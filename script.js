@@ -8,9 +8,8 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // Retrieve vote count and user voting status from localStorage
     let voteCount = localStorage.getItem("voteCount") ? parseInt(localStorage.getItem("voteCount")) : 0;
-    let hasVoted = localStorage.getItem("hasVoted");
+    let hasVoted = localStorage.getItem("hasVoted") === "true";
     
     function updateVoteDisplay() {
         voteDisplay.textContent = voteCount;
@@ -26,17 +25,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function handleVote(change) {
-        if (localStorage.getItem("hasVoted")) {
+        if (hasVoted) {
             alert("You have already voted.");
             return;
         }
         
-        // Immediately disable buttons to prevent multiple clicks
+        // Set hasVoted to true *before* updating anything
+        hasVoted = true;
+        localStorage.setItem("hasVoted", "true");
         disableButtons();
         
         voteCount += change;
         localStorage.setItem("voteCount", voteCount);
-        localStorage.setItem("hasVoted", "true"); // Store vote status
         updateVoteDisplay();
     }
 
