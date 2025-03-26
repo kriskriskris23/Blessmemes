@@ -74,15 +74,9 @@ async function vote(type) {
                 localStorage.setItem("lastVote", type);
                 alert("Thank you for voting!");
             } else {
-                // 🔄 **Switch vote**
-                console.log("🔄 Switching vote from", lastVote, "to", type);
-                const previousVoteChange = lastVote === "bless" ? -1 : +1;
-                const newVoteChange = type === "bless" ? +1 : -1;
-                await updateDoc(docRef, { count: currentVotes + previousVoteChange + newVoteChange });
-
-                lastVote = type;
-                localStorage.setItem("lastVote", type);
-                alert("Vote switched!");
+                // 🔴 **Prevent voting twice before canceling**
+                alert("You must cancel your previous vote before voting again.");
+                return;
             }
 
             console.log("🔹 Last vote after clicking:", lastVote);
