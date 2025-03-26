@@ -66,7 +66,7 @@ async function vote(type) {
             await updateDoc(docRef, { count: currentVotes + (type === "bless" ? 1 : -1) });
             lastVote = type;
             localStorage.setItem("lastVote", type);
-            alert("Thank you for voting!");
+            alert("Thank you for Voting!"); // Show prompt
         } else {
             alert("You must cancel your previous vote before voting again.");
         }
