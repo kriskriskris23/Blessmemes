@@ -28,6 +28,6 @@ button {
 
 #curse {
     background-color: red;
-    color: white; /* Ensure text is readable */
+    color: black; /* Ensure text is readable */
     border: 2px solid darkred;
 }
