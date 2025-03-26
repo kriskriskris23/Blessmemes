@@ -1,50 +1,32 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const voteDisplay = document.getElementById("vote-count");
-    const blessBtn = document.getElementById("bless");
-    const curseBtn = document.getElementById("curse");
+document.addEventListener("DOMContentLoaded", () => {
+    const blessButton = document.getElementById("bless");
+    const curseButton = document.getElementById("curse");
+    const voteCount = document.getElementById("vote-count");
 
-    if (!voteDisplay || !blessBtn || !curseBtn) {
-        console.error("One or more elements are missing. Check your HTML IDs.");
-        return;
-    }
+    let userVote = null; // Tracks the user's last vote
 
-    // Load votes from localStorage
-    let voteCount = localStorage.getItem("voteCount") ? parseInt(localStorage.getItem("voteCount")) : 0;
-    let lastVote = localStorage.getItem("lastVote") || null; // "bless", "curse", or null
+    blessButton.addEventListener("click", () => handleVote("bless"));
+    curseButton.addEventListener("click", () => handleVote("curse"));
 
-    function updateVoteDisplay() {
-        voteDisplay.textContent = voteCount;
-    }
-
-    function handleVote(change, type) {
-        if (lastVote === type) {
+    function handleVote(voteType) {
+        if (userVote === voteType) {
+            // If user clicks the same vote again, remove their vote
+            alert("Your vote has been removed.");
+            userVote = null;
+            updateVoteCount(-1);
+        } else if (userVote === null) {
+            // If they haven't voted yet, allow voting
+            userVote = voteType;
+            alert("Thank you for voting!");
+            updateVoteCount(1);
+        } else {
+            // If they already voted but try to switch votes, prevent it
             alert("You have already voted.");
-            return;
         }
-
-        if (lastVote) {
-            alert("You can only vote once.");
-            return;
-        }
-
-        // Update vote count
-        voteCount += change;
-        localStorage.setItem("voteCount", voteCount);
-        localStorage.setItem("lastVote", type);
-        lastVote = type;
-        
-        updateVoteDisplay();
-        alert("Thank you for voting!");
     }
 
-    blessBtn.addEventListener("click", function () {
-        handleVote(1, "bless");
-    });
-
-    curseBtn.addEventListener("click", function () {
-        handleVote(-1, "curse");
-    });
-
-    // Ensure vote count updates on page load
-    updateVoteDisplay();
+    function updateVoteCount(change) {
+        let currentVotes = parseInt(voteCount.textContent);
+        voteCount.textContent = currentVotes + change;
+    }
 });
