@@ -1,36 +1,29 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const blessButton = document.getElementById("bless");
-    const curseButton = document.getElementById("curse");
-    const voteCount = document.getElementById("vote-count");
+document.addEventListener("DOMContentLoaded", function () {
+    const blessBtn = document.getElementById("bless");
+    const curseBtn = document.getElementById("curse");
+    const voteCountDisplay = document.getElementById("vote-count");
 
-    let userVote = null; // Tracks the user's last vote
-    let votes = 0; // Initial vote count
+    // Load stored vote count and user's vote status from localStorage
+    let voteCount = localStorage.getItem("voteCount") ? parseInt(localStorage.getItem("voteCount")) : 0;
+    let hasVoted = localStorage.getItem("hasVoted") === "true"; // Check if user already voted
 
-    blessButton.addEventListener("click", () => handleVote("bless"));
-    curseButton.addEventListener("click", () => handleVote("curse"));
+    // Update the displayed vote count
+    voteCountDisplay.textContent = voteCount;
 
-    function handleVote(voteType) {
-        if (userVote === voteType) {
-            // If user clicks the same vote again, remove their vote
-            alert("Your vote has been removed.");
-            userVote = null;
-            updateVoteCount(-1);
-        } else if (userVote === null) {
-            // If they haven't voted yet, allow voting
-            userVote = voteType;
-            alert("Thank you for voting!");
-            updateVoteCount(1);
-        } else {
-            // If they already voted but try to switch votes, allow it by adjusting counts
-            alert("You switched your vote.");
-            updateVoteCount(-1); // Remove previous vote
-            userVote = voteType;
-            updateVoteCount(1); // Add new vote
+    function vote(change) {
+        if (hasVoted) {
+            alert("You have already voted.");
+            return;
         }
+
+        voteCount += change;
+        voteCountDisplay.textContent = voteCount;
+        localStorage.setItem("voteCount", voteCount); // Save vote count
+        localStorage.setItem("hasVoted", "true"); // Mark user as voted
+
+        alert("Thank you for voting!");
     }
 
-    function updateVoteCount(change) {
-        votes += change;
-        voteCount.textContent = votes;
-    }
+    blessBtn.addEventListener("click", () => vote(1));
+    curseBtn.addEventListener("click", () => vote(-1));
 });
