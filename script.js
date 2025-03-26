@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     let voteCount = localStorage.getItem("voteCount") ? parseInt(localStorage.getItem("voteCount")) : 0;
-    let lastVote = localStorage.getItem("lastVote"); // "upvote", "downvote", or null
+    let lastVote = localStorage.getItem("lastVote") || null; // "upvote", "downvote", or null
     
     function updateVoteDisplay() {
         voteDisplay.textContent = voteCount;
@@ -42,13 +42,13 @@ document.addEventListener("DOMContentLoaded", function () {
         updateVoteDisplay();
     }
 
-    upvoteBtn.onclick = function () {
+    upvoteBtn.addEventListener("click", function () {
         handleVote(1, "upvote");
-    };
+    });
     
-    downvoteBtn.onclick = function () {
+    downvoteBtn.addEventListener("click", function () {
         handleVote(-1, "downvote");
-    };
+    });
     
     updateVoteDisplay();
 });
