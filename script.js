@@ -13,96 +13,73 @@ const firebaseConfig = {
     measurementId: "G-0GY321M1ML"
 };
 
-// Initialize Firebase
+// Initialize Firebase & Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 window.db = db;
 
-console.log("🔥 Firestore Initialized:", window.db);
-
-// Get elements
+// DOM Elements
 const blessBtn = document.getElementById("bless");
 const curseBtn = document.getElementById("curse");
 const voteCountSpan = document.getElementById("vote-count");
 
+// Firestore Document Reference
 const docRef = doc(db, "votes", "meme1");
 
-// Retrieve the user's last vote from local storage
+// Load the last vote from local storage
 let lastVote = localStorage.getItem("lastVote") || null;
-console.log("🔹 Last vote from storage:", lastVote);
 
-// Function to update vote count
+// Fetch & Update Vote Count
 async function updateVoteCount() {
     try {
         const docSnap = await getDoc(docRef);
+        let voteCount = 0;
+
         if (docSnap.exists()) {
-            voteCountSpan.textContent = docSnap.data().count;
+            voteCount = docSnap.data().count;
         } else {
             await setDoc(docRef, { count: 0 });
-            voteCountSpan.textContent = 0;
         }
+
+        voteCountSpan.textContent = voteCount;
     } catch (error) {
-        console.error("🔥 Error updating vote count:", error);
+        console.error("🔥 Error fetching votes:", error);
     }
 }
 
-// Function to handle voting
+// Handle Vote Logic
 async function vote(type) {
-    console.log("🟡 Vote button clicked:", type);
-
     try {
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            let currentVotes = docSnap.data().count || 0;
-            console.log("🔹 Current vote count:", currentVotes);
-            console.log("🔹 Last vote before clicking:", lastVote);
+        if (!docSnap.exists()) return;
 
-            if (lastVote === type) {
-                // ❌ **Cancel previous vote**
-                console.log("❌ Canceling vote...");
-                const voteChange = type === "bless" ? -1 : +1; // Reverse effect
-                await updateDoc(docRef, { count: currentVotes + voteChange });
-                lastVote = null;
-                localStorage.removeItem("lastVote");
-                alert("Vote canceled!");
-            } else if (lastVote === null) {
-                // ✅ **New vote**
-                const voteChange = type === "bless" ? +1 : -1;
-                console.log("✅ Voting:", type, "Change:", voteChange);
-                await updateDoc(docRef, { count: currentVotes + voteChange });
-                lastVote = type;
-                localStorage.setItem("lastVote", type);
-                alert("Thank you for voting!");
-            } else {
-                // 🔴 **Prevent voting twice before canceling**
-                alert("You must cancel your previous vote before voting again.");
-                return;
-            }
+        let currentVotes = docSnap.data().count || 0;
 
-            console.log("🔹 Last vote after clicking:", lastVote);
-            updateVoteCount();
+        if (lastVote === type) {
+            // Cancel the previous vote
+            await updateDoc(docRef, { count: currentVotes + (type === "bless" ? -1 : 1) });
+            lastVote = null;
+            localStorage.removeItem("lastVote");
+            alert("Vote canceled!");
+        } else if (lastVote === null) {
+            // Cast a new vote
+            await updateDoc(docRef, { count: currentVotes + (type === "bless" ? 1 : -1) });
+            lastVote = type;
+            localStorage.setItem("lastVote", type);
+            alert("Thank you for voting!");
+        } else {
+            alert("You must cancel your previous vote before voting again.");
         }
+
+        updateVoteCount();
     } catch (error) {
-        console.error("🔥 Error voting:", error);
+        console.error("🔥 Error processing vote:", error);
     }
 }
 
-// Ensure buttons stay clickable
-function enableButtons() {
-    blessBtn.disabled = false;
-    curseBtn.disabled = false;
-}
+// Event Listeners
+blessBtn.addEventListener("click", () => vote("bless"));
+curseBtn.addEventListener("click", () => vote("curse"));
 
-blessBtn.addEventListener("click", () => {
-    enableButtons();
-    vote("bless");
-});
-
-curseBtn.addEventListener("click", () => {
-    enableButtons();
-    vote("curse");
-});
-
-// Initialize vote count on page load
+// Initialize Vote Count on Page Load
 updateVoteCount();
-enableButtons();
