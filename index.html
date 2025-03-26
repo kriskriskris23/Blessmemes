@@ -19,28 +19,24 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        // Import Firebase SDKs
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
-            authDomain: "blessmemes.firebaseapp.com",
-            projectId: "blessmemes",
-            storageBucket: "blessmemes.firebasestorage.app",
-            messagingSenderId: "647948484551",
-            appId: "1:647948484551:web:db884bd3346d838737e3e2",
-            measurementId: "G-0GY321M1ML"
-        };
+  const firebaseConfig = {
+    apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
+    authDomain: "blessmemes.firebaseapp.com",
+    projectId: "blessmemes",
+    storageBucket: "blessmemes.appspot.com",
+    messagingSenderId: "647948484551",
+    appId: "1:647948484551:web:db884bd3346d838737e3e2",
+    measurementId: "G-0GY321M1ML"
+  };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-        // Expose db globally so script.js can use it
-        window.db = db;
-    </script>
+  window.db = db; // Store Firestore in window for debugging
+</script>
 
     <!-- Main JavaScript -->
     <script defer src="script.js"></script>
