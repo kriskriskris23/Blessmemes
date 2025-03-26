@@ -18,13 +18,11 @@ document.addEventListener("DOMContentLoaded", function () {
     function disableButtons() {
         upvoteBtn.disabled = true;
         downvoteBtn.disabled = true;
+        upvoteBtn.removeEventListener("click", upvoteHandler);
+        downvoteBtn.removeEventListener("click", downvoteHandler);
     }
 
-    if (hasVoted) {
-        disableButtons();
-    }
-
-    function handleVote(change, button) {
+    function handleVote(change) {
         if (hasVoted) {
             alert("You have already voted.");
             return;
@@ -40,8 +38,20 @@ document.addEventListener("DOMContentLoaded", function () {
         updateVoteDisplay();
     }
 
-    upvoteBtn.addEventListener("click", function() { handleVote(1, upvoteBtn); });
-    downvoteBtn.addEventListener("click", function() { handleVote(-1, downvoteBtn); });
+    function upvoteHandler() {
+        handleVote(1);
+    }
+    
+    function downvoteHandler() {
+        handleVote(-1);
+    }
+
+    if (hasVoted) {
+        disableButtons();
+    } else {
+        upvoteBtn.addEventListener("click", upvoteHandler);
+        downvoteBtn.addEventListener("click", downvoteHandler);
+    }
     
     updateVoteDisplay();
 });
