@@ -1,6 +1,6 @@
 // Import Firebase SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 // Firebase Configuration
 const firebaseConfig = {
@@ -16,7 +16,6 @@ const firebaseConfig = {
 // Initialize Firebase & Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-window.db = db;
 
 // DOM Elements
 const blessBtn = document.getElementById("bless");
@@ -26,22 +25,18 @@ const memeInput = document.getElementById("meme-url");
 const updateMemeBtn = document.getElementById("update-meme");
 const memeImg = document.getElementById("meme-img");
 
-// Firestore Document Reference
-const docRef = doc(db, "votes", "meme1");
-
-// Load the last vote from local storage
-let lastVote = localStorage.getItem("lastVote") || null;
+// Firestore Document References
+const voteDocRef = doc(db, "votes", "meme1");
+const memeDocRef = doc(db, "memes", "currentMeme");
 
 // Fetch & Update Vote Count
 async function updateVoteCount() {
     try {
-        const docSnap = await getDoc(docRef);
-        let voteCount = 0;
-
-        if (docSnap.exists()) {
-            voteCount = docSnap.data().count;
-        } else {
-            await setDoc(docRef, { count: 0 });
+        const docSnap = await getDoc(voteDocRef);
+        let voteCount = docSnap.exists() ? docSnap.data().count : 0;
+        
+        if (!docSnap.exists()) {
+            await setDoc(voteDocRef, { count: 0 });
         }
 
         voteCountSpan.textContent = voteCount;
@@ -53,27 +48,14 @@ async function updateVoteCount() {
 // Handle Vote Logic
 async function vote(type) {
     try {
-        const docSnap = await getDoc(docRef);
+        const docSnap = await getDoc(voteDocRef);
         if (!docSnap.exists()) return;
 
         let currentVotes = docSnap.data().count || 0;
 
-        if (lastVote === type) {
-            // Cancel the previous vote
-            await updateDoc(docRef, { count: currentVotes + (type === "bless" ? -1 : 1) });
-            lastVote = null;
-            localStorage.removeItem("lastVote");
-            alert("Vote canceled!");
-        } else if (lastVote === null) {
-            // Cast a new vote
-            await updateDoc(docRef, { count: currentVotes + (type === "bless" ? 1 : -1) });
-            lastVote = type;
-            localStorage.setItem("lastVote", type);
-            alert("Thank you for Voting!"); // Show prompt
-        } else {
-            alert("You must cancel your previous vote before voting again.");
-        }
+        await updateDoc(voteDocRef, { count: currentVotes + (type === "bless" ? 1 : -1) });
 
+        alert("Thank you for voting!");
         updateVoteCount();
     } catch (error) {
         console.error("🔥 Error processing vote:", error);
@@ -87,22 +69,40 @@ curseBtn.addEventListener("click", () => vote("curse"));
 // Initialize Vote Count on Page Load
 updateVoteCount();
 
-// Function to update the meme image
-updateMemeBtn.addEventListener("click", () => {
+// Function to update meme image in Firestore
+updateMemeBtn.addEventListener("click", async () => {
     const newMemeURL = memeInput.value.trim();
 
     if (newMemeURL) {
-        memeImg.src = newMemeURL;
-        localStorage.setItem("memeImageURL", newMemeURL); // Save meme URL in local storage
+        try {
+            await setDoc(memeDocRef, { url: newMemeURL });
+            memeInput.value = ""; // Clear input after updating
+        } catch (error) {
+            console.error("🔥 Error updating meme URL:", error);
+        }
     } else {
         alert("Please enter a valid image URL!");
     }
 });
 
-// Load saved meme URL on page refresh
-window.addEventListener("load", () => {
-    const savedMeme = localStorage.getItem("memeImageURL");
-    if (savedMeme) {
-        memeImg.src = savedMeme;
+// Real-time Sync: Update meme for all users instantly
+onSnapshot(memeDocRef, (docSnap) => {
+    if (docSnap.exists()) {
+        memeImg.src = docSnap.data().url;
     }
 });
+
+// Load meme from Firestore when page loads
+async function loadMeme() {
+    try {
+        const docSnap = await getDoc(memeDocRef);
+        if (docSnap.exists()) {
+            memeImg.src = docSnap.data().url;
+        }
+    } catch (error) {
+        console.error("🔥 Error loading meme:", error);
+    }
+}
+
+// Load meme on page load
+window.addEventListener("load", loadMeme);
