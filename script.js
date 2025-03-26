@@ -60,7 +60,8 @@ async function vote(type) {
             if (lastVote === type) {
                 // Cancel previous vote
                 console.log("❌ Canceling vote...");
-                await updateDoc(docRef, { count: currentVotes - 1 });
+                const voteChange = type === "bless" ? -1 : +1; // Reverse effect
+                await updateDoc(docRef, { count: currentVotes + voteChange });
                 lastVote = null;
                 localStorage.removeItem("lastVote");
                 alert("Vote canceled!");
@@ -68,11 +69,13 @@ async function vote(type) {
                 // Remove old vote first if the user already voted
                 if (lastVote) {
                     console.log("🔄 Removing old vote:", lastVote);
-                    currentVotes--; // Undo previous vote
+                    const previousVoteChange = lastVote === "bless" ? -1 : +1;
+                    currentVotes += previousVoteChange; // Undo previous vote
                 }
                 // Add new vote
                 console.log("✅ Adding new vote:", type);
-                await updateDoc(docRef, { count: currentVotes + 1 });
+                const voteChange = type === "bless" ? +1 : -1;
+                await updateDoc(docRef, { count: currentVotes + voteChange });
                 lastVote = type;
                 localStorage.setItem("lastVote", type);
                 alert("Thank you for voting!");
