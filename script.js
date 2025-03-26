@@ -38,7 +38,7 @@ const userId = getUserId(); // Get unique user ID
 async function loadVotes() {
     const docSnap = await getDoc(voteDoc);
     if (docSnap.exists()) {
-        voteCountDisplay.textContent = docSnap.data().count;
+        voteCountDisplay.textContent = docSnap.data().count || 0;
     } else {
         await setDoc(voteDoc, { count: 0, voters: {} });
         voteCountDisplay.textContent = 0;
@@ -50,13 +50,14 @@ async function vote(type) {
     const docSnap = await getDoc(voteDoc);
     if (docSnap.exists()) {
         let data = docSnap.data();
-        let userVote = data.voters ? data.voters[userId] : null;
+        let userVote = data.voters?.[userId] || null;
+        let newCount = data.count || 0;
+        let updatedVoters = { ...data.voters };
 
         // 🛑 If user clicks the same vote again, cancel it
         if (userVote === type) {
-            let newCount = data.count - (type === "bless" ? 1 : -1);
-            let updatedVoters = { ...data.voters };
-            delete updatedVoters[userId]; // Remove user vote
+            newCount += type === "bless" ? -1 : 1; // Remove vote
+            delete updatedVoters[userId];
 
             await updateDoc(voteDoc, { count: newCount, voters: updatedVoters });
             localStorage.removeItem("hasVoted");
@@ -64,15 +65,15 @@ async function vote(type) {
             return;
         }
 
-        // ✅ If user has already voted, prevent voting again until canceled
+        // ✅ If user has already voted for the other option, prevent voting without canceling first
         if (userVote !== null) {
             alert("You must cancel your previous vote before voting again.");
             return;
         }
 
         // ✅ Register new vote
-        let newCount = data.count + (type === "bless" ? 1 : -1);
-        let updatedVoters = { ...data.voters, [userId]: type };
+        newCount += type === "bless" ? 1 : -1;
+        updatedVoters[userId] = type;
 
         await updateDoc(voteDoc, { count: newCount, voters: updatedVoters });
         localStorage.setItem("hasVoted", type);
@@ -83,7 +84,7 @@ async function vote(type) {
 // ✅ Real-time vote updates
 onSnapshot(voteDoc, (docSnap) => {
     if (docSnap.exists()) {
-        voteCountDisplay.textContent = docSnap.data().count;
+        voteCountDisplay.textContent = docSnap.data().count || 0;
     }
 });
 
