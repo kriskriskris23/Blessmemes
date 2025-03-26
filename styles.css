@@ -23,11 +23,11 @@ button {
 #bless {
     background-color: yellow;
     color: black; /* Ensure text is readable */
-    border: 2px solid #b3a100; /* Slightly darker border for contrast */
+    border: 2px solid black; /* Black border */
 }
 
 #curse {
     background-color: red;
     color: black; /* Ensure text is readable */
-    border: 2px solid darkred;
+    border: 2px solid black; /* Black border */
 }
