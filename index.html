@@ -19,9 +19,11 @@
 
     <!-- Firebase SDK -->
     <script type="module">
+  // Import Firebase SDK
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
   import { getFirestore } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
+  // Your Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
     authDomain: "blessmemes.firebaseapp.com",
@@ -32,10 +34,12 @@
     measurementId: "G-0GY321M1ML"
   };
 
+  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  window.db = db; // Store Firestore in window for debugging
+  // Store Firestore in global window object for debugging
+  window.db = db;
 </script>
 
     <!-- Main JavaScript -->
