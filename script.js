@@ -1,13 +1,14 @@
 // Import Firebase SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-storage.js";
 
 // Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
     authDomain: "blessmemes.firebaseapp.com",
     projectId: "blessmemes",
-    storageBucket: "blessmemes.firebasestorage.app",
+    storageBucket: "blessmemes.appspot.com",
     messagingSenderId: "647948484551",
     appId: "1:647948484551:web:db884bd3346d838737e3e2",
     measurementId: "G-0GY321M1ML"
@@ -16,12 +17,15 @@ const firebaseConfig = {
 // Initialize Firebase & Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 window.db = db;
 
 // DOM Elements
 const blessBtn = document.getElementById("bless");
 const curseBtn = document.getElementById("curse");
 const voteCountSpan = document.getElementById("vote-count");
+const imageUpload = document.getElementById("imageUpload");
+const uploadedImage = document.getElementById("uploadedImage");
 
 // Firestore Document Reference
 const docRef = doc(db, "votes", "meme1");
@@ -66,7 +70,7 @@ async function vote(type) {
             await updateDoc(docRef, { count: currentVotes + (type === "bless" ? 1 : -1) });
             lastVote = type;
             localStorage.setItem("lastVote", type);
-            alert("Thank you for Voting!"); // Show prompt
+            alert("Thank you for voting!");
         } else {
             alert("You must cancel your previous vote before voting again.");
         }
@@ -76,6 +80,27 @@ async function vote(type) {
         console.error("🔥 Error processing vote:", error);
     }
 }
+
+// Handle Meme Image Upload
+imageUpload.addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+        const storageRef = ref(storage, 'memes/' + file.name);
+        
+        try {
+            // Upload the file to Firebase Storage
+            await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(storageRef);
+
+            // Display the uploaded meme image
+            uploadedImage.src = downloadURL;
+            uploadedImage.style.display = "block";
+        } catch (error) {
+            console.error("Error uploading meme:", error);
+        }
+    }
+});
 
 // Event Listeners
 blessBtn.addEventListener("click", () => vote("bless"));
