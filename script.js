@@ -16,7 +16,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-window.db = db; // ✅ Firestore globally accessible
+window.db = db;
 
 console.log("🔥 Firestore Initialized:", window.db);
 
@@ -27,7 +27,7 @@ const voteCountSpan = document.getElementById("vote-count");
 
 const docRef = doc(db, "votes", "meme1");
 
-// Store user's last vote in local storage
+// Retrieve the user's last vote from local storage
 let lastVote = localStorage.getItem("lastVote") || null;
 console.log("🔹 Last vote from storage:", lastVote);
 
@@ -58,29 +58,31 @@ async function vote(type) {
             console.log("🔹 Last vote before clicking:", lastVote);
 
             if (lastVote === type) {
-                // Cancel previous vote
+                // ❌ **Cancel previous vote**
                 console.log("❌ Canceling vote...");
                 const voteChange = type === "bless" ? -1 : +1; // Reverse effect
                 await updateDoc(docRef, { count: currentVotes + voteChange });
                 lastVote = null;
                 localStorage.removeItem("lastVote");
                 alert("Vote canceled!");
-            } else {
-                // Remove old vote first if the user already voted
-                if (lastVote) {
-                    console.log("🔄 Removing old vote:", lastVote);
-                    const previousVoteChange = lastVote === "bless" ? -1 : +1;
-                    currentVotes += previousVoteChange; // Undo previous vote
-                }
-
-                // ✅ **Fix: Ensure Curse subtracts (-1)**
-                const voteChange = type === "bless" ? +1 : -1; 
-                console.log("✅ Adding new vote:", type, "Change:", voteChange);
-
+            } else if (lastVote === null) {
+                // ✅ **New vote**
+                const voteChange = type === "bless" ? +1 : -1;
+                console.log("✅ Voting:", type, "Change:", voteChange);
                 await updateDoc(docRef, { count: currentVotes + voteChange });
                 lastVote = type;
                 localStorage.setItem("lastVote", type);
                 alert("Thank you for voting!");
+            } else {
+                // 🔄 **Switch vote**
+                console.log("🔄 Switching vote from", lastVote, "to", type);
+                const previousVoteChange = lastVote === "bless" ? -1 : +1;
+                const newVoteChange = type === "bless" ? +1 : -1;
+                await updateDoc(docRef, { count: currentVotes + previousVoteChange + newVoteChange });
+
+                lastVote = type;
+                localStorage.setItem("lastVote", type);
+                alert("Vote switched!");
             }
 
             console.log("🔹 Last vote after clicking:", lastVote);
@@ -91,7 +93,7 @@ async function vote(type) {
     }
 }
 
-// 🔥 **Ensuring buttons stay clickable**
+// Ensure buttons stay clickable
 function enableButtons() {
     blessBtn.disabled = false;
     curseBtn.disabled = false;
@@ -109,4 +111,4 @@ curseBtn.addEventListener("click", () => {
 
 // Initialize vote count on page load
 updateVoteCount();
-enableButtons(); // 🔥 Make sure buttons are always enabled
+enableButtons();
