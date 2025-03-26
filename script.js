@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", function () {
     function disableVoting() {
         upvoteBtn.disabled = true;
         downvoteBtn.disabled = true;
+        upvoteBtn.removeEventListener("click", upvoteHandler);
+        downvoteBtn.removeEventListener("click", downvoteHandler);
     }
 
     function handleVote(change) {
@@ -26,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         
-        // Immediately store the vote status to prevent rapid clicking
+        // Prevents any clicks registering before storage updates
         localStorage.setItem("hasVoted", "true");
         disableVoting();
         
@@ -35,12 +37,20 @@ document.addEventListener("DOMContentLoaded", function () {
         updateVoteDisplay();
     }
 
-    upvoteBtn.addEventListener("click", () => handleVote(1));
-    downvoteBtn.addEventListener("click", () => handleVote(-1));
+    function upvoteHandler() {
+        handleVote(1);
+    }
     
-    if (hasVoted) {
-        disableVoting();
+    function downvoteHandler() {
+        handleVote(-1);
     }
 
+    if (hasVoted) {
+        disableVoting();
+    } else {
+        upvoteBtn.addEventListener("click", upvoteHandler);
+        downvoteBtn.addEventListener("click", downvoteHandler);
+    }
+    
     updateVoteDisplay();
 });
