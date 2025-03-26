@@ -31,18 +31,21 @@ document.addEventListener("DOMContentLoaded", function () {
             voteCount -= change;
             localStorage.setItem("voteCount", voteCount);
             localStorage.removeItem("lastVote");
+            lastVote = null;
             enableVoting();
             alert("Your vote has been canceled.");
         } else {
-            // Register a new vote
+            // If switching votes, reset first
             if (lastVote) {
-                alert("You have already voted. Click your vote again to cancel.");
-                return;
+                let previousChange = lastVote === "upvote" ? 1 : -1;
+                voteCount -= previousChange;
             }
             
+            // Register the new vote
             voteCount += change;
             localStorage.setItem("voteCount", voteCount);
             localStorage.setItem("lastVote", type);
+            lastVote = type;
             disableVoting();
             alert("Thank you for voting!");
         }
