@@ -1,8 +1,8 @@
 // ✅ Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-// ✅ Firebase configuration (Replace with your actual Firebase config)
+// ✅ Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
     authDomain: "blessmemes.firebaseapp.com",
@@ -46,9 +46,11 @@ async function vote(change) {
     const docSnap = await getDoc(voteDoc);
     if (docSnap.exists()) {
         let newCount = docSnap.data().count + change;
-        await setDoc(voteDoc, { count: newCount }); // Update vote count in Firebase
+        await updateDoc(voteDoc, { count: newCount }); // 🔥 Update vote count in Firebase
         localStorage.setItem("hasVoted", "true"); // Mark user as voted
         alert("Thank you for voting!");
+    } else {
+        await setDoc(voteDoc, { count: change }); // If document doesn't exist, create it
     }
 }
 
