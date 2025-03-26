@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+    let hasVoted = false;
     let voteCount = 0;
     
     const voteDisplay = document.getElementById("vote-count");
@@ -14,14 +15,22 @@ document.addEventListener("DOMContentLoaded", function () {
         voteDisplay.textContent = voteCount;
     }
     
-    upvoteBtn.addEventListener("click", function () {
-        voteCount++;
+    function handleVote(change) {
+        if (hasVoted) {
+            alert("You have already voted.");
+            return;
+        }
+        voteCount += change;
+        hasVoted = true;
         updateVoteDisplay();
+    }
+
+    upvoteBtn.addEventListener("click", function () {
+        handleVote(1);
     });
     
     downvoteBtn.addEventListener("click", function () {
-        voteCount--;
-        updateVoteDisplay();
+        handleVote(-1);
     });
     
     updateVoteDisplay();
