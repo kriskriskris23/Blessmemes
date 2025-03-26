@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const voteCount = document.getElementById("vote-count");
 
     let userVote = null; // Tracks the user's last vote
+    let votes = 0; // Initial vote count
 
     blessButton.addEventListener("click", () => handleVote("bless"));
     curseButton.addEventListener("click", () => handleVote("curse"));
@@ -20,13 +21,16 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Thank you for voting!");
             updateVoteCount(1);
         } else {
-            // If they already voted but try to switch votes, prevent it
-            alert("You have already voted.");
+            // If they already voted but try to switch votes, allow it by adjusting counts
+            alert("You switched your vote.");
+            updateVoteCount(-1); // Remove previous vote
+            userVote = voteType;
+            updateVoteCount(1); // Add new vote
         }
     }
 
     function updateVoteCount(change) {
-        let currentVotes = parseInt(voteCount.textContent);
-        voteCount.textContent = currentVotes + change;
+        votes += change;
+        voteCount.textContent = votes;
     }
 });
