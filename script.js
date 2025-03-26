@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -21,17 +21,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     const blessBtn = document.getElementById("bless");
     const curseBtn = document.getElementById("curse");
     const voteCount = document.getElementById("vote-count");
+    const resetBtn = document.getElementById("reset-votes");
 
     const voteDocRef = doc(db, "votes", "main");
-    const voteDocSnap = await getDoc(voteDocRef);
+    let voteDocSnap = await getDoc(voteDocRef);
 
     let userVote = localStorage.getItem("userVote");
 
-    if (voteDocSnap.exists()) {
-        voteCount.innerText = voteDocSnap.data().count;
-    } else {
-        await updateDoc(voteDocRef, { count: 0 });
+    if (!voteDocSnap.exists()) {
+        await setDoc(voteDocRef, { count: 0 });
+        voteDocSnap = await getDoc(voteDocRef);
     }
+
+    voteCount.innerText = voteDocSnap.data().count;
 
     async function vote(type) {
         if (userVote) {
@@ -54,6 +56,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         voteCount.innerText = updatedVoteDoc.data().count;
     }
 
+    async function resetVotes() {
+        if (confirm("Are you sure you want to reset the votes?")) {
+            await updateDoc(voteDocRef, { count: 0 });
+            voteCount.innerText = "0";
+            alert("Votes have been reset.");
+        }
+    }
+
     blessBtn.addEventListener("click", () => vote("bless"));
     curseBtn.addEventListener("click", () => vote("curse"));
+    resetBtn.addEventListener("click", resetVotes);
 });
