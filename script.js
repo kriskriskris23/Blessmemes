@@ -9,48 +9,53 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     let voteCount = localStorage.getItem("voteCount") ? parseInt(localStorage.getItem("voteCount")) : 0;
-    let lastVote = localStorage.getItem("lastVote") || null; // "upvote", "downvote", or null
-    let voteCountPerUser = localStorage.getItem("voteCountPerUser") ? parseInt(localStorage.getItem("voteCountPerUser")) : 0;
+    let userVotes = localStorage.getItem("userVotes") ? parseInt(localStorage.getItem("userVotes")) : 0;
     const maxVotes = 2;
     
     function updateVoteDisplay() {
         voteDisplay.textContent = voteCount;
     }
 
-    function handleVote(change, type) {
-        if (lastVote === type && voteCountPerUser > 0) {
-            // Cancel vote if clicking the same button again
-            voteCount -= change;
-            voteCountPerUser -= 1;
-            localStorage.setItem("voteCount", voteCount);
-            localStorage.setItem("voteCountPerUser", voteCountPerUser);
-            if (voteCountPerUser === 0) {
-                localStorage.removeItem("lastVote");
-                lastVote = null;
-            }
-            alert("Your vote has been canceled.");
-        } else if (voteCountPerUser < maxVotes) {
-            // Register new vote if under limit
+    function handleVote(change) {
+        if (userVotes < maxVotes) {
             voteCount += change;
-            voteCountPerUser += 1;
+            userVotes += 1;
             localStorage.setItem("voteCount", voteCount);
-            localStorage.setItem("voteCountPerUser", voteCountPerUser);
-            localStorage.setItem("lastVote", type);
-            lastVote = type;
+            localStorage.setItem("userVotes", userVotes);
             alert("Thank you for voting!");
         } else {
-            alert("You have reached the maximum of 2 votes.");
+            alert("You have reached your vote limit of 2.");
+        }
+        
+        updateVoteDisplay();
+    }
+
+    function handleUnvote(change) {
+        if (userVotes > 0) {
+            voteCount -= change;
+            userVotes -= 1;
+            localStorage.setItem("voteCount", voteCount);
+            localStorage.setItem("userVotes", userVotes);
+            alert("Your vote has been removed.");
         }
         
         updateVoteDisplay();
     }
 
     upvoteBtn.addEventListener("click", function () {
-        handleVote(1, "upvote");
+        if (userVotes < maxVotes) {
+            handleVote(1);
+        } else {
+            handleUnvote(1);
+        }
     });
     
     downvoteBtn.addEventListener("click", function () {
-        handleVote(-1, "downvote");
+        if (userVotes < maxVotes) {
+            handleVote(-1);
+        } else {
+            handleUnvote(-1);
+        }
     });
     
     updateVoteDisplay();
