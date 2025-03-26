@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    let voteCount = 0;
     const voteDisplay = document.getElementById("vote-count");
     const upvoteBtn = document.getElementById("upvote");
     const downvoteBtn = document.getElementById("downvote");
@@ -9,27 +8,35 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // Check if user has already voted
+    // Retrieve vote count and user voting status from localStorage
+    let voteCount = localStorage.getItem("voteCount") ? parseInt(localStorage.getItem("voteCount")) : 0;
     let hasVoted = localStorage.getItem("hasVoted");
-    if (hasVoted) {
+    
+    function updateVoteDisplay() {
+        voteDisplay.textContent = voteCount;
+    }
+
+    function disableButtons() {
         upvoteBtn.disabled = true;
         downvoteBtn.disabled = true;
     }
 
-    function updateVoteDisplay() {
-        voteDisplay.textContent = voteCount;
+    if (hasVoted) {
+        disableButtons();
     }
-    
+
     function handleVote(change) {
         if (localStorage.getItem("hasVoted")) {
             alert("You have already voted.");
             return;
         }
         
+        // Immediately disable buttons to prevent multiple clicks
+        disableButtons();
+        
         voteCount += change;
-        localStorage.setItem("hasVoted", "true"); // Store vote status in localStorage
-        upvoteBtn.disabled = true;
-        downvoteBtn.disabled = true;
+        localStorage.setItem("voteCount", voteCount);
+        localStorage.setItem("hasVoted", "true"); // Store vote status
         updateVoteDisplay();
     }
 
