@@ -9,53 +9,38 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     let voteCount = localStorage.getItem("voteCount") ? parseInt(localStorage.getItem("voteCount")) : 0;
-    let userVotes = localStorage.getItem("userVotes") ? parseInt(localStorage.getItem("userVotes")) : 0;
-    const maxVotes = 2;
+    let lastVote = localStorage.getItem("lastVote") || null; // "upvote", "downvote", or null
     
     function updateVoteDisplay() {
         voteDisplay.textContent = voteCount;
     }
 
-    function handleVote(change) {
-        if (userVotes < maxVotes) {
-            voteCount += change;
-            userVotes += 1;
-            localStorage.setItem("voteCount", voteCount);
-            localStorage.setItem("userVotes", userVotes);
-            alert("Thank you for voting!");
-        } else {
-            alert("You have reached your vote limit of 2.");
+    function handleVote(change, type) {
+        if (lastVote === type) {
+            alert("You have already voted.");
+            return;
         }
         
-        updateVoteDisplay();
-    }
-
-    function handleUnvote(change) {
-        if (userVotes > 0) {
-            voteCount -= change;
-            userVotes -= 1;
-            localStorage.setItem("voteCount", voteCount);
-            localStorage.setItem("userVotes", userVotes);
-            alert("Your vote has been removed.");
+        if (lastVote) {
+            alert("You can only vote once.");
+            return;
         }
+        
+        voteCount += change;
+        localStorage.setItem("voteCount", voteCount);
+        localStorage.setItem("lastVote", type);
+        lastVote = type;
+        alert("Thank you for voting!");
         
         updateVoteDisplay();
     }
 
     upvoteBtn.addEventListener("click", function () {
-        if (userVotes < maxVotes) {
-            handleVote(1);
-        } else {
-            handleUnvote(1);
-        }
+        handleVote(1, "upvote");
     });
     
     downvoteBtn.addEventListener("click", function () {
-        if (userVotes < maxVotes) {
-            handleVote(-1);
-        } else {
-            handleUnvote(-1);
-        }
+        handleVote(-1, "downvote");
     });
     
     updateVoteDisplay();
