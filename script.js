@@ -1,15 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
     const voteDisplay = document.getElementById("vote-count");
-    const upvoteBtn = document.getElementById("upvote");
-    const downvoteBtn = document.getElementById("downvote");
+    const blessBtn = document.getElementById("bless");
+    const curseBtn = document.getElementById("curse");
     
-    if (!voteDisplay || !upvoteBtn || !downvoteBtn) {
+    if (!voteDisplay || !blessBtn || !curseBtn) {
         console.error("One or more elements are missing. Check your HTML IDs.");
         return;
     }
 
     let voteCount = localStorage.getItem("voteCount") ? parseInt(localStorage.getItem("voteCount")) : 0;
-    let lastVote = localStorage.getItem("lastVote") || null; // "upvote", "downvote", or null
+    let lastVote = localStorage.getItem("lastVote") || null; // "bless", "curse", or null
     
     function updateVoteDisplay() {
         voteDisplay.textContent = voteCount;
@@ -35,12 +35,12 @@ document.addEventListener("DOMContentLoaded", function () {
         updateVoteDisplay();
     }
 
-    upvoteBtn.addEventListener("click", function () {
-        handleVote(1, "upvote");
+    blessBtn.addEventListener("click", function () {
+        handleVote(1, "bless");
     });
     
-    downvoteBtn.addEventListener("click", function () {
-        handleVote(-1, "downvote");
+    curseBtn.addEventListener("click", function () {
+        handleVote(-1, "curse");
     });
     
     updateVoteDisplay();
