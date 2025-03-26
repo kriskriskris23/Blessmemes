@@ -21,19 +21,22 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         hasVoted = true;
-        upvoteBtn.disabled = true;
-        downvoteBtn.disabled = true;
+        upvoteBtn.removeEventListener("click", upvoteHandler);
+        downvoteBtn.removeEventListener("click", downvoteHandler);
         voteCount += change;
         updateVoteDisplay();
     }
 
-    upvoteBtn.addEventListener("click", function () {
+    function upvoteHandler() {
         handleVote(1);
-    });
+    }
     
-    downvoteBtn.addEventListener("click", function () {
+    function downvoteHandler() {
         handleVote(-1);
-    });
+    }
+
+    upvoteBtn.addEventListener("click", upvoteHandler);
+    downvoteBtn.addEventListener("click", downvoteHandler);
     
     updateVoteDisplay();
 });
