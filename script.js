@@ -18,11 +18,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const voteDoc = doc(db, "votes", "main");
 
-// HTML elements
-const blessBtn = document.getElementById("bless");
-const curseBtn = document.getElementById("curse");
-const voteCountDisplay = document.getElementById("vote-count");
-
 // ✅ Get a unique identifier for each user
 function getUserId() {
     let userId = localStorage.getItem("userId");
@@ -33,6 +28,11 @@ function getUserId() {
     return userId;
 }
 const userId = getUserId(); // Get unique user ID
+
+// HTML elements
+const blessBtn = document.getElementById("bless");
+const curseBtn = document.getElementById("curse");
+const voteCountDisplay = document.getElementById("vote-count");
 
 // ✅ Load votes from Firestore
 async function loadVotes() {
@@ -65,15 +65,20 @@ async function vote(type) {
             return;
         }
 
-        // ✅ If user has already voted for the other option, prevent voting without canceling first
+        // ✅ If user previously voted, cancel first before switching
         if (userVote !== null) {
-            alert("You must cancel your previous vote before voting again.");
-            return;
-        }
+            // Remove old vote first
+            newCount += userVote === "bless" ? -1 : 1; 
+            delete updatedVoters[userId];
 
-        // ✅ Register new vote
-        newCount += type === "bless" ? 1 : -1;
-        updatedVoters[userId] = type;
+            // Apply new vote
+            newCount += type === "bless" ? 1 : -1;
+            updatedVoters[userId] = type;
+        } else {
+            // First time voting
+            newCount += type === "bless" ? 1 : -1;
+            updatedVoters[userId] = type;
+        }
 
         await updateDoc(voteDoc, { count: newCount, voters: updatedVoters });
         localStorage.setItem("hasVoted", type);
