@@ -35,6 +35,8 @@ document.addEventListener("DOMContentLoaded", function () {
         voteCount += change;
         localStorage.setItem("voteCount", voteCount);
         updateVoteDisplay();
+        
+        alert("Thank you for voting!");
     }
 
     function upvoteHandler() {
