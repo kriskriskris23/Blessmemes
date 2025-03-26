@@ -35,10 +35,11 @@ document.addEventListener("DOMContentLoaded", function () {
             enableVoting();
             alert("Your vote has been canceled.");
         } else {
-            // If switching votes, reset first
-            if (lastVote) {
-                let previousChange = lastVote === "upvote" ? 1 : -1;
-                voteCount -= previousChange;
+            // If switching votes, remove previous vote first
+            if (lastVote === "upvote") {
+                voteCount -= 1;
+            } else if (lastVote === "downvote") {
+                voteCount += 1;
             }
             
             // Register the new vote
