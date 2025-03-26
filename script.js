@@ -46,7 +46,7 @@ async function loadVotes() {
 }
 
 // ✅ Function to handle voting
-async function vote(change, type) {
+async function vote(type) {
     const docSnap = await getDoc(voteDoc);
     if (docSnap.exists()) {
         let data = docSnap.data();
@@ -54,7 +54,7 @@ async function vote(change, type) {
 
         // 🛑 If user clicked the same vote again, cancel it
         if (userVote === type) {
-            let newCount = data.count - change;
+            let newCount = data.count - (type === "bless" ? 1 : -1);
             let updatedVoters = { ...data.voters };
             delete updatedVoters[userId]; // Remove user vote
 
@@ -65,13 +65,13 @@ async function vote(change, type) {
         }
 
         // ✅ If user has already voted, prevent switching votes
-        if (userVote !== null && userVote !== type) {
+        if (userVote !== null) {
             alert("You can only vote once.");
             return;
         }
 
         // ✅ Register new vote
-        let newCount = data.count + change;
+        let newCount = data.count + (type === "bless" ? 1 : -1);
         let updatedVoters = { ...data.voters, [userId]: type };
 
         await updateDoc(voteDoc, { count: newCount, voters: updatedVoters });
@@ -88,8 +88,8 @@ onSnapshot(voteDoc, (docSnap) => {
 });
 
 // ✅ Event listeners
-blessBtn.addEventListener("click", () => vote(1, "bless"));
-curseBtn.addEventListener("click", () => vote(-1, "curse"));
+blessBtn.addEventListener("click", () => vote("bless"));
+curseBtn.addEventListener("click", () => vote("curse"));
 
 // ✅ Load initial votes
 loadVotes();
