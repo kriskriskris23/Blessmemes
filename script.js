@@ -58,7 +58,7 @@ async function updateVoteCount() {
     }
 }
 
-// Handle Vote Logic
+// Handle Vote Logic with Spam Prevention
 async function vote(type) {
     try {
         const docSnap = await getDoc(voteDocRef);
@@ -66,9 +66,23 @@ async function vote(type) {
 
         let currentVotes = docSnap.data().count || 0;
 
-        await updateDoc(voteDocRef, { count: currentVotes + (type === "bless" ? 1 : -1) });
+        // Get the last vote from localStorage
+        let lastVote = localStorage.getItem("lastVote");
 
-        alert("Thank you for voting!");
+        if (lastVote === type) {
+            // Cancel the previous vote
+            await updateDoc(voteDocRef, { count: currentVotes + (type === "bless" ? -1 : 1) });
+            localStorage.removeItem("lastVote");
+            alert("Vote canceled!");
+        } else if (lastVote === null) {
+            // Cast a new vote
+            await updateDoc(voteDocRef, { count: currentVotes + (type === "bless" ? 1 : -1) });
+            localStorage.setItem("lastVote", type);
+            alert("Thank you for voting!");
+        } else {
+            alert("You must cancel your previous vote before voting again.");
+        }
+
         updateVoteCount();
     } catch (error) {
         console.error("🔥 Error processing vote:", error);
