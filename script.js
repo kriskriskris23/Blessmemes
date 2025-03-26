@@ -1,29 +1,67 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const blessBtn = document.getElementById("bless");
-    const curseBtn = document.getElementById("curse");
-    const voteCountDisplay = document.getElementById("vote-count");
+// ✅ Import Firebase modules
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-    // Load stored vote count and user's vote status from localStorage
-    let voteCount = localStorage.getItem("voteCount") ? parseInt(localStorage.getItem("voteCount")) : 0;
-    let hasVoted = localStorage.getItem("hasVoted") === "true"; // Check if user already voted
+// ✅ Firebase configuration (Replace with your actual Firebase config)
+const firebaseConfig = {
+    apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
+    authDomain: "blessmemes.firebaseapp.com",
+    projectId: "blessmemes",
+    storageBucket: "blessmemes.firebasestorage.app",
+    messagingSenderId: "647948484551",
+    appId: "1:647948484551:web:db884bd3346d838737e3e2",
+    measurementId: "G-0GY321M1ML"
+};
 
-    // Update the displayed vote count
-    voteCountDisplay.textContent = voteCount;
+// 🔥 Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const voteDoc = doc(db, "votes", "main"); // Firestore document reference
 
-    function vote(change) {
-        if (hasVoted) {
-            alert("You have already voted.");
-            return;
-        }
+// HTML elements
+const blessBtn = document.getElementById("bless");
+const curseBtn = document.getElementById("curse");
+const voteCountDisplay = document.getElementById("vote-count");
 
-        voteCount += change;
-        voteCountDisplay.textContent = voteCount;
-        localStorage.setItem("voteCount", voteCount); // Save vote count
-        localStorage.setItem("hasVoted", "true"); // Mark user as voted
+// Track if user has voted
+let hasVoted = localStorage.getItem("hasVoted") === "true";
 
-        alert("Thank you for voting!");
+// ✅ Fetch the current vote count from Firebase
+async function loadVotes() {
+    const docSnap = await getDoc(voteDoc);
+    if (docSnap.exists()) {
+        voteCountDisplay.textContent = docSnap.data().count;
+    } else {
+        await setDoc(voteDoc, { count: 0 }); // Initialize vote count if not present
+    }
+}
+
+// ✅ Function to handle voting
+async function vote(change) {
+    if (hasVoted) {
+        alert("You have already voted.");
+        return;
     }
 
-    blessBtn.addEventListener("click", () => vote(1));
-    curseBtn.addEventListener("click", () => vote(-1));
+    const docSnap = await getDoc(voteDoc);
+    if (docSnap.exists()) {
+        let newCount = docSnap.data().count + change;
+        await setDoc(voteDoc, { count: newCount }); // Update vote count in Firebase
+        localStorage.setItem("hasVoted", "true"); // Mark user as voted
+        alert("Thank you for voting!");
+    }
+}
+
+// ✅ Real-time vote updates
+onSnapshot(voteDoc, (docSnap) => {
+    if (docSnap.exists()) {
+        voteCountDisplay.textContent = docSnap.data().count;
+    }
 });
+
+// ✅ Event listeners
+blessBtn.addEventListener("click", () => vote(1));
+curseBtn.addEventListener("click", () => vote(-1));
+
+// ✅ Load initial votes
+loadVotes();
