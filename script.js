@@ -20,10 +20,10 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("You have already voted.");
             return;
         }
-        voteCount += change;
         hasVoted = true;
         upvoteBtn.disabled = true;
         downvoteBtn.disabled = true;
+        voteCount += change;
         updateVoteDisplay();
     }
 
