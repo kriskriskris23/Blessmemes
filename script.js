@@ -1,8 +1,7 @@
-// ✅ Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-// ✅ Firebase configuration
+// Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
     authDomain: "blessmemes.firebaseapp.com",
@@ -13,89 +12,48 @@ const firebaseConfig = {
     measurementId: "G-0GY321M1ML"
 };
 
-// 🔥 Initialize Firebase
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const voteDoc = doc(db, "votes", "main");
 
-// ✅ Get a unique identifier for each user
-function getUserId() {
-    let userId = localStorage.getItem("userId");
-    if (!userId) {
-        userId = "user_" + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem("userId", userId);
-    }
-    return userId;
-}
-const userId = getUserId(); // Get unique user ID
+// Get elements
+document.addEventListener("DOMContentLoaded", async () => {
+    const blessBtn = document.getElementById("bless");
+    const curseBtn = document.getElementById("curse");
+    const voteCount = document.getElementById("vote-count");
 
-// HTML elements
-const blessBtn = document.getElementById("bless");
-const curseBtn = document.getElementById("curse");
-const voteCountDisplay = document.getElementById("vote-count");
+    const voteDocRef = doc(db, "votes", "main");
+    const voteDocSnap = await getDoc(voteDocRef);
 
-// ✅ Load votes from Firestore
-async function loadVotes() {
-    const docSnap = await getDoc(voteDoc);
-    if (docSnap.exists()) {
-        voteCountDisplay.textContent = docSnap.data().count || 0;
+    let userVote = localStorage.getItem("userVote");
+
+    if (voteDocSnap.exists()) {
+        voteCount.innerText = voteDocSnap.data().count;
     } else {
-        await setDoc(voteDoc, { count: 0, voters: {} });
-        voteCountDisplay.textContent = 0;
+        await updateDoc(voteDocRef, { count: 0 });
     }
-}
 
-// ✅ Function to handle voting
-async function vote(type) {
-    const docSnap = await getDoc(voteDoc);
-    if (docSnap.exists()) {
-        let data = docSnap.data();
-        let userVote = data.voters?.[userId] || null;
-        let newCount = data.count || 0;
-        let updatedVoters = { ...data.voters };
-
-        // 🛑 If user clicks the same vote again, cancel it
-        if (userVote === type) {
-            newCount += type === "bless" ? -1 : 1; // Remove vote
-            delete updatedVoters[userId];
-
-            await updateDoc(voteDoc, { count: newCount, voters: updatedVoters });
-            localStorage.removeItem("hasVoted");
-            alert("Your vote has been canceled.");
-            return;
-        }
-
-        // ✅ If user previously voted, cancel first before switching
-        if (userVote !== null) {
-            // Remove old vote first
-            newCount += userVote === "bless" ? -1 : 1; 
-            delete updatedVoters[userId];
-
-            // Apply new vote
-            newCount += type === "bless" ? 1 : -1;
-            updatedVoters[userId] = type;
+    async function vote(type) {
+        if (userVote) {
+            if (userVote === type) {
+                alert("You have canceled your vote.");
+                userVote = null;
+                localStorage.removeItem("userVote");
+                await updateDoc(voteDocRef, { count: voteDocSnap.data().count - 1 });
+            } else {
+                alert("You must cancel your previous vote before voting again.");
+            }
         } else {
-            // First time voting
-            newCount += type === "bless" ? 1 : -1;
-            updatedVoters[userId] = type;
+            userVote = type;
+            localStorage.setItem("userVote", type);
+            await updateDoc(voteDocRef, { count: voteDocSnap.data().count + 1 });
+            alert("Thank you for voting!");
         }
 
-        await updateDoc(voteDoc, { count: newCount, voters: updatedVoters });
-        localStorage.setItem("hasVoted", type);
-        alert("Thank you for voting!");
+        const updatedVoteDoc = await getDoc(voteDocRef);
+        voteCount.innerText = updatedVoteDoc.data().count;
     }
-}
 
-// ✅ Real-time vote updates
-onSnapshot(voteDoc, (docSnap) => {
-    if (docSnap.exists()) {
-        voteCountDisplay.textContent = docSnap.data().count || 0;
-    }
+    blessBtn.addEventListener("click", () => vote("bless"));
+    curseBtn.addEventListener("click", () => vote("curse"));
 });
-
-// ✅ Event listeners
-blessBtn.addEventListener("click", () => vote("bless"));
-curseBtn.addEventListener("click", () => vote("curse"));
-
-// ✅ Load initial votes
-loadVotes();
