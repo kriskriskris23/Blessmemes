@@ -15,43 +15,32 @@ document.addEventListener("DOMContentLoaded", function () {
         voteDisplay.textContent = voteCount;
     }
 
-    function disableButtons() {
+    function disableVoting() {
         upvoteBtn.disabled = true;
         downvoteBtn.disabled = true;
-        upvoteBtn.removeEventListener("click", upvoteHandler);
-        downvoteBtn.removeEventListener("click", downvoteHandler);
     }
 
     function handleVote(change) {
-        if (hasVoted) {
+        if (localStorage.getItem("hasVoted") === "true") {
             alert("You have already voted.");
             return;
         }
         
-        // Lock vote *before* any processing happens
-        hasVoted = true;
+        // Immediately store the vote status to prevent rapid clicking
         localStorage.setItem("hasVoted", "true");
-        disableButtons();
+        disableVoting();
         
         voteCount += change;
         localStorage.setItem("voteCount", voteCount);
         updateVoteDisplay();
     }
 
-    function upvoteHandler() {
-        handleVote(1);
-    }
+    upvoteBtn.addEventListener("click", () => handleVote(1));
+    downvoteBtn.addEventListener("click", () => handleVote(-1));
     
-    function downvoteHandler() {
-        handleVote(-1);
+    if (hasVoted) {
+        disableVoting();
     }
 
-    if (hasVoted) {
-        disableButtons();
-    } else {
-        upvoteBtn.addEventListener("click", upvoteHandler);
-        downvoteBtn.addEventListener("click", downvoteHandler);
-    }
-    
     updateVoteDisplay();
 });
