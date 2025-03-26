@@ -9,10 +9,9 @@ html, body {
     font-family: Arial, sans-serif;
 }
 
-.buttons-container {
+.button-container {
     display: flex;
-    gap: 20px;
-    margin: 10px;
+    gap: 10px;
 }
 
 button {
