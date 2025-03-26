@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     let voteCount = localStorage.getItem("voteCount") ? parseInt(localStorage.getItem("voteCount")) : 0;
-    let hasVoted = localStorage.getItem("hasVoted") === "true";
+    let lastVote = localStorage.getItem("lastVote"); // Stores "upvote", "downvote", or null
     
     function updateVoteDisplay() {
         voteDisplay.textContent = voteCount;
@@ -18,41 +18,44 @@ document.addEventListener("DOMContentLoaded", function () {
     function disableVoting() {
         upvoteBtn.disabled = true;
         downvoteBtn.disabled = true;
-        upvoteBtn.removeEventListener("click", upvoteHandler);
-        downvoteBtn.removeEventListener("click", downvoteHandler);
+    }
+    
+    function enableVoting() {
+        upvoteBtn.disabled = false;
+        downvoteBtn.disabled = false;
     }
 
-    function handleVote(change) {
-        if (localStorage.getItem("hasVoted") === "true") {
-            alert("You have already voted.");
-            return;
+    function handleVote(change, type) {
+        if (lastVote === type) {
+            // If clicking the same vote again, cancel the vote
+            voteCount -= change;
+            localStorage.setItem("voteCount", voteCount);
+            localStorage.removeItem("lastVote");
+            enableVoting();
+            alert("Your vote has been canceled.");
+        } else {
+            // Register a new vote
+            if (lastVote) {
+                alert("You have already voted. Click your vote again to cancel.");
+                return;
+            }
+            
+            voteCount += change;
+            localStorage.setItem("voteCount", voteCount);
+            localStorage.setItem("lastVote", type);
+            disableVoting();
+            alert("Thank you for voting!");
         }
         
-        // Prevents any clicks registering before storage updates
-        localStorage.setItem("hasVoted", "true");
-        disableVoting();
-        
-        voteCount += change;
-        localStorage.setItem("voteCount", voteCount);
         updateVoteDisplay();
-        
-        alert("Thank you for voting!");
     }
 
-    function upvoteHandler() {
-        handleVote(1);
-    }
+    upvoteBtn.addEventListener("click", () => handleVote(1, "upvote"));
+    downvoteBtn.addEventListener("click", () => handleVote(-1, "downvote"));
     
-    function downvoteHandler() {
-        handleVote(-1);
-    }
-
-    if (hasVoted) {
+    if (lastVote) {
         disableVoting();
-    } else {
-        upvoteBtn.addEventListener("click", upvoteHandler);
-        downvoteBtn.addEventListener("click", downvoteHandler);
     }
-    
+
     updateVoteDisplay();
 });
