@@ -16,7 +16,7 @@ const firebaseConfig = {
 // 🔥 Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const voteDoc = doc(db, "votes", "main"); // Firestore document reference
+const voteDoc = doc(db, "votes", "main");
 
 // HTML elements
 const blessBtn = document.getElementById("bless");
@@ -27,7 +27,7 @@ const voteCountDisplay = document.getElementById("vote-count");
 function getUserId() {
     let userId = localStorage.getItem("userId");
     if (!userId) {
-        userId = "user_" + Math.random().toString(36).substr(2, 9); // Random unique ID
+        userId = "user_" + Math.random().toString(36).substr(2, 9);
         localStorage.setItem("userId", userId);
     }
     return userId;
@@ -40,26 +40,42 @@ async function loadVotes() {
     if (docSnap.exists()) {
         voteCountDisplay.textContent = docSnap.data().count;
     } else {
-        await setDoc(voteDoc, { count: 0, voters: {} }); // Initialize with voters list
+        await setDoc(voteDoc, { count: 0, voters: {} });
         voteCountDisplay.textContent = 0;
     }
 }
 
 // ✅ Function to handle voting
-async function vote(change) {
+async function vote(change, type) {
     const docSnap = await getDoc(voteDoc);
     if (docSnap.exists()) {
         let data = docSnap.data();
-        if (data.voters && data.voters[userId]) {
-            alert("You have already voted.");
+        let userVote = data.voters ? data.voters[userId] : null;
+
+        // 🛑 If user clicked same vote again, cancel it
+        if (userVote === type) {
+            let newCount = data.count - change;
+            let updatedVoters = { ...data.voters };
+            delete updatedVoters[userId]; // Remove user vote
+
+            await updateDoc(voteDoc, { count: newCount, voters: updatedVoters });
+            localStorage.removeItem("hasVoted");
+            alert("Your vote has been canceled.");
             return;
         }
 
-        let newCount = data.count + change;
-        let updatedVoters = { ...data.voters, [userId]: change };
+        // 🛑 If user already voted differently, prevent another vote
+        if (userVote !== null) {
+            alert("You can only vote once.");
+            return;
+        }
 
-        await updateDoc(voteDoc, { count: newCount, voters: updatedVoters }); // 🔥 Save vote & prevent spam
-        localStorage.setItem("hasVoted", "true"); // Store in local storage
+        // ✅ Register new vote
+        let newCount = data.count + change;
+        let updatedVoters = { ...data.voters, [userId]: type };
+
+        await updateDoc(voteDoc, { count: newCount, voters: updatedVoters });
+        localStorage.setItem("hasVoted", type);
         alert("Thank you for voting!");
     }
 }
@@ -72,8 +88,8 @@ onSnapshot(voteDoc, (docSnap) => {
 });
 
 // ✅ Event listeners
-blessBtn.addEventListener("click", () => vote(1));
-curseBtn.addEventListener("click", () => vote(-1));
+blessBtn.addEventListener("click", () => vote(1, "bless"));
+curseBtn.addEventListener("click", () => vote(-1, "curse"));
 
 // ✅ Load initial votes
 loadVotes();
