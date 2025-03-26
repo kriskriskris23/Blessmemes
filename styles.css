@@ -1,4 +1,3 @@
-/* Make the page fully centered */
 html, body {
     height: 100%;
     margin: 0;
@@ -10,39 +9,19 @@ html, body {
     font-family: Arial, sans-serif;
 }
 
-/* Button styling */
 button {
     margin: 10px;
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
 }
 
-/* Make buttons side by side */
+/* ✅ Fix: Make Bless & Curse Buttons Side by Side */
 .button-container {
     display: flex;
-    gap: 20px; /* Space between buttons */
+    gap: 10px; /* Adds spacing between buttons */
 }
 
-/* Bless button styling */
-#bless {
-    background-color: #4CAF50;
-    color: white;
-}
-
-#bless:hover {
-    background-color: #45a049;
-}
-
-/* Curse button styling */
-#curse {
-    background-color: #f44336;
-    color: white;
-}
-
-#curse:hover {
-    background-color: #d32f2f;
+button {
+    min-width: 100px;
 }
