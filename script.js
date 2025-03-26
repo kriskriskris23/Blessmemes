@@ -17,21 +17,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleVote(change, type) {
         if (lastVote === type) {
-            // Cancel vote if same button is clicked again
+            // If clicking the same vote again, cancel it
             voteCount -= change;
             localStorage.setItem("voteCount", voteCount);
             localStorage.removeItem("lastVote");
             lastVote = null;
             alert("Your vote has been canceled.");
         } else {
-            // Remove previous vote if switching
+            // If switching votes, remove previous vote first
             if (lastVote === "upvote") {
                 voteCount -= 1;
             } else if (lastVote === "downvote") {
                 voteCount += 1;
             }
             
-            // Register new vote
+            // Register the new vote
             voteCount += change;
             localStorage.setItem("voteCount", voteCount);
             localStorage.setItem("lastVote", type);
@@ -42,8 +42,13 @@ document.addEventListener("DOMContentLoaded", function () {
         updateVoteDisplay();
     }
 
-    upvoteBtn.addEventListener("click", () => handleVote(1, "upvote"));
-    downvoteBtn.addEventListener("click", () => handleVote(-1, "downvote"));
+    upvoteBtn.addEventListener("click", function () {
+        handleVote(1, "upvote");
+    });
+    
+    downvoteBtn.addEventListener("click", function () {
+        handleVote(-1, "downvote");
+    });
     
     updateVoteDisplay();
 });
