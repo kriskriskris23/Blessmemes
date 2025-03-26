@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     let voteCount = localStorage.getItem("voteCount") ? parseInt(localStorage.getItem("voteCount")) : 0;
-    let lastVote = localStorage.getItem("lastVote"); // Stores "upvote", "downvote", or null
+    let lastVote = localStorage.getItem("lastVote"); // "upvote", "downvote", or null
     
     function updateVoteDisplay() {
         voteDisplay.textContent = voteCount;
@@ -17,21 +17,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleVote(change, type) {
         if (lastVote === type) {
-            // If clicking the same vote again, cancel it
+            // Cancel vote if clicking the same button again
             voteCount -= change;
             localStorage.setItem("voteCount", voteCount);
             localStorage.removeItem("lastVote");
             lastVote = null;
             alert("Your vote has been canceled.");
         } else {
-            // If switching votes, remove previous vote first
+            // Reverse previous vote before applying new vote
             if (lastVote === "upvote") {
                 voteCount -= 1;
             } else if (lastVote === "downvote") {
                 voteCount += 1;
             }
             
-            // Register the new vote
+            // Register new vote
             voteCount += change;
             localStorage.setItem("voteCount", voteCount);
             localStorage.setItem("lastVote", type);
@@ -42,13 +42,13 @@ document.addEventListener("DOMContentLoaded", function () {
         updateVoteDisplay();
     }
 
-    upvoteBtn.addEventListener("click", function () {
+    upvoteBtn.onclick = function () {
         handleVote(1, "upvote");
-    });
+    };
     
-    downvoteBtn.addEventListener("click", function () {
+    downvoteBtn.onclick = function () {
         handleVote(-1, "downvote");
-    });
+    };
     
     updateVoteDisplay();
 });
