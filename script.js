@@ -16,19 +16,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Debug: Check if Firebase is connected
-console.log("Firebase initialized:", app);
-
 // Wait for DOM to load
 document.addEventListener("DOMContentLoaded", async () => {
-    console.log("DOM fully loaded"); // Debugging
+    console.log("DOM fully loaded");
 
     const blessBtn = document.getElementById("bless");
     const curseBtn = document.getElementById("curse");
     const voteCount = document.getElementById("vote-count");
 
     if (!blessBtn || !curseBtn || !voteCount) {
-        console.error("Error: Buttons or vote count not found in the DOM.");
+        console.error("Error: Buttons or vote count not found.");
         return;
     }
 
@@ -45,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let userVote = localStorage.getItem("userVote");
 
     async function vote(type) {
-        console.log(`Vote button clicked: ${type}`); // Debugging
+        console.log(`Vote button clicked: ${type}`);
 
         if (userVote) {
             if (userVote === type) {
@@ -69,12 +66,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Attach event listeners
     blessBtn.addEventListener("click", () => {
-        console.log("Bless button clicked"); // Debugging
+        console.log("Bless button clicked");
         vote("bless");
     });
 
     curseBtn.addEventListener("click", () => {
-        console.log("Curse button clicked"); // Debugging
+        console.log("Curse button clicked");
         vote("curse");
     });
 });
