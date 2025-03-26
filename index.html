@@ -8,20 +8,15 @@
 </head>
 <body>
     <h1>Welcome to Bless Memes!</h1>
-    <p>Upload your meme and vote:</p>
-    
-    <!-- File input for uploading meme image -->
-    <input type="file" id="imageUpload" accept="image/*">
-    
-    <!-- Upload button to trigger the upload -->
-    <button id="uploadBtn">Upload Meme</button>
+    <p>Vote on memes below:</p>
 
-    <div id="imageContainer">
-        <!-- The uploaded image will be displayed here -->
-        <img id="uploadedImage" src="" alt="Uploaded Meme" style="display: none; max-width: 100%; height: auto;">
+    <!-- Meme Panel Section -->
+    <div class="meme-panel">
+        <img id="meme-img" src="your-meme-image.jpg" alt="Meme Image" />
     </div>
-    
-    <div class="buttons">
+
+    <!-- Voting Buttons -->
+    <div class="button-container">
         <button id="bless">Bless</button>
         <button id="curse">Curse</button>
     </div>
