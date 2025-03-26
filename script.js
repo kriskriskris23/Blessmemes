@@ -1,3 +1,4 @@
+console.log("Script is running!");
 document.addEventListener("DOMContentLoaded", function () {
     const voteDisplay = document.getElementById("vote-count");
     const blessBtn = document.getElementById("bless");
