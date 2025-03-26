@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    let hasVoted = false;
     let voteCount = 0;
-    
     const voteDisplay = document.getElementById("vote-count");
     const upvoteBtn = document.getElementById("upvote");
     const downvoteBtn = document.getElementById("downvote");
@@ -11,39 +9,32 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
+    // Check if user has already voted
+    let hasVoted = localStorage.getItem("hasVoted");
+    if (hasVoted) {
+        upvoteBtn.disabled = true;
+        downvoteBtn.disabled = true;
+    }
+
     function updateVoteDisplay() {
         voteDisplay.textContent = voteCount;
     }
     
     function handleVote(change) {
-        if (hasVoted) {
+        if (localStorage.getItem("hasVoted")) {
             alert("You have already voted.");
             return;
         }
         
-        // Set the flag first to prevent rapid clicking exploits
-        hasVoted = true;
+        voteCount += change;
+        localStorage.setItem("hasVoted", "true"); // Store vote status in localStorage
         upvoteBtn.disabled = true;
         downvoteBtn.disabled = true;
-        
-        voteCount += change;
         updateVoteDisplay();
     }
 
-    function upvoteHandler() {
-        handleVote(1);
-        upvoteBtn.removeEventListener("click", upvoteHandler);
-        downvoteBtn.removeEventListener("click", downvoteHandler);
-    }
-    
-    function downvoteHandler() {
-        handleVote(-1);
-        upvoteBtn.removeEventListener("click", upvoteHandler);
-        downvoteBtn.removeEventListener("click", downvoteHandler);
-    }
-
-    upvoteBtn.addEventListener("click", upvoteHandler);
-    downvoteBtn.addEventListener("click", downvoteHandler);
+    upvoteBtn.addEventListener("click", () => handleVote(1));
+    downvoteBtn.addEventListener("click", () => handleVote(-1));
     
     updateVoteDisplay();
 });
