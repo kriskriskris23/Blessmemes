@@ -11,12 +11,14 @@
     <p>Vote on memes below:</p>
 
     <!-- Meme URL Input Section -->
-    <input type="text" id="meme-url" placeholder="Paste image URL here">
-    <button id="update-meme">Set Meme</button>
+    <div class="meme-input-container">
+        <input type="text" id="meme-url" placeholder="Paste image URL here">
+        <button id="update-meme">Set Meme</button>
+    </div>
 
-    <!-- Meme Panel Section -->
+    <!-- Meme Display Section -->
     <div class="meme-panel">
-        <img id="meme-img" src="your-meme-image.jpg" alt="Meme Image">
+        <img id="meme-img" src="default-meme.jpg" alt="Meme Image">
     </div>
 
     <!-- Voting Buttons -->
