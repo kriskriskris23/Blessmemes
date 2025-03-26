@@ -1,82 +1,78 @@
-// Import Firestore functions
-import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-
-console.log("🔥 Script is running...");
-
-// Get Firestore database instance
-const db = getFirestore();
-console.log("✅ Firestore initialized:", db);
-
-// Get HTML elements
-const blessButton = document.getElementById("bless");
-const curseButton = document.getElementById("curse");
-const voteCountElement = document.getElementById("vote-count");
-
-if (!blessButton || !curseButton || !voteCountElement) {
-    console.error("❌ ERROR: Buttons or vote count element not found in HTML.");
-}
-
-// Store user vote in local storage (so they can’t vote multiple times)
-const userVoteKey = "userVote"; // LocalStorage key
-
-// Function to fetch current votes
-async function getVotes() {
-    console.log("📡 Fetching votes...");
-    const docRef = doc(db, "votes", "meme1"); // Replace "meme1" with your meme ID
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-        console.log("✅ Current vote count:", docSnap.data().count);
-        return docSnap.data().count;
-    } else {
-        console.warn("⚠️ No vote count found, initializing to 0.");
-        await setDoc(docRef, { count: 0 });
-        return 0;
-    }
-}
-
-// Function to update votes
-async function updateVotes(change) {
-    console.log(`🔄 Updating votes by ${change}...`);
-    const docRef = doc(db, "votes", "meme1");
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-        let newCount = docSnap.data().count + change;
-        console.log("📊 New vote count:", newCount);
-        await updateDoc(docRef, { count: newCount });
-        voteCountElement.textContent = newCount; // Update UI
-    } else {
-        console.error("❌ ERROR: Vote document not found.");
-    }
-}
-
-// Function to handle voting
-async function handleVote(voteType) {
-    console.log(`🗳️ ${voteType.toUpperCase()} button clicked.`);
-    const previousVote = localStorage.getItem(userVoteKey);
-
-    if (previousVote === voteType) {
-        alert("You have already voted.");
-        return;
-    }
-
-    if (previousVote) {
-        alert("You must cancel your previous vote before voting again.");
-        return;
-    }
-
-    // Update Firestore and local storage
-    await updateVotes(voteType === "bless" ? 1 : -1);
-    localStorage.setItem(userVoteKey, voteType);
-    alert("Thank you for voting!");
-}
-
-// Fetch and display votes on page load
-getVotes().then(count => {
-    voteCountElement.textContent = count;
+// ✅ Fix 2: Ensure buttons are recognized
+document.getElementById("bless").addEventListener("click", () => {
+    console.log("Bless button clicked!");
+});
+document.getElementById("curse").addEventListener("click", () => {
+    console.log("Curse button clicked!");
 });
 
-// Event Listeners
-blessButton?.addEventListener("click", () => handleVote("bless"));
-curseButton?.addEventListener("click", () => handleVote("curse"));
+// ✅ Firebase setup
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+
+// Your Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
+    authDomain: "blessmemes.firebaseapp.com",
+    projectId: "blessmemes",
+    storageBucket: "blessmemes.firebasestorage.app",
+    messagingSenderId: "647948484551",
+    appId: "1:647948484551:web:db884bd3346d838737e3e2",
+    measurementId: "G-0GY321M1ML"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ✅ Function to get and update votes
+async function updateVote(type) {
+    const voteDoc = doc(db, "votes", "main"); // Reference to Firestore document
+    const docSnap = await getDoc(voteDoc);
+
+    if (docSnap.exists()) {
+        let votes = docSnap.data();
+        let newVoteCount = votes[type] || 0;
+
+        // Check localStorage for previous vote
+        const previousVote = localStorage.getItem("userVote");
+        if (previousVote === type) {
+            alert("You already voted this!");
+            return;
+        } else if (previousVote) {
+            alert("You must cancel your previous vote before voting again.");
+            return;
+        }
+
+        // Update vote count
+        newVoteCount++;
+        await updateDoc(voteDoc, { [type]: newVoteCount });
+
+        // Store user vote locally
+        localStorage.setItem("userVote", type);
+
+        // Update UI
+        document.getElementById("vote-count").textContent = `Bless: ${votes.bless || 0} | Curse: ${votes.curse || 0}`;
+        alert("Thank you for voting!");
+    } else {
+        console.log("No vote document found, creating one...");
+        await setDoc(voteDoc, { bless: 0, curse: 0 });
+    }
+}
+
+// ✅ Attach event listeners to buttons
+document.getElementById("bless").addEventListener("click", () => updateVote("bless"));
+document.getElementById("curse").addEventListener("click", () => updateVote("curse"));
+
+// ✅ Load vote count on page load
+async function loadVotes() {
+    const voteDoc = doc(db, "votes", "main");
+    const docSnap = await getDoc(voteDoc);
+
+    if (docSnap.exists()) {
+        let votes = docSnap.data();
+        document.getElementById("vote-count").textContent = `Bless: ${votes.bless || 0} | Curse: ${votes.curse || 0}`;
+    }
+}
+
+loadVotes();
