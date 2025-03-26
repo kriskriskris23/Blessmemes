@@ -23,49 +23,50 @@ const blessBtn = document.getElementById("bless");
 const curseBtn = document.getElementById("curse");
 const voteCountDisplay = document.getElementById("vote-count");
 
-// Track if user has voted
-let hasVoted = localStorage.getItem("hasVoted") === "true";
+// ✅ Get a unique identifier for each user
+function getUserId() {
+    let userId = localStorage.getItem("userId");
+    if (!userId) {
+        userId = "user_" + Math.random().toString(36).substr(2, 9); // Random unique ID
+        localStorage.setItem("userId", userId);
+    }
+    return userId;
+}
+const userId = getUserId(); // Get unique user ID
 
-// ✅ Fetch the current vote count from Firebase
+// ✅ Load votes from Firestore
 async function loadVotes() {
-    console.log("Loading votes..."); // Debug
     const docSnap = await getDoc(voteDoc);
     if (docSnap.exists()) {
-        console.log("Vote count from Firebase:", docSnap.data().count); // Debug
         voteCountDisplay.textContent = docSnap.data().count;
     } else {
-        console.log("No vote document found, creating one...");
-        await setDoc(voteDoc, { count: 0 });
+        await setDoc(voteDoc, { count: 0, voters: {} }); // Initialize with voters list
         voteCountDisplay.textContent = 0;
     }
 }
 
 // ✅ Function to handle voting
 async function vote(change) {
-    if (hasVoted) {
-        alert("You have already voted.");
-        return;
-    }
-
-    console.log("Voting with change:", change); // Debug
-
     const docSnap = await getDoc(voteDoc);
     if (docSnap.exists()) {
-        let newCount = docSnap.data().count + change;
-        console.log("Updating vote count to:", newCount); // Debug
-        await updateDoc(voteDoc, { count: newCount }); // 🔥 Update Firebase
-        localStorage.setItem("hasVoted", "true"); // Mark user as voted
+        let data = docSnap.data();
+        if (data.voters && data.voters[userId]) {
+            alert("You have already voted.");
+            return;
+        }
+
+        let newCount = data.count + change;
+        let updatedVoters = { ...data.voters, [userId]: change };
+
+        await updateDoc(voteDoc, { count: newCount, voters: updatedVoters }); // 🔥 Save vote & prevent spam
+        localStorage.setItem("hasVoted", "true"); // Store in local storage
         alert("Thank you for voting!");
-    } else {
-        console.log("Creating new vote document...");
-        await setDoc(voteDoc, { count: change });
     }
 }
 
 // ✅ Real-time vote updates
 onSnapshot(voteDoc, (docSnap) => {
     if (docSnap.exists()) {
-        console.log("Real-time update, new count:", docSnap.data().count); // Debug
         voteCountDisplay.textContent = docSnap.data().count;
     }
 });
