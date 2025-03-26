@@ -24,13 +24,13 @@ document.addEventListener("DOMContentLoaded", function () {
         disableButtons();
     }
 
-    function handleVote(change) {
+    function handleVote(change, button) {
         if (hasVoted) {
             alert("You have already voted.");
             return;
         }
         
-        // Set hasVoted to true *before* updating anything
+        // Lock vote *before* any processing happens
         hasVoted = true;
         localStorage.setItem("hasVoted", "true");
         disableButtons();
@@ -40,8 +40,8 @@ document.addEventListener("DOMContentLoaded", function () {
         updateVoteDisplay();
     }
 
-    upvoteBtn.addEventListener("click", () => handleVote(1));
-    downvoteBtn.addEventListener("click", () => handleVote(-1));
+    upvoteBtn.addEventListener("click", function() { handleVote(1, upvoteBtn); });
+    downvoteBtn.addEventListener("click", function() { handleVote(-1, downvoteBtn); });
     
     updateVoteDisplay();
 });
