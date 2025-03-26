@@ -19,3 +19,17 @@ button {
     font-size: 16px;
     cursor: pointer;
 }
+
+#bless {
+    background-color: yellow;
+    color: black;
+    border: 2px solid black;
+    font-weight: bold;
+}
+
+#curse {
+    background-color: red;
+    color: white;
+    border: 2px solid black;
+    font-weight: bold;
+}
