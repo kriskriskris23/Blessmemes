@@ -52,7 +52,7 @@ async function vote(change, type) {
         let data = docSnap.data();
         let userVote = data.voters ? data.voters[userId] : null;
 
-        // 🛑 If user clicked same vote again, cancel it
+        // 🛑 If user clicked the same vote again, cancel it
         if (userVote === type) {
             let newCount = data.count - change;
             let updatedVoters = { ...data.voters };
@@ -64,8 +64,8 @@ async function vote(change, type) {
             return;
         }
 
-        // 🛑 If user already voted differently, prevent another vote
-        if (userVote !== null) {
+        // ✅ If user has already voted, prevent switching votes
+        if (userVote !== null && userVote !== type) {
             alert("You can only vote once.");
             return;
         }
