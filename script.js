@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
             lastVote = null;
             alert("Your vote has been canceled.");
         } else {
-            // Reverse previous vote before applying new vote
+            // Remove previous vote before applying new vote
             if (lastVote === "upvote") {
                 voteCount -= 1;
             } else if (lastVote === "downvote") {
