@@ -5,21 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bless Memes</title>
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- Firebase Setup -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
+            authDomain: "blessmemes.firebaseapp.com",
+            projectId: "blessmemes",
+            storageBucket: "blessmemes.appspot.com",
+            messagingSenderId: "647948484551",
+            appId: "1:647948484551:web:db884bd3346d838737e3e2",
+            measurementId: "G-0GY321M1ML"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        window.db = getFirestore(app);
+        console.log("🔥 Firestore Initialized:", window.db);
+    </script>
 </head>
 <body>
     <h1>Welcome to Bless Memes!</h1>
-    <p>Vote on the meme below:</p>
     
-    <div class="meme-container">
-        <img id="meme" src="your-meme-image.jpg" alt="Meme Image">
+    <!-- Meme Panel -->
+    <div class="meme-panel">
+        <img id="meme-image" src="your-meme-url.jpg" alt="Meme">
     </div>
-    
-    <div class="button-container">
+
+    <!-- Vote Buttons -->
+    <div class="vote-buttons">
         <button id="bless">Bless</button>
         <button id="curse">Curse</button>
     </div>
-    
+
     <p>Votes: <span id="vote-count">0</span></p>
+
     <script src="script.js"></script>
 </body>
 </html>
