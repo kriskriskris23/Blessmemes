@@ -5,6 +5,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const upvoteBtn = document.getElementById("upvote");
     const downvoteBtn = document.getElementById("downvote");
     
+    if (!voteDisplay || !upvoteBtn || !downvoteBtn) {
+        console.error("One or more elements are missing. Check your HTML IDs.");
+        return;
+    }
+
     function updateVoteDisplay() {
         voteDisplay.textContent = voteCount;
     }
