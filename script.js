@@ -22,6 +22,9 @@ window.db = db;
 const blessBtn = document.getElementById("bless");
 const curseBtn = document.getElementById("curse");
 const voteCountSpan = document.getElementById("vote-count");
+const memeInput = document.getElementById("meme-url");
+const updateMemeBtn = document.getElementById("update-meme");
+const memeImg = document.getElementById("meme-img");
 
 // Firestore Document Reference
 const docRef = doc(db, "votes", "meme1");
@@ -77,9 +80,29 @@ async function vote(type) {
     }
 }
 
-// Event Listeners
+// Event Listeners for Voting
 blessBtn.addEventListener("click", () => vote("bless"));
 curseBtn.addEventListener("click", () => vote("curse"));
 
 // Initialize Vote Count on Page Load
 updateVoteCount();
+
+// Function to update the meme image
+updateMemeBtn.addEventListener("click", () => {
+    const newMemeURL = memeInput.value.trim();
+
+    if (newMemeURL) {
+        memeImg.src = newMemeURL;
+        localStorage.setItem("memeImageURL", newMemeURL); // Save meme URL in local storage
+    } else {
+        alert("Please enter a valid image URL!");
+    }
+});
+
+// Load saved meme URL on page refresh
+window.addEventListener("load", () => {
+    const savedMeme = localStorage.getItem("memeImageURL");
+    if (savedMeme) {
+        memeImg.src = savedMeme;
+    }
+});
