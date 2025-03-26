@@ -26,6 +26,7 @@ const curseBtn = document.getElementById("curse");
 const voteCountSpan = document.getElementById("vote-count");
 const imageUpload = document.getElementById("imageUpload");
 const uploadedImage = document.getElementById("uploadedImage");
+const uploadBtn = document.getElementById("uploadBtn");
 
 // Firestore Document Reference
 const docRef = doc(db, "votes", "meme1");
@@ -82,8 +83,8 @@ async function vote(type) {
 }
 
 // Handle Meme Image Upload
-imageUpload.addEventListener("change", async (event) => {
-    const file = event.target.files[0];
+uploadBtn.addEventListener("click", async () => {
+    const file = imageUpload.files[0];  // Get the file from the input element
 
     if (file) {
         const storageRef = ref(storage, 'memes/' + file.name);
@@ -99,6 +100,8 @@ imageUpload.addEventListener("change", async (event) => {
         } catch (error) {
             console.error("Error uploading meme:", error);
         }
+    } else {
+        alert("Please select a meme image to upload.");
     }
 });
 
