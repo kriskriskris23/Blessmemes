@@ -22,14 +22,12 @@ button {
 
 #bless {
     background-color: yellow;
-    color: black;
-    border: 2px solid black;
-    font-weight: bold;
+    color: black; /* Ensure text is readable */
+    border: 2px solid #b3a100; /* Slightly darker border for contrast */
 }
 
 #curse {
     background-color: red;
-    color: white;
-    border: 2px solid black;
-    font-weight: bold;
+    color: white; /* Ensure text is readable */
+    border: 2px solid darkred;
 }
