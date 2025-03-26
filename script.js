@@ -72,9 +72,11 @@ async function vote(type) {
                     const previousVoteChange = lastVote === "bless" ? -1 : +1;
                     currentVotes += previousVoteChange; // Undo previous vote
                 }
-                // Add new vote
-                console.log("✅ Adding new vote:", type);
-                const voteChange = type === "bless" ? +1 : -1;
+
+                // ✅ **Fix: Ensure Curse subtracts (-1)**
+                const voteChange = type === "bless" ? +1 : -1; 
+                console.log("✅ Adding new vote:", type, "Change:", voteChange);
+
                 await updateDoc(docRef, { count: currentVotes + voteChange });
                 lastVote = type;
                 localStorage.setItem("lastVote", type);
