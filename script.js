@@ -20,15 +20,30 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("You have already voted.");
             return;
         }
+        
+        // Set the flag first to prevent rapid clicking exploits
         hasVoted = true;
         upvoteBtn.disabled = true;
         downvoteBtn.disabled = true;
+        
         voteCount += change;
         updateVoteDisplay();
     }
 
-    upvoteBtn.addEventListener("click", () => handleVote(1));
-    downvoteBtn.addEventListener("click", () => handleVote(-1));
+    function upvoteHandler() {
+        handleVote(1);
+        upvoteBtn.removeEventListener("click", upvoteHandler);
+        downvoteBtn.removeEventListener("click", downvoteHandler);
+    }
+    
+    function downvoteHandler() {
+        handleVote(-1);
+        upvoteBtn.removeEventListener("click", upvoteHandler);
+        downvoteBtn.removeEventListener("click", downvoteHandler);
+    }
+
+    upvoteBtn.addEventListener("click", upvoteHandler);
+    downvoteBtn.addEventListener("click", downvoteHandler);
     
     updateVoteDisplay();
 });
