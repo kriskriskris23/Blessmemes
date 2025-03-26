@@ -1,7 +1,8 @@
+// Import Firebase SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-// Firebase Config
+// Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
     authDomain: "blessmemes.firebaseapp.com",
@@ -12,66 +13,73 @@ const firebaseConfig = {
     measurementId: "G-0GY321M1ML"
 };
 
-// Initialize Firebase
+// Initialize Firebase & Firestore
 const app = initializeApp(firebaseConfig);
-window.db = getFirestore(app);
+const db = getFirestore(app);
+window.db = db;
 
-console.log("Firestore Initialized:", window.db);
+// DOM Elements
+const blessBtn = document.getElementById("bless");
+const curseBtn = document.getElementById("curse");
+const voteCountSpan = document.getElementById("vote-count");
 
-// Get references to DOM elements
-const blessButton = document.getElementById("bless");
-const curseButton = document.getElementById("curse");
-const voteCountElement = document.getElementById("vote-count");
+// Firestore Document Reference
+const docRef = doc(db, "votes", "meme1");
 
-let userVote = localStorage.getItem("userVote") || null;
+// Load the last vote from local storage
+let lastVote = localStorage.getItem("lastVote") || null;
 
-// Function to update vote display
-async function updateVoteDisplay() {
-    const docRef = doc(window.db, "votes", "meme1");
-    const docSnap = await getDoc(docRef);
+// Fetch & Update Vote Count
+async function updateVoteCount() {
+    try {
+        const docSnap = await getDoc(docRef);
+        let voteCount = 0;
 
-    if (docSnap.exists()) {
-        voteCountElement.textContent = docSnap.data().count;
-    } else {
-        await setDoc(docRef, { count: 0 });
-        voteCountElement.textContent = 0;
+        if (docSnap.exists()) {
+            voteCount = docSnap.data().count;
+        } else {
+            await setDoc(docRef, { count: 0 });
+        }
+
+        voteCountSpan.textContent = voteCount;
+    } catch (error) {
+        console.error("🔥 Error fetching votes:", error);
     }
 }
 
-// Function to handle voting
-async function handleVote(voteType) {
-    const docRef = doc(window.db, "votes", "meme1");
-    const docSnap = await getDoc(docRef);
+// Handle Vote Logic
+async function vote(type) {
+    try {
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) return;
 
-    if (!docSnap.exists()) {
-        await setDoc(docRef, { count: 0 });
+        let currentVotes = docSnap.data().count || 0;
+
+        if (lastVote === type) {
+            // Cancel the previous vote
+            await updateDoc(docRef, { count: currentVotes + (type === "bless" ? -1 : 1) });
+            lastVote = null;
+            localStorage.removeItem("lastVote");
+            alert("Vote canceled!");
+        } else if (lastVote === null) {
+            // Cast a new vote
+            await updateDoc(docRef, { count: currentVotes + (type === "bless" ? 1 : -1) });
+            lastVote = type;
+            localStorage.setItem("lastVote", type);
+            alert("Thank you for voting!");
+        } else {
+            alert("You must cancel your previous vote before voting again.");
+        }
+
+        updateVoteCount();
+    } catch (error) {
+        console.error("🔥 Error processing vote:", error);
     }
-
-    let currentVotes = docSnap.data().count;
-
-    if (userVote === voteType) {
-        // If clicking the same button again, cancel the vote
-        currentVotes += voteType === "bless" ? -1 : 1;
-        userVote = null;
-        localStorage.removeItem("userVote");
-    } else if (userVote === null) {
-        // If first-time voting
-        currentVotes += voteType === "bless" ? 1 : -1;
-        userVote = voteType;
-        localStorage.setItem("userVote", voteType);
-    } else {
-        // If user has already voted, show an alert
-        alert("You must cancel your previous vote before voting again.");
-        return;
-    }
-
-    await updateDoc(docRef, { count: currentVotes });
-    voteCountElement.textContent = currentVotes;
 }
 
-// Event listeners
-blessButton.addEventListener("click", () => handleVote("bless"));
-curseButton.addEventListener("click", () => handleVote("curse"));
+// Event Listeners
+blessBtn.addEventListener("click", () => vote("bless"));
+curseBtn.addEventListener("click", () => vote("curse"));
 
-// Initialize vote count display
-updateVoteDisplay();
+// Initialize Vote Count on Page Load
+updateVoteCount();
