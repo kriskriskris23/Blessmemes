@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         voteCount += change;
         hasVoted = true;
+        upvoteBtn.disabled = true;
+        downvoteBtn.disabled = true;
         updateVoteDisplay();
     }
 
