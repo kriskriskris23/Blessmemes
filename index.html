@@ -4,50 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bless Memes</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-        }
-        h1 {
-            color: #333;
-        }
-        .vote-container {
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        button {
-            font-size: 16px;
-            padding: 10px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: white;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        #vote-count {
-            font-size: 20px;
-            font-weight: bold;
-        }
-    </style>
 </head>
 <body>
     <h1>Welcome to Bless Memes!</h1>
-    <div class="vote-container">
-        <button id="upvote">👍 Upvote</button>
-        <span id="vote-count">0</span>
-        <button id="downvote">👎 Downvote</button>
-    </div>
+    <p>Vote on memes below:</p>
+    <button id="bless">Bless</button>
+    <button id="curse">Curse</button>
+    <p>Votes: <span id="vote-count">0</span></p>
     <script src="script.js"></script>
 </body>
 </html>
