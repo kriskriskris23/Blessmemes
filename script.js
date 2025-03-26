@@ -16,50 +16,76 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-window.db = db; // ✅ Make Firestore available globally
+window.db = db; // ✅ Ensure Firestore is globally accessible
 
-console.log("🔥 Firestore Initialized:", window.db);
+// Debug Firestore Setup
+console.log("🔥 Firestore initialized:", window.db);
 
-// Get elements
+// DOM Elements
 const blessBtn = document.getElementById("bless");
 const curseBtn = document.getElementById("curse");
-const voteCountSpan = document.getElementById("vote-count");
+const voteCount = document.getElementById("vote-count");
 
-const docRef = doc(db, "votes", "meme1");
+// Local Storage to track votes
+const userVote = localStorage.getItem("userVote");
 
-// Function to update vote count
-async function updateVoteCount() {
-    try {
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            voteCountSpan.textContent = docSnap.data().count;
-        } else {
-            await setDoc(docRef, { count: 0 });
-            voteCountSpan.textContent = 0;
-        }
-    } catch (error) {
-        console.error("🔥 Error updating vote count:", error);
+// Check if user already voted
+if (userVote) {
+    blessBtn.disabled = true;
+    curseBtn.disabled = true;
+}
+
+// Function to Get Firestore Document Reference
+function getVoteDocRef() {
+    if (!window.db) {
+        console.error("🚨 Firestore is not initialized!");
+        return null;
+    }
+    return doc(window.db, "votes", "meme1");
+}
+
+// Fetch vote count from Firestore
+async function fetchVotes() {
+    const docRef = getVoteDocRef();
+    if (!docRef) return;
+
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        voteCount.textContent = docSnap.data().count;
+    } else {
+        await setDoc(docRef, { count: 0 });
+        voteCount.textContent = 0;
     }
 }
 
-// Function to handle voting
+// Vote function
 async function vote(type) {
-    try {
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            const currentVotes = docSnap.data().count || 0;
-            await updateDoc(docRef, { count: type === "bless" ? currentVotes + 1 : currentVotes - 1 });
-            updateVoteCount();
-            alert("Thank you for voting!");
-        }
-    } catch (error) {
-        console.error("🔥 Error voting:", error);
+    if (localStorage.getItem("userVote")) {
+        alert("You have already voted.");
+        return;
     }
+
+    const docRef = getVoteDocRef();
+    if (!docRef) return;
+
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const newCount = docSnap.data().count + 1;
+        await updateDoc(docRef, { count: newCount });
+        voteCount.textContent = newCount;
+    }
+
+    localStorage.setItem("userVote", type);
+    blessBtn.disabled = true;
+    curseBtn.disabled = true;
+    alert("Thank you for voting!");
 }
 
-// Event listeners
+// Event Listeners
 blessBtn.addEventListener("click", () => vote("bless"));
 curseBtn.addEventListener("click", () => vote("curse"));
 
-// Initialize vote count on page load
-updateVoteCount();
+// Fetch initial votes
+fetchVotes();
