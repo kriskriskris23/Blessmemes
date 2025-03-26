@@ -28,11 +28,15 @@ let hasVoted = localStorage.getItem("hasVoted") === "true";
 
 // ✅ Fetch the current vote count from Firebase
 async function loadVotes() {
+    console.log("Loading votes..."); // Debug
     const docSnap = await getDoc(voteDoc);
     if (docSnap.exists()) {
+        console.log("Vote count from Firebase:", docSnap.data().count); // Debug
         voteCountDisplay.textContent = docSnap.data().count;
     } else {
-        await setDoc(voteDoc, { count: 0 }); // Initialize vote count if not present
+        console.log("No vote document found, creating one...");
+        await setDoc(voteDoc, { count: 0 });
+        voteCountDisplay.textContent = 0;
     }
 }
 
@@ -43,20 +47,25 @@ async function vote(change) {
         return;
     }
 
+    console.log("Voting with change:", change); // Debug
+
     const docSnap = await getDoc(voteDoc);
     if (docSnap.exists()) {
         let newCount = docSnap.data().count + change;
-        await updateDoc(voteDoc, { count: newCount }); // 🔥 Update vote count in Firebase
+        console.log("Updating vote count to:", newCount); // Debug
+        await updateDoc(voteDoc, { count: newCount }); // 🔥 Update Firebase
         localStorage.setItem("hasVoted", "true"); // Mark user as voted
         alert("Thank you for voting!");
     } else {
-        await setDoc(voteDoc, { count: change }); // If document doesn't exist, create it
+        console.log("Creating new vote document...");
+        await setDoc(voteDoc, { count: change });
     }
 }
 
 // ✅ Real-time vote updates
 onSnapshot(voteDoc, (docSnap) => {
     if (docSnap.exists()) {
+        console.log("Real-time update, new count:", docSnap.data().count); // Debug
         voteCountDisplay.textContent = docSnap.data().count;
     }
 });
