@@ -7,6 +7,7 @@
     <style>
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -16,9 +17,28 @@
         h1 {
             color: #333;
         }
+        .vote-container {
+            margin-top: 20px;
+        }
+        button {
+            font-size: 16px;
+            margin: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        #vote-count {
+            font-size: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <h1>Welcome to Bless Memes!</h1>
+    <div class="vote-container">
+        <button id="upvote">👍 Upvote</button>
+        <span id="vote-count">0</span>
+        <button id="downvote">👎 Downvote</button>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
