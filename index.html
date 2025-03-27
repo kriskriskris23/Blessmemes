@@ -15,18 +15,25 @@
             <input type="text" id="meme-url" placeholder="Paste image URL here">
             <button id="update-meme">Add Meme</button>
         </div>
-        <div class="sort-container">
-            <label for="sort-options">Sort by:</label>
-            <select id="sort-options">
-                <option value="most-votes">Most Votes</option>
-                <option value="least-votes">Least Votes</option>
-                <option value="latest-uploaded">Latest Uploaded</option>
-                <option value="oldest-uploaded">Oldest Uploaded</option>
-                <option value="most-comments">Most Comments</option>
-            </select>
+        <div class="sort-pagination-container">
+            <div class="sort-container">
+                <label for="sort-options">Sort by:</label>
+                <select id="sort-options">
+                    <option value="most-votes">Most Votes</option>
+                    <option value="least-votes">Least Votes</option>
+                    <option value="latest-uploaded">Latest Uploaded</option>
+                    <option value="oldest-uploaded">Oldest Uploaded</option>
+                    <option value="most-comments">Most Comments</option>
+                </select>
+            </div>
+            <div class="pagination-container top-pagination">
+                <button id="prev-page-top" disabled>Previous</button>
+                <span id="page-info-top">Page 1</span>
+                <button id="next-page-top" disabled>Next</button>
+            </div>
         </div>
         <div id="memes-container"></div>
-        <div class="pagination-container">
+        <div class="pagination-container bottom-pagination">
             <button id="prev-page" disabled>Previous</button>
             <span id="page-info">Page 1</span>
             <button id="next-page" disabled>Next</button>
