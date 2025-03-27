@@ -25,17 +25,11 @@ const logoutBtn = document.getElementById("logout-btn");
 const memesCollection = collection(db, "memes");
 const ADMIN_ID = "adminaccount@gmail.com";
 
-let deviceId = localStorage.getItem("deviceId");
-if (!deviceId) {
-    deviceId = crypto.randomUUID();
-    localStorage.setItem("deviceId", deviceId);
-}
-
 let currentUserEmail = null;
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUserEmail = user.email;
-        console.log("User logged in:", currentUserEmail, "Device ID:", deviceId);
+        console.log("User logged in:", currentUserEmail);
         if (currentUserEmail === ADMIN_ID && adminBtn) {
             adminBtn.style.display = "none";
         } else if (adminBtn) {
@@ -56,16 +50,19 @@ function renderMemes() {
             const memeData = docSnap.data();
             const memeId = docSnap.id;
 
+            const memeWrapper = document.createElement("div");
+            memeWrapper.className = "meme-wrapper";
+
+            const uploaderSpan = document.createElement("span");
+            uploaderSpan.className = "uploader";
+            uploaderSpan.textContent = `Uploaded by: ${memeData.uploadedBy}`; // Use email
+
             const memeDiv = document.createElement("div");
             memeDiv.className = "meme-item";
 
             const img = document.createElement("img");
             img.src = memeData.url;
             img.alt = "User-uploaded meme";
-
-            const uploaderSpan = document.createElement("span");
-            uploaderSpan.className = "uploader";
-            uploaderSpan.textContent = `Uploaded by: ${memeData.uploadedBy}`; // Display deviceId
 
             const voteCount = document.createElement("span");
             voteCount.textContent = `Votes: ${memeData.votes || 0}`;
@@ -81,10 +78,10 @@ function renderMemes() {
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Delete";
             deleteBtn.className = "delete-btn";
-            deleteBtn.style.display = (memeData.uploadedBy === deviceId || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
+            deleteBtn.style.display = (memeData.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
             deleteBtn.onclick = () => deleteMeme(memeId);
 
-            const voteRef = doc(db, "memes", memeId, "votes", deviceId);
+            const voteRef = doc(db, "memes", memeId, "votes", currentUserEmail || "anonymous");
             getDoc(voteRef).then((voteSnap) => {
                 const userVote = voteSnap.exists() ? voteSnap.data().vote : null;
                 blessBtn.textContent = userVote === 1 ? "Unbless" : "Bless";
@@ -99,12 +96,14 @@ function renderMemes() {
             curseBtn.onclick = () => handleVote(memeId, -1, curseBtn, blessBtn);
 
             memeDiv.appendChild(img);
-            memeDiv.appendChild(uploaderSpan); // Add uploader info
             memeDiv.appendChild(voteCount);
             memeDiv.appendChild(blessBtn);
             memeDiv.appendChild(curseBtn);
             memeDiv.appendChild(deleteBtn);
-            memesContainer.appendChild(memeDiv);
+
+            memeWrapper.appendChild(uploaderSpan);
+            memeWrapper.appendChild(memeDiv);
+            memesContainer.appendChild(memeWrapper);
         });
     }, (error) => {
         console.error("Error in memes snapshot:", error);
@@ -114,7 +113,7 @@ function renderMemes() {
 async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
     try {
         const memeRef = doc(db, "memes", memeId);
-        const voteRef = doc(db, "memes", memeId, "votes", deviceId);
+        const voteRef = doc(db, "memes", memeId, "votes", currentUserEmail || "anonymous");
         const [voteSnap, memeSnap] = await Promise.all([getDoc(voteRef), getDoc(memeRef)]);
 
         if (!memeSnap.exists()) {
@@ -166,7 +165,7 @@ if (updateMemeBtn && memeInput) {
             try {
                 await addDoc(memesCollection, {
                     url: newMemeURL,
-                    uploadedBy: deviceId,
+                    uploadedBy: currentUserEmail, // Use email instead of deviceId
                     votes: 0
                 });
                 memeInput.value = "";
