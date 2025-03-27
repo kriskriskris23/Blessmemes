@@ -146,7 +146,7 @@ body {
 
 #memes-container {
     width: 100%; /* Full width to allow centering */
-    max-width: 90vw;
+    max-width: 90vw; /* Constrain total width */
     display: flex;
     flex-direction: column;
     gap: 2vh; /* Responsive gap */
@@ -161,33 +161,34 @@ body {
 
 .meme-container {
     display: flex;
-    gap: 2vw; /* Responsive gap */
+    gap: 1vw; /* Reduced gap for smaller size */
     align-items: stretch;
     justify-content: center; /* Center panels horizontally */
     width: fit-content; /* Fit to content */
+    max-width: 90vw; /* Prevent overflow */
 }
 
 .meme-item {
     border: 0.2vw solid var(--border-color); /* Responsive border */
-    padding: 1.5vw;
+    padding: 1vw; /* Reduced padding */
     border-radius: 0.5vw;
-    width: 50vw; /* Responsive width */
+    width: 40vw; /* Smaller width */
     box-sizing: border-box;
     background-color: var(--container-bg);
 }
 
 .meme-item img {
     width: 100%;
-    max-width: 48vw; /* Slightly less than container for padding */
+    max-width: 38vw; /* Adjusted for smaller panel */
     height: auto;
     border-radius: 0.5vw;
 }
 
 .comment-section {
     border: 0.2vw solid var(--border-color);
-    padding: 1.5vw;
+    padding: 1vw; /* Reduced padding */
     border-radius: 0.5vw;
-    width: 50vw;
+    width: 40vw; /* Smaller width */
     display: flex;
     flex-direction: column;
     gap: 1vh;
@@ -211,7 +212,7 @@ body {
 
 .comments-list p {
     margin: 0;
-    font-size: 1.2vw; /* Responsive font size */
+    font-size: 1vw; /* Slightly smaller font */
     word-wrap: break-word;
     max-width: calc(100% - 7vw);
 }
@@ -302,7 +303,7 @@ input {
 
 .comment-input {
     padding: 0.8vh 1vw;
-    font-size: 1.2vw;
+    font-size: 1vw; /* Slightly smaller font */
 }
 
 h1 {
