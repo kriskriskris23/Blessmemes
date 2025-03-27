@@ -145,23 +145,26 @@ body {
 }
 
 #memes-container {
-    width: 90%;
+    width: 100%; /* Full width to allow centering */
     max-width: 90vw;
     display: flex;
     flex-direction: column;
     gap: 2vh; /* Responsive gap */
+    align-items: center; /* Center meme wrappers */
 }
 
 .meme-wrapper {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: fit-content; /* Adjust to content width */
 }
 
 .meme-container {
     display: flex;
     gap: 2vw; /* Responsive gap */
     align-items: stretch;
+    justify-content: center; /* Center panels horizontally */
+    width: fit-content; /* Fit to content */
 }
 
 .meme-item {
