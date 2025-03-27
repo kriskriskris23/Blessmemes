@@ -58,6 +58,12 @@ button {
     color: white;
 }
 
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 #admin-btn {
     background-color: #4CAF50;
     color: white;
