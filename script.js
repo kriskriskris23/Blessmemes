@@ -136,6 +136,10 @@ function renderMemes() {
             memesContainer.appendChild(memeWrapper);
 
             renderComments(memeId, commentsDiv);
+
+            // Match heights after rendering
+            const memeHeight = memeDiv.offsetHeight;
+            commentSection.style.height = `${memeHeight}px`;
         });
     }, (error) => {
         console.error("Error in memes snapshot:", error);
