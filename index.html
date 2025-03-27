@@ -9,32 +9,21 @@
 <body>
     <h1>Welcome to Bless Memes!</h1>
     <p>Vote on memes below:</p>
-
-    <!-- Meme URL Input Section -->
     <div class="meme-input-container">
         <input type="text" id="meme-url" placeholder="Paste image URL here">
         <button id="update-meme">Set Meme</button>
     </div>
-
-    <!-- Meme Display Section -->
     <div class="meme-panel">
         <img id="meme-img" src="default-meme.jpg" alt="Meme Image">
     </div>
-
-    <!-- Delete Meme Button (Hidden by Default) -->
     <button id="delete-meme" style="display: none;">Delete Meme</button>
-
-    <!-- Voting Buttons -->
     <div class="button-container">
         <button id="bless">Bless</button>
         <button id="curse">Curse</button>
     </div>
-
     <p>Votes: <span id="vote-count">0</span></p>
-
-    <!-- Admin Button -->
     <button id="admin-btn">I am an Admin</button>
-
+    <button id="logout-btn">Logout</button>
     <script type="module" src="script.js"></script>
 </body>
 </html>
