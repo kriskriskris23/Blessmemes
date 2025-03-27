@@ -49,6 +49,32 @@ body {
     border: 0.1vw solid #ccc;
 }
 
+.pagination-container {
+    margin: 2vh 0;
+    width: 90%;
+    max-width: 90vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2vw;
+}
+
+#page-info {
+    font-size: 1.5vw;
+}
+
+#prev-page, #next-page {
+    padding: 0.8vh 1.5vw;
+    font-size: 1.2vw;
+    background-color: #2196F3;
+    color: white;
+}
+
+#prev-page:disabled, #next-page:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
 #memes-container {
     width: 90%;
     max-width: 90vw;
