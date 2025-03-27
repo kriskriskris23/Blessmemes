@@ -36,7 +36,7 @@ html, body {
 .meme-container {
     display: flex;
     gap: 20px;
-    align-items: stretch; /* Ensure both panels stretch to the same height */
+    align-items: stretch;
 }
 
 .meme-item {
@@ -44,7 +44,7 @@ html, body {
     padding: 15px;
     border-radius: 8px;
     width: 720px;
-    box-sizing: border-box; /* Include padding in width */
+    box-sizing: border-box;
 }
 
 .meme-item img {
@@ -62,17 +62,18 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    box-sizing: border-box; /* Include padding in width */
+    box-sizing: border-box;
 }
 
 .comments-list {
-    flex-grow: 1; /* Stretch to fill available space */
-    overflow-y: auto; /* Scrollbar spans full height */
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden; /* Prevent horizontal scrollbar */
 }
 
 .comment-wrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* Align top for wrapped text */
     gap: 10px;
     margin: 5px 0;
 }
@@ -80,16 +81,8 @@ html, body {
 .comments-list p {
     margin: 0;
     font-size: 14px;
-    flex-grow: 1;
-}
-
-.comment-input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
+    word-wrap: break-word; /* Wrap long words */
+    max-width: calc(100% - 80px); /* Leave space for email and Delete button */
 }
 
 .meme-buttons {
@@ -133,6 +126,7 @@ button {
     font-size: 12px;
     background-color: #f44336;
     color: white;
+    white-space: nowrap; /* Keep button text on one line */
 }
 
 button:disabled {
@@ -158,4 +152,13 @@ input {
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
+}
+
+.comment-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
 }
