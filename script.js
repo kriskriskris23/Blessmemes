@@ -26,10 +26,20 @@ const memesCollection = collection(db, "memes");
 const ADMIN_ID = "adminaccount@gmail.com";
 
 let currentUserEmail = null;
-onAuthStateChanged(auth, (user) => {
+let currentUsername = null;
+
+onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUserEmail = user.email;
-        console.log("User logged in:", currentUserEmail);
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+            currentUsername = userSnap.data().nickname;
+        } else {
+            window.location.href = "set-nickname.html"; // Redirect if no nickname set
+            return;
+        }
+        console.log("User logged in:", currentUserEmail, "Username:", currentUsername);
         if (currentUserEmail === ADMIN_ID && adminBtn) {
             adminBtn.style.display = "none";
         } else if (adminBtn) {
@@ -37,6 +47,7 @@ onAuthStateChanged(auth, (user) => {
         }
     } else {
         currentUserEmail = null;
+        currentUsername = null;
         console.log("No user logged in, redirecting to login.html");
         window.location.href = "login.html";
     }
@@ -55,7 +66,7 @@ function renderMemes() {
 
             const uploaderSpan = document.createElement("span");
             uploaderSpan.className = "uploader";
-            uploaderSpan.textContent = `Uploaded by: ${memeData.uploadedBy}`;
+            uploaderSpan.textContent = `Uploaded by: ${memeData.uploadedBy}`; // Now uses nickname
 
             const memeContainer = document.createElement("div");
             memeContainer.className = "meme-container";
@@ -84,10 +95,10 @@ function renderMemes() {
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Delete";
             deleteBtn.className = "delete-btn";
-            deleteBtn.style.display = (memeData.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
+            deleteBtn.style.display = (memeData.uploadedBy === currentUsername || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
             deleteBtn.onclick = () => deleteMeme(memeId);
 
-            const voteRef = doc(db, "memes", memeId, "votes", currentUserEmail || "anonymous");
+            const voteRef = doc(db, "memes", memeId, "votes", currentUsername || "anonymous");
             getDoc(voteRef).then((voteSnap) => {
                 const userVote = voteSnap.exists() ? voteSnap.data().vote : null;
                 blessBtn.textContent = userVote === 1 ? "Unbless" : "Bless";
@@ -153,7 +164,7 @@ function renderMemes() {
 async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
     try {
         const memeRef = doc(db, "memes", memeId);
-        const voteRef = doc(db, "memes", memeId, "votes", currentUserEmail || "anonymous");
+        const voteRef = doc(db, "memes", memeId, "votes", currentUsername || "anonymous");
         const [voteSnap, memeSnap] = await Promise.all([getDoc(voteRef), getDoc(memeRef)]);
 
         if (!memeSnap.exists()) {
@@ -193,11 +204,11 @@ async function addComment(memeId, commentText, commentInput) {
         const commentsCollection = collection(db, "memes", memeId, "comments");
         await addDoc(commentsCollection, {
             text: commentText,
-            userEmail: currentUserEmail,
+            userNickname: currentUsername, // Use nickname instead of email
             timestamp: Date.now()
         });
         console.log("Comment added to meme:", memeId);
-        commentInput.value = ""; // Clear input after posting
+        commentInput.value = "";
     } catch (error) {
         console.error("Error adding comment:", error);
         alert("Failed to add comment!");
@@ -230,7 +241,7 @@ function renderComments(memeId, commentsDiv) {
 
             const commentP = document.createElement("p");
             const date = new Date(comment.timestamp).toLocaleString();
-            commentP.textContent = `${comment.userEmail}: ${comment.text} (${date})`;
+            commentP.textContent = `${comment.userNickname}: ${comment.text} (${date})`; // Use nickname
 
             const deleteCommentBtn = document.createElement("button");
             deleteCommentBtn.textContent = "Delete";
@@ -263,7 +274,6 @@ if (updateMemeBtn && memeInput) {
     updateMemeBtn.addEventListener("click", async () => {
         const newMemeURL = memeInput.value.trim();
         if (newMemeURL) {
-            // Validate URL extension
             const allowedExtensions = /\.(jpg|jpeg|png)$/i;
             if (!allowedExtensions.test(newMemeURL)) {
                 alert("Only static images (.jpg, .jpeg, .png) are allowed. No GIFs, videos, or other formats.");
@@ -272,7 +282,7 @@ if (updateMemeBtn && memeInput) {
             try {
                 await addDoc(memesCollection, {
                     url: newMemeURL,
-                    uploadedBy: currentUserEmail,
+                    uploadedBy: currentUsername, // Use nickname
                     votes: 0
                 });
                 memeInput.value = "";
