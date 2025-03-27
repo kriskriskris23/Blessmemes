@@ -1,8 +1,6 @@
-// Import Firebase SDKs
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
 
-// Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
     authDomain: "blessmemes.firebaseapp.com",
@@ -13,55 +11,34 @@ const firebaseConfig = {
     measurementId: "G-0GY321M1ML"
 };
 
-// Initialize Firebase
-let app, auth;
-try {
-    app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    console.log("Firebase initialized successfully");
-} catch (error) {
-    console.error("Firebase initialization failed:", error);
-}
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-// DOM Elements
 const signupForm = document.getElementById("signup-form");
 const signupEmail = document.getElementById("signup-email");
 const signupPassword = document.getElementById("signup-password");
+const errorMessage = document.getElementById("error-message");
 
-// Email/Password Signup
-if (signupForm && signupEmail && signupPassword) {
-    console.log("Signup form elements found");
+if (signupForm && signupEmail && signupPassword && errorMessage) {
     signupForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const email = signupEmail.value.trim();
         const password = signupPassword.value.trim();
 
-        console.log("Signup attempt with:", email);
-
         if (!email || !password) {
-            alert("Please enter both email and password.");
+            errorMessage.textContent = "Please enter both email and password.";
+            return;
+        }
+        if (password.length < 6) {
+            errorMessage.textContent = "Password must be at least 6 characters.";
             return;
         }
 
         try {
             await createUserWithEmailAndPassword(auth, email, password);
-            alert("Account created successfully!");
-            window.location.href = "login.html";
+            window.location.href = "set-nickname.html"; // Redirect to set nickname
         } catch (error) {
-            console.error("Signup error:", error);
-            if (error.code === "auth/email-already-in-use") {
-                alert("🔥 User with that email already exists.");
-            } else if (error.code === "auth/invalid-email") {
-                alert("🔥 Invalid email format.");
-            } else {
-                alert(`🔥 Sign up failed: ${error.message}`);
-            }
+            errorMessage.textContent = `Sign up failed: ${error.message}`;
         }
-    });
-} else {
-    console.error("Signup form elements not found:", {
-        signupForm: !!signupForm,
-        signupEmail: !!signupEmail,
-        signupPassword: !!signupPassword
     });
 }
