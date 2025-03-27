@@ -4,7 +4,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebas
 
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
+    apiKey: "YOUR_API_KEY",
     authDomain: "blessmemes.firebaseapp.com",
     projectId: "blessmemes",
     storageBucket: "blessmemes.firebasestorage.app",
@@ -21,32 +21,32 @@ const auth = getAuth(app);
 const signupForm = document.getElementById("signup-form");
 const signupEmail = document.getElementById("signup-email");
 const signupPassword = document.getElementById("signup-password");
+const signupButton = document.getElementById("signup-btn"); // Correct ID
 
 // Email/Password Signup
-if (signupForm) {
-    signupForm.addEventListener("submit", async (event) => {
-        event.preventDefault();  // Prevent form from submitting and refreshing the page
+if (signupButton) { // Changed from signupForm to signupButton
+    signupButton.addEventListener("click", async (event) => {
+        event.preventDefault();
         const email = signupEmail.value;
         const password = signupPassword.value;
 
         try {
-            // Attempt to create the user with email and password
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user; // Get user object
+            const user = userCredential.user;
             console.log("User created:", user);
             alert("Account created successfully!");
-            window.location.href = "login.html"; // Redirect to login page after successful signup
+            window.location.href = "login.html";
         } catch (error) {
             console.error("Error creating account:", error);
-            let errorMessage = "Signup failed. Please check your information."; // Default error message.
+            let errorMessage = "Signup failed. Please check your information.";
             if (error.code === 'auth/email-already-in-use') {
                 errorMessage = "Email address is already in use.";
             } else if (error.code === 'auth/invalid-email') {
                 errorMessage = "Invalid email address.";
             } else if (error.code === 'auth/weak-password') {
-                errorMessage = "Password is too weak.  It must be at least 6 characters long.";
+                errorMessage = "Password is too weak. It must be at least 6 characters long.";
             }
-            alert(errorMessage); // Show error to the user
+            alert(errorMessage);
         }
     });
 }
