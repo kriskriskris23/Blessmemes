@@ -21,36 +21,25 @@ const auth = getAuth(app);
 const signupForm = document.getElementById("signup-form");
 const signupEmail = document.getElementById("signup-email");
 const signupPassword = document.getElementById("signup-password");
-const errorMessage = document.getElementById("error-message"); // Error message element
-
-console.log("Signup script loaded"); // Debugging line
 
 // Email/Password Signup
 if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
         e.preventDefault();  // Prevent form from submitting and refreshing the page
-        console.log("Form submitted");  // Debugging line
-
         const email = signupEmail.value;
         const password = signupPassword.value;
 
         try {
-            console.log("Creating user with:", email, password);  // Debugging line
-            // Create user with email and password
+            // Attempt to create the user with email and password
             await createUserWithEmailAndPassword(auth, email, password);
             alert("Account created successfully!");
-            window.location.href = "login.html"; // Redirect to login page after sign up
+            window.location.href = "login.html"; // Redirect to login page after sign-up
         } catch (error) {
-            console.error("Error during sign-up:", error);  // Debugging line
             if (error.code === 'auth/email-already-in-use') {
-                // Handle case when email is already registered
-                errorMessage.textContent = "User with that email already exists.";
+                alert("🔥 User with that email already exists.");
             } else {
-                // Handle other errors
-                errorMessage.textContent = `🔥 Sign up failed: ${error.message}`;
+                alert(`🔥 Sign up failed: ${error.message}`);
             }
         }
     });
-} else {
-    console.error('Signup form not found!');
 }
