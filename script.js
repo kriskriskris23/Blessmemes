@@ -160,11 +160,18 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             const memeWrapper = document.createElement("div");
             memeWrapper.className = "meme-wrapper";
 
+            // Create a container for the uploader info
+            const uploaderContainer = document.createElement("div");
+            uploaderContainer.className = "uploader-container";
+
             const uploaderSpan = document.createElement("span");
             uploaderSpan.className = "uploader";
             const uploaderNickname = await getNicknameFromEmail(meme.uploadedBy);
             const uploadDate = meme.timestamp ? new Date(meme.timestamp).toLocaleString() : "Unknown date";
             uploaderSpan.textContent = `Uploaded by: ${uploaderNickname} on ${uploadDate}`;
+
+            uploaderContainer.appendChild(uploaderSpan);
+            memeWrapper.appendChild(uploaderContainer);
 
             const memeContainer = document.createElement("div");
             memeContainer.className = "meme-container";
@@ -245,7 +252,6 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             memeContainer.appendChild(memeDiv);
             memeContainer.appendChild(commentSection);
 
-            memeWrapper.appendChild(uploaderSpan);
             memeWrapper.appendChild(memeContainer);
             memesContainer.appendChild(memeWrapper);
 
