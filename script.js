@@ -59,10 +59,10 @@ onAuthStateChanged(auth, async (user) => {
         console.log("User logged in:", currentUserEmail, "Nickname:", currentUsername);
         if (currentUserEmail === ADMIN_ID && adminBtn) {
             adminBtn.style.display = "none";
-            adminBannerForm.style.display = "block"; // Show banner form for admin
+            adminBannerForm.style.display = "block";
         } else if (adminBtn) {
             adminBtn.style.display = "block";
-            adminBannerForm.style.display = "none"; // Hide for non-admins
+            adminBannerForm.style.display = "none";
         }
     } else {
         currentUserEmail = null;
@@ -78,7 +78,7 @@ onSnapshot(bannerDoc, (docSnap) => {
         bannerImage.src = docSnap.data().imageUrl;
         bannerImage.style.display = "block";
     } else {
-        bannerImage.style.display = "none"; // Hide if no image
+        bannerImage.style.display = "none";
     }
 });
 
@@ -90,7 +90,7 @@ async function getNicknameFromEmail(email) {
             return docSnap.data().nickname;
         }
     }
-    return email; // Fallback to email if nickname not found
+    return email;
 }
 
 // Helper function to get comment count for a meme
@@ -98,6 +98,24 @@ async function getCommentCount(memeId) {
     const commentsCollection = collection(db, "memes", memeId, "comments");
     const commentSnapshot = await getDocs(commentsCollection);
     return commentSnapshot.size;
+}
+
+// Function to add or update meme description
+async function addDescription(memeId, descriptionText, descriptionInput) {
+    if (!descriptionText.trim()) return;
+    try {
+        const memeRef = doc(db, "memes", memeId);
+        await updateDoc(memeRef, {
+            description: descriptionText,
+            updatedBy: currentUserEmail,
+            updatedAt: Date.now()
+        });
+        console.log("Description added to meme:", memeId);
+        descriptionInput.value = "";
+    } catch (error) {
+        console.error("Error adding description:", error);
+        alert("Failed to add description: " + error.message);
+    }
 }
 
 function renderMemes(sortBy = "latest-uploaded", page = 1) {
@@ -136,7 +154,7 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
         // Pagination logic
         const totalMemes = memes.length;
         const totalPages = Math.ceil(totalMemes / memesPerPage);
-        currentPage = Math.max(1, Math.min(page, totalPages)); // Ensure page is within bounds
+        currentPage = Math.max(1, Math.min(page, totalPages));
         const startIndex = (currentPage - 1) * memesPerPage;
         const endIndex = Math.min(startIndex + memesPerPage, totalMemes);
         const paginatedMemes = memes.slice(startIndex, endIndex);
@@ -160,7 +178,6 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             const memeWrapper = document.createElement("div");
             memeWrapper.className = "meme-wrapper";
 
-            // Create a container for the uploader info
             const uploaderContainer = document.createElement("div");
             uploaderContainer.className = "uploader-container";
 
@@ -171,6 +188,29 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             uploaderSpan.textContent = `Uploaded by: ${uploaderNickname} on ${uploadDate}`;
 
             uploaderContainer.appendChild(uploaderSpan);
+
+            // Add description input for uploader or admin
+            if (meme.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID) {
+                const descriptionInput = document.createElement("input");
+                descriptionInput.type = "text";
+                descriptionInput.placeholder = "Add a short description (max 100 chars)";
+                descriptionInput.maxLength = 100;
+                descriptionInput.className = "description-input";
+                descriptionInput.value = meme.description || "";
+
+                const descriptionBtn = document.createElement("button");
+                descriptionBtn.textContent = "Save Description";
+                descriptionBtn.className = "description-btn";
+                descriptionBtn.onclick = () => addDescription(meme.id, descriptionInput.value, descriptionInput);
+
+                const descriptionControls = document.createElement("div");
+                descriptionControls.className = "description-controls";
+                descriptionControls.appendChild(descriptionInput);
+                descriptionControls.appendChild(descriptionBtn);
+
+                uploaderContainer.appendChild(descriptionControls);
+            }
+
             memeWrapper.appendChild(uploaderContainer);
 
             const memeContainer = document.createElement("div");
@@ -227,6 +267,10 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             const commentSection = document.createElement("div");
             commentSection.className = "comment-section";
 
+            const descriptionDiv = document.createElement("div");
+            descriptionDiv.className = "meme-description";
+            descriptionDiv.textContent = meme.description || "No description provided.";
+
             const commentsDiv = document.createElement("div");
             commentsDiv.className = "comments-list";
 
@@ -245,6 +289,7 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             commentBtn.className = "comment-btn";
             commentBtn.onclick = () => addComment(meme.id, commentInput.value, commentInput);
 
+            commentSection.appendChild(descriptionDiv);
             commentSection.appendChild(commentsDiv);
             commentSection.appendChild(commentInput);
             commentSection.appendChild(commentBtn);
@@ -438,7 +483,7 @@ if (updateBannerBtn && bannerInput) {
     updateBannerBtn.addEventListener("click", async () => {
         const newBannerImageUrl = bannerInput.value.trim();
         if (newBannerImageUrl) {
-            const allowedExtensions = /\.(jpg|jpeg|png|webp)(\?.*)?$/i; // Added webp
+            const allowedExtensions = /\.(jpg|jpeg|png|webp)(\?.*)?$/i;
             if (!allowedExtensions.test(newBannerImageUrl)) {
                 alert("Only static images (.jpg, .jpeg, .png, .webp) are allowed for the banner.");
                 return;
@@ -459,7 +504,7 @@ if (updateBannerBtn && bannerInput) {
 
 if (sortOptions) {
     sortOptions.addEventListener("change", (e) => {
-        currentPage = 1; // Reset to page 1 on sort change
+        currentPage = 1;
         renderMemes(e.target.value, currentPage);
     });
 }
