@@ -29,10 +29,16 @@ body {
     gap: 1vw;
 }
 
-.sort-container {
+.sort-pagination-container {
     margin: 2vh 0;
     width: 90%;
     max-width: 90vw;
+    display: flex;
+    justify-content: space-between; /* Space out sort and pagination */
+    align-items: center;
+}
+
+.sort-container {
     display: flex;
     align-items: center;
     gap: 1vw;
@@ -50,27 +56,36 @@ body {
 }
 
 .pagination-container {
-    margin: 2vh 0;
-    width: 90%;
-    max-width: 90vw;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 2vw;
+    gap: 1vw;
 }
 
-#page-info {
+.top-pagination {
+    /* No additional styling needed, inherits from .pagination-container */
+}
+
+.bottom-pagination {
+    margin: 2vh 0;
+    width: 90%;
+    max-width: 90vw;
+}
+
+#page-info, #page-info-top {
     font-size: 1.5vw;
 }
 
-#prev-page, #next-page {
+#prev-page, #next-page, #prev-page-top, #next-page-top {
     padding: 0.8vh 1.5vw;
     font-size: 1.2vw;
+    width: 8vw; /* Fixed width for consistent size */
     background-color: #2196F3;
     color: white;
+    text-align: center;
 }
 
-#prev-page:disabled, #next-page:disabled {
+#prev-page:disabled, #next-page:disabled, #prev-page-top:disabled, #next-page-top:disabled {
     background-color: #ccc;
     cursor: not-allowed;
 }
