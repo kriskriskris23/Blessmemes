@@ -57,6 +57,9 @@ function renderMemes() {
             uploaderSpan.className = "uploader";
             uploaderSpan.textContent = `Uploaded by: ${memeData.uploadedBy}`;
 
+            const memeContainer = document.createElement("div");
+            memeContainer.className = "meme-container";
+
             const memeDiv = document.createElement("div");
             memeDiv.className = "meme-item";
 
@@ -105,9 +108,43 @@ function renderMemes() {
             buttonsDiv.appendChild(deleteBtn);
             memeDiv.appendChild(buttonsDiv);
 
+            // Comment Section
+            const commentSection = document.createElement("div");
+            commentSection.className = "comment-section";
+
+            const commentInput = document.createElement("input");
+            commentInput.type = "text";
+            commentInput.placeholder = "Add a comment...";
+            commentInput.className = "comment-input";
+
+            const commentBtn = document.createElement("button");
+            commentBtn.textContent = "Post";
+            commentBtn.className = "comment-btn";
+            commentBtn.onclick = () => addComment(memeId, commentInput.value);
+
+            const commentsDiv = document.createElement("div");
+            commentsDiv.className = "comments-list";
+
+            memeDiv.appendChild(img);
+            memeDiv.appendChild(voteCount);
+            buttonsDiv.appendChild(blessBtn);
+            buttonsDiv.appendChild(curseBtn);
+            buttonsDiv.appendChild(deleteBtn);
+            memeDiv.appendChild(buttonsDiv);
+
+            commentSection.appendChild(commentInput);
+            commentSection.appendChild(commentBtn);
+            commentSection.appendChild(commentsDiv);
+
+            memeContainer.appendChild(memeDiv);
+            memeContainer.appendChild(commentSection);
+
             memeWrapper.appendChild(uploaderSpan);
-            memeWrapper.appendChild(memeDiv);
+            memeWrapper.appendChild(memeContainer);
             memesContainer.appendChild(memeWrapper);
+
+            // Render comments
+            renderComments(memeId, commentsDiv);
         });
     }, (error) => {
         console.error("Error in memes snapshot:", error);
@@ -149,6 +186,37 @@ async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
         console.error("Error handling vote:", error);
         alert("Failed to process vote: " + error.message);
     }
+}
+
+async function addComment(memeId, commentText) {
+    if (!commentText.trim()) return;
+    try {
+        const commentsCollection = collection(db, "memes", memeId, "comments");
+        await addDoc(commentsCollection, {
+            text: commentText,
+            userEmail: currentUserEmail,
+            timestamp: new Date().toISOString()
+        });
+        console.log("Comment added to meme:", memeId);
+    } catch (error) {
+        console.error("Error adding comment:", error);
+        alert("Failed to add comment!");
+    }
+}
+
+function renderComments(memeId, commentsDiv) {
+    const commentsCollection = collection(db, "memes", memeId, "comments");
+    onSnapshot(commentsCollection, (snapshot) => {
+        commentsDiv.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+            const commentData = docSnap.data();
+            const commentP = document.createElement("p");
+            commentP.textContent = `${commentData.userEmail}: ${commentData.text}`;
+            commentsDiv.appendChild(commentP);
+        });
+    }, (error) => {
+        console.error("Error in comments snapshot:", error);
+    });
 }
 
 async function deleteMeme(memeId) {
