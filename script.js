@@ -1,25 +1,12 @@
-// Import Firebase SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-// Firebase Configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
-    authDomain: "blessmemes.firebaseapp.com",
-    projectId: "blessmemes",
-    storageBucket: "blessmemes.firebasestorage.app",
-    messagingSenderId: "647948484551",
-    appId: "1:647948484551:web:db884bd3346d838737e3e2",
-    measurementId: "G-0GY321M1ML"
-};
-
-// Initialize Firebase & Firestore
+const firebaseConfig = { /* ... */ };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// DOM Elements
 const blessBtn = document.getElementById("bless");
 const curseBtn = document.getElementById("curse");
 const voteCountSpan = document.getElementById("vote-count");
@@ -27,23 +14,19 @@ const memeInput = document.getElementById("meme-url");
 const updateMemeBtn = document.getElementById("update-meme");
 const deleteMemeBtn = document.getElementById("delete-meme");
 const memeImg = document.getElementById("meme-img");
-const adminBtn = document.getElementById("admin-btn"); // Added
+const adminBtn = document.getElementById("admin-btn");
+const logoutBtn = document.getElementById("logout-btn");
 
-// Firestore Document References
 const voteDocRef = doc(db, "votes", "meme1");
 const memeDocRef = doc(db, "memes", "currentMeme");
+const ADMIN_ID = "adminacount@gmail.com"; // Match the email from Firebase
 
-// Admin Identifier
-const ADMIN_ID = "admin@example.com"; // Replace with your admin email
-
-// Unique device identifier stored in localStorage
 let deviceId = localStorage.getItem("deviceId");
 if (!deviceId) {
     deviceId = crypto.randomUUID();
     localStorage.setItem("deviceId", deviceId);
 }
 
-// Track current user
 let currentUserEmail = null;
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -56,7 +39,6 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// Fetch & Update Vote Count
 async function updateVoteCount() {
     try {
         const docSnap = await getDoc(voteDocRef);
@@ -70,7 +52,6 @@ async function updateVoteCount() {
     }
 }
 
-// Handle Vote Logic
 async function vote(type) {
     try {
         const docSnap = await getDoc(voteDocRef);
@@ -84,14 +65,12 @@ async function vote(type) {
     }
 }
 
-// Event Listeners for Voting
 if (blessBtn && curseBtn) {
     blessBtn.addEventListener("click", () => vote("bless"));
     curseBtn.addEventListener("click", () => vote("curse"));
     updateVoteCount();
 }
 
-// Function to update meme image in Firestore
 if (updateMemeBtn && memeInput) {
     updateMemeBtn.addEventListener("click", async () => {
         const newMemeURL = memeInput.value.trim();
@@ -108,7 +87,6 @@ if (updateMemeBtn && memeInput) {
     });
 }
 
-// Function to delete meme
 if (deleteMemeBtn) {
     deleteMemeBtn.addEventListener("click", async () => {
         try {
@@ -122,7 +100,6 @@ if (deleteMemeBtn) {
     });
 }
 
-// Real-time Sync: Update meme for all users instantly
 if (memeImg && deleteMemeBtn) {
     onSnapshot(memeDocRef, (docSnap) => {
         if (docSnap.exists()) {
@@ -140,9 +117,19 @@ if (memeImg && deleteMemeBtn) {
     });
 }
 
-// Admin Button Redirect
 if (adminBtn) {
     adminBtn.addEventListener("click", () => {
         window.location.href = "admin-login.html";
+    });
+}
+
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+        try {
+            await auth.signOut();
+            window.location.href = "login.html";
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
     });
 }
