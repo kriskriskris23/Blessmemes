@@ -4,7 +4,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebas
 
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
+    apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
     authDomain: "blessmemes.firebaseapp.com",
     projectId: "blessmemes",
     storageBucket: "blessmemes.firebasestorage.app",
@@ -38,14 +38,14 @@ if (signupForm) {
             window.location.href = "login.html"; // Redirect to login page after successful signup
         } catch (error) {
             console.error("Error creating account:", error);
-             let errorMessage = "Signup failed. Please check your information."; // Default error message.
-              if (error.code === 'auth/email-already-in-use') {
+            let errorMessage = "Signup failed. Please check your information."; // Default error message.
+            if (error.code === 'auth/email-already-in-use') {
                 errorMessage = "Email address is already in use.";
-              } else if (error.code === 'auth/invalid-email') {
+            } else if (error.code === 'auth/invalid-email') {
                 errorMessage = "Invalid email address.";
-              } else if (error.code === 'auth/weak-password') {
+            } else if (error.code === 'auth/weak-password') {
                 errorMessage = "Password is too weak.  It must be at least 6 characters long.";
-              }
+            }
             alert(errorMessage); // Show error to the user
         }
     });
