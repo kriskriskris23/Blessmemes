@@ -58,7 +58,7 @@ onAuthStateChanged(auth, async (user) => {
             window.location.href = "set-nickname.html";
             return;
         }
-        console.log("User logged in:", currentUserEmail, "Nickname:", currentUsername);
+        console.log("User logged in:", currentUserEmail, "UID:", user.uid, "Nickname:", currentUsername);
         if (currentUserEmail === ADMIN_ID && adminBtn) {
             adminBtn.style.display = "none";
             if (adminBannerForm) adminBannerForm.style.display = "block";
@@ -207,7 +207,7 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
                 memes.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                 break;
             case "oldest-uploaded":
-                memes.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                memes.sort((a, b) => (a.timestamp || 0) - (b.votes || 0));
                 break;
             case "most-comments":
                 memes.sort((a, b) => b.commentCount - a.commentCount);
@@ -295,12 +295,12 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
 
             const blessBtn = document.createElement("button");
             blessBtn.className = "bless-btn";
-            blessBtn.textContent = "Bless"; // Default text
+            blessBtn.textContent = "Bless";
             blessBtn.dataset.memeId = meme.id;
 
             const curseBtn = document.createElement("button");
             curseBtn.className = "curse-btn";
-            curseBtn.textContent = "Curse"; // Default text
+            curseBtn.textContent = "Curse";
             curseBtn.dataset.memeId = meme.id;
 
             const deleteBtn = document.createElement("button");
@@ -309,7 +309,6 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             deleteBtn.style.display = (meme.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
             deleteBtn.onclick = () => deleteMeme(meme.id);
 
-            // Update vote state if user is logged in
             if (auth.currentUser) {
                 const voteRef = doc(db, "memes", meme.id, "votes", auth.currentUser.uid);
                 getDoc(voteRef).then((voteSnap) => {
@@ -397,8 +396,11 @@ async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
         alert("You must be logged in to vote.");
         return;
     }
+
+    const userId = auth.currentUser.uid;
+    console.log("Voting - Meme ID:", memeId, "User ID:", userId, "Vote Change:", voteChange);
+
     try {
-        const userId = auth.currentUser.uid;
         const memeRef = doc(db, "memes", memeId);
         const voteRef = doc(db, "memes", memeId, "votes", userId);
         const [voteSnap, memeSnap] = await Promise.all([getDoc(voteRef), getDoc(memeRef)]);
@@ -409,11 +411,21 @@ async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
         }
 
         let currentVotes = memeSnap.data().votes || 0;
+        console.log("Current votes:", currentVotes);
 
         if (voteSnap.exists()) {
             const existingVote = voteSnap.data().vote;
+            console.log("Existing vote:", existingVote);
             if (existingVote === voteChange) {
-                await deleteDoc(voteRef);
+                // Delete vote document
+                try {
+                    await deleteDoc(voteRef);
+                    console.log("Vote document deleted successfully");
+                } catch (deleteError) {
+                    console.error("Failed to delete vote document:", deleteError);
+                    throw deleteError; // Re-throw to catch below
+                }
+                // Update meme votes
                 await updateDoc(memeRef, { votes: currentVotes - voteChange });
                 clickedBtn.textContent = voteChange > 0 ? "Bless" : "Curse";
                 clickedBtn.disabled = false;
@@ -421,7 +433,15 @@ async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
                 console.log(`Cancelled ${voteChange > 0 ? "bless" : "curse"} on meme ${memeId}`);
             }
         } else {
-            await setDoc(voteRef, { vote: voteChange });
+            // Set new vote document
+            try {
+                await setDoc(voteRef, { vote: voteChange });
+                console.log("Vote document set successfully");
+            } catch (setError) {
+                console.error("Failed to set vote document:", setError);
+                throw setError; // Re-throw to catch below
+            }
+            // Update meme votes
             await updateDoc(memeRef, { votes: currentVotes + voteChange });
             clickedBtn.textContent = voteChange > 0 ? "Unbless" : "Uncurse";
             clickedBtn.disabled = false;
@@ -431,7 +451,8 @@ async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
     } catch (error) {
         console.error("Error handling vote:", error);
         if (error.code === "permission-denied") {
-            alert("You don’t have permission to vote. Check Firestore rules.");
+            console.log("Permission denied details:", error.message);
+            alert("You don’t have permission to fully process this vote. Check Firestore rules. Vote may still be recorded.");
         } else {
             alert("Failed to process vote: " + error.message);
         }
