@@ -24,6 +24,7 @@ html, body {
 .meme-wrapper {
     display: flex;
     flex-direction: column;
+    width: fit-content; /* Match the width of the meme-item */
 }
 
 .meme-wrapper .uploader {
@@ -36,6 +37,7 @@ html, body {
     border: 2px solid black;
     padding: 15px;
     border-radius: 8px;
+    width: 100%; /* Ensure consistent width */
 }
 
 .meme-item img {
@@ -47,9 +49,10 @@ html, body {
 
 .vote-buttons {
     display: flex;
-    justify-content: center; /* Center the vote buttons */
-    gap: 10px; /* Space between buttons */
-    margin-top: 10px; /* Space below the panel */
+    justify-content: center; /* Center buttons within the container */
+    gap: 10px;
+    margin-top: 10px;
+    width: 100%; /* Match the width of meme-item */
 }
 
 button {
