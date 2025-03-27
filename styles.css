@@ -69,6 +69,8 @@ body {
     background-color: var(--banner-bg);
     padding: 1vh 0;
     margin-bottom: 2vh;
+    position: relative; /* For positioning text over image */
+    overflow: hidden; /* Ensure content stays within bounds */
 }
 
 #banner-image {
@@ -76,8 +78,30 @@ body {
     margin: 0 auto; /* Center horizontally */
     width: 100%; /* Full width of the banner container */
     height: auto;
-    max-height: 40vh; /* Doubled from 20vh to 40vh */
+    max-height: 40vh; /* Existing max height */
     object-fit: cover; /* Ensure image fits without distortion */
+}
+
+.banner h1 {
+    position: absolute;
+    top: 10%; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    margin: 0;
+    font-size: 2.5vw; /* Keep existing size */
+    color: white; /* Ensure visibility on image */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Add shadow for contrast */
+}
+
+.banner p {
+    position: absolute;
+    top: 20%; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    margin: 0;
+    font-size: 1.5vw; /* Keep existing size */
+    color: white; /* Ensure visibility on image */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Add shadow for contrast */
 }
 
 #admin-banner-form {
