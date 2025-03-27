@@ -229,8 +229,19 @@ body {
 .meme-wrapper {
     display: flex;
     flex-direction: column;
-    width: fit-content; /* Adjust to content width */
-    align-items: center; /* Center children */
+    width: 100%; /* Full width to align uploader */
+    max-width: 90vw; /* Match memes-container */
+    align-items: flex-start; /* Align children to the left */
+}
+
+.uploader-container {
+    width: 100%; /* Full width of meme-wrapper */
+    text-align: left; /* Align text to the left */
+    margin-left: calc((100% - 90vw) / 2); /* Align with meme-item’s left edge */
+}
+
+.uploader {
+    font-size: 1.2vw; /* Responsive uploader text */
 }
 
 .meme-container {
@@ -402,8 +413,4 @@ h1 {
 
 p {
     font-size: 1.5vw; /* Responsive text */
-}
-
-.uploader {
-    font-size: 1.2vw; /* Responsive uploader text */
 }
