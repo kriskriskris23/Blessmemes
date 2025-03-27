@@ -35,7 +35,7 @@ let currentUserEmail = null;
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUserEmail = user.email;
-        console.log("User logged in:", currentUserEmail);
+        console.log("User logged in:", currentUserEmail, "Device ID:", deviceId);
         if (currentUserEmail === ADMIN_ID && adminBtn) {
             adminBtn.style.display = "none";
         } else if (adminBtn) {
@@ -51,7 +51,7 @@ onAuthStateChanged(auth, (user) => {
 function renderMemes() {
     memesContainer.innerHTML = "";
     onSnapshot(memesCollection, (snapshot) => {
-        memesContainer.innerHTML = ""; // Clear to avoid duplicates
+        memesContainer.innerHTML = "";
         snapshot.forEach((docSnap) => {
             const memeData = docSnap.data();
             const memeId = docSnap.id;
@@ -62,6 +62,10 @@ function renderMemes() {
             const img = document.createElement("img");
             img.src = memeData.url;
             img.alt = "User-uploaded meme";
+
+            const uploaderSpan = document.createElement("span");
+            uploaderSpan.className = "uploader";
+            uploaderSpan.textContent = `Uploaded by: ${memeData.uploadedBy}`; // Display deviceId
 
             const voteCount = document.createElement("span");
             voteCount.textContent = `Votes: ${memeData.votes || 0}`;
@@ -80,7 +84,6 @@ function renderMemes() {
             deleteBtn.style.display = (memeData.uploadedBy === deviceId || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
             deleteBtn.onclick = () => deleteMeme(memeId);
 
-            // Check and update vote button states
             const voteRef = doc(db, "memes", memeId, "votes", deviceId);
             getDoc(voteRef).then((voteSnap) => {
                 const userVote = voteSnap.exists() ? voteSnap.data().vote : null;
@@ -88,18 +91,23 @@ function renderMemes() {
                 curseBtn.textContent = userVote === -1 ? "Uncurse" : "Curse";
                 blessBtn.disabled = userVote === -1;
                 curseBtn.disabled = userVote === 1;
+            }).catch((error) => {
+                console.error("Error fetching vote state:", error);
             });
 
             blessBtn.onclick = () => handleVote(memeId, 1, blessBtn, curseBtn);
             curseBtn.onclick = () => handleVote(memeId, -1, curseBtn, blessBtn);
 
             memeDiv.appendChild(img);
+            memeDiv.appendChild(uploaderSpan); // Add uploader info
             memeDiv.appendChild(voteCount);
             memeDiv.appendChild(blessBtn);
             memeDiv.appendChild(curseBtn);
             memeDiv.appendChild(deleteBtn);
             memesContainer.appendChild(memeDiv);
         });
+    }, (error) => {
+        console.error("Error in memes snapshot:", error);
     });
 }
 
@@ -107,17 +115,18 @@ async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
     try {
         const memeRef = doc(db, "memes", memeId);
         const voteRef = doc(db, "memes", memeId, "votes", deviceId);
-        const voteSnap = await getDoc(voteRef);
-        const memeSnap = await getDoc(memeRef);
+        const [voteSnap, memeSnap] = await Promise.all([getDoc(voteRef), getDoc(memeRef)]);
 
-        if (!memeSnap.exists()) return;
+        if (!memeSnap.exists()) {
+            console.error("Meme does not exist:", memeId);
+            return;
+        }
 
         let currentVotes = memeSnap.data().votes || 0;
 
         if (voteSnap.exists()) {
             const existingVote = voteSnap.data().vote;
             if (existingVote === voteChange) {
-                // Cancel the vote
                 await deleteDoc(voteRef);
                 await updateDoc(memeRef, { votes: currentVotes - voteChange });
                 clickedBtn.textContent = voteChange > 0 ? "Bless" : "Curse";
@@ -126,7 +135,6 @@ async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
                 console.log(`Cancelled ${voteChange > 0 ? "bless" : "curse"} on meme ${memeId}`);
             }
         } else {
-            // Cast a new vote
             await setDoc(voteRef, { vote: voteChange });
             await updateDoc(memeRef, { votes: currentVotes + voteChange });
             clickedBtn.textContent = voteChange > 0 ? "Unbless" : "Uncurse";
@@ -136,7 +144,7 @@ async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
         }
     } catch (error) {
         console.error("Error handling vote:", error);
-        alert("Failed to process vote!");
+        alert("Failed to process vote: " + error.message);
     }
 }
 
