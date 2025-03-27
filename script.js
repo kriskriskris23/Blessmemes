@@ -186,12 +186,23 @@ async function addComment(memeId, commentText) {
         await addDoc(commentsCollection, {
             text: commentText,
             userEmail: currentUserEmail,
-            timestamp: Date.now() // Use numeric timestamp for sorting
+            timestamp: Date.now()
         });
         console.log("Comment added to meme:", memeId);
     } catch (error) {
         console.error("Error adding comment:", error);
         alert("Failed to add comment!");
+    }
+}
+
+async function deleteComment(memeId, commentId) {
+    try {
+        const commentRef = doc(db, "memes", memeId, "comments", commentId);
+        await deleteDoc(commentRef);
+        console.log(`Deleted comment ${commentId} from meme ${memeId}`);
+    } catch (error) {
+        console.error("Error deleting comment:", error);
+        alert("Failed to delete comment: " + error.message);
     }
 }
 
@@ -203,13 +214,24 @@ function renderComments(memeId, commentsDiv) {
         snapshot.forEach((docSnap) => {
             comments.push({ id: docSnap.id, ...docSnap.data() });
         });
-        // Sort by timestamp (ascending, oldest first, newest last)
-        comments.sort((a, b) => a.timestamp - b.timestamp);
+        comments.sort((a, b) => a.timestamp - b.timestamp); // Oldest first, newest last
         comments.forEach((comment) => {
+            const commentWrapper = document.createElement("div");
+            commentWrapper.className = "comment-wrapper";
+
             const commentP = document.createElement("p");
-            const date = new Date(comment.timestamp).toLocaleString(); // Readable timestamp
+            const date = new Date(comment.timestamp).toLocaleString();
             commentP.textContent = `${comment.userEmail}: ${comment.text} (${date})`;
-            commentsDiv.appendChild(commentP);
+
+            const deleteCommentBtn = document.createElement("button");
+            deleteCommentBtn.textContent = "Delete";
+            deleteCommentBtn.className = "delete-comment-btn";
+            deleteCommentBtn.style.display = (currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
+            deleteCommentBtn.onclick = () => deleteComment(memeId, comment.id);
+
+            commentWrapper.appendChild(commentP);
+            commentWrapper.appendChild(deleteCommentBtn);
+            commentsDiv.appendChild(commentWrapper);
         });
     }, (error) => {
         console.error("Error in comments snapshot:", error);
