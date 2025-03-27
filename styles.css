@@ -2,11 +2,11 @@ html, body {
     height: 100%;
     margin: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
-    text-align: center;
+    align-items: flex-start; /* Align content to the left */
+    text-align: left; /* Left-align text */
     font-family: Arial, sans-serif;
+    padding-left: 20px; /* Add some padding from the left edge */
 }
 
 .meme-input-container {
@@ -15,7 +15,7 @@ html, body {
 
 #memes-container {
     width: 80%;
-    max-width: 800px;
+    max-width: 600px; /* Reduced max-width for better left alignment */
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -29,7 +29,7 @@ html, body {
 
 .meme-item img {
     width: 100%;
-    max-width: 600px;
+    max-width: 500px; /* Adjust to fit left-aligned layout */
     height: auto;
     border-radius: 8px;
 }
