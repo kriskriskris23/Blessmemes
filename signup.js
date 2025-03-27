@@ -14,8 +14,14 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+let app, auth;
+try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    console.log("Firebase initialized successfully");
+} catch (error) {
+    console.error("Firebase initialization failed:", error);
+}
 
 // DOM Elements
 const signupForm = document.getElementById("signup-form");
@@ -23,23 +29,39 @@ const signupEmail = document.getElementById("signup-email");
 const signupPassword = document.getElementById("signup-password");
 
 // Email/Password Signup
-if (signupForm) {
+if (signupForm && signupEmail && signupPassword) {
+    console.log("Signup form elements found");
     signupForm.addEventListener("submit", async (e) => {
-        e.preventDefault();  // Prevent form from submitting and refreshing the page
-        const email = signupEmail.value;
-        const password = signupPassword.value;
+        e.preventDefault();
+        const email = signupEmail.value.trim();
+        const password = signupPassword.value.trim();
+
+        console.log("Signup attempt with:", email);
+
+        if (!email || !password) {
+            alert("Please enter both email and password.");
+            return;
+        }
 
         try {
-            // Attempt to create the user with email and password
             await createUserWithEmailAndPassword(auth, email, password);
             alert("Account created successfully!");
-            window.location.href = "login.html"; // Redirect to login page after sign-up
+            window.location.href = "login.html";
         } catch (error) {
-            if (error.code === 'auth/email-already-in-use') {
+            console.error("Signup error:", error);
+            if (error.code === "auth/email-already-in-use") {
                 alert("🔥 User with that email already exists.");
+            } else if (error.code === "auth/invalid-email") {
+                alert("🔥 Invalid email format.");
             } else {
                 alert(`🔥 Sign up failed: ${error.message}`);
             }
         }
+    });
+} else {
+    console.error("Signup form elements not found:", {
+        signupForm: !!signupForm,
+        signupEmail: !!signupEmail,
+        signupPassword: !!signupPassword
     });
 }
