@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Set Nickname - Bless Memes</title>
+    <title>Sign Up</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="login-page">
-        <div class="login-card">
-            <h1>Set Your Nickname</h1>
-            <form class="login-form" id="nickname-form">
-                <div class="form-group">
-                    <p>Choose a unique nickname (max 32 characters):</p>
-                    <input type="text" id="nickname-input" placeholder="Enter your nickname" maxlength="32" required>
-                </div>
-                <div class="form-buttons">
-                    <button type="submit">Save Nickname</button>
-                </div>
-                <p id="error-message" class="error"></p>
-            </form>
-        </div>
+    <div class="container">
+        <h2>Create an Account</h2>
+        <form id="signup-form">
+            <label for="signup-email">Email:</label>
+            <input type="email" id="signup-email" required placeholder="Enter your email">
+            
+            <label for="signup-password">Password:</label>
+            <input type="password" id="signup-password" required placeholder="Enter your password">
+
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="login.html">Login here</a></p>
     </div>
-    <script type="module" src="set-nickname.js"></script>
+
+    <!-- Make sure to add type="module" here -->
+    <script type="module" src="signup.js"></script>
 </body>
 </html>
