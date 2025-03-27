@@ -103,7 +103,7 @@ function renderMemes(sortBy = "latest-uploaded") {
                 memes.sort((a, b) => b.commentCount - a.commentCount);
                 break;
             default:
-                memes.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)); // Default to latest
+                memes.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
         }
 
         // Render sorted memes
@@ -147,7 +147,7 @@ function renderMemes(sortBy = "latest-uploaded") {
             deleteBtn.style.display = (meme.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
             deleteBtn.onclick = () => deleteMeme(meme.id);
 
-            const voteRef = doc(db, "memes", meme.id, "votes", currentUsername || "anonymous");
+            const voteRef = doc(db, "memes", meme.id, "votes", currentUsername);
             getDoc(voteRef).then((voteSnap) => {
                 const userVote = voteSnap.exists() ? voteSnap.data().vote : null;
                 blessBtn.textContent = userVote === 1 ? "Unbless" : "Bless";
@@ -159,7 +159,7 @@ function renderMemes(sortBy = "latest-uploaded") {
             });
 
             blessBtn.onclick = () => handleVote(meme.id, 1, blessBtn, curseBtn);
-            curseBtn.onclick = () => handleVote(meme.id, -1, curseBtn, blessBtn);
+            curseBtn.onclick = () => handleVote(meme.id, -1, curseBtn, otherBtn);
 
             memeDiv.appendChild(img);
             memeDiv.appendChild(voteCount);
@@ -213,7 +213,7 @@ function renderMemes(sortBy = "latest-uploaded") {
 async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
     try {
         const memeRef = doc(db, "memes", memeId);
-        const voteRef = doc(db, "memes", memeId, "votes", currentUsername || "anonymous");
+        const voteRef = doc(db, "memes", memeId, "votes", currentUsername);
         const [voteSnap, memeSnap] = await Promise.all([getDoc(voteRef), getDoc(memeRef)]);
 
         if (!memeSnap.exists()) {
