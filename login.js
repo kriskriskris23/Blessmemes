@@ -39,6 +39,7 @@ if (loginBtn) {
 
         try {
             // Attempt to sign in the user with email and password
+            console.log("Attempting to log in with email:", email); // Add this line for debugging
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             console.log("Logged in:", user);
