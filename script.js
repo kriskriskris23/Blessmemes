@@ -66,7 +66,7 @@ onAuthStateChanged(auth, async (user) => {
             adminBtn.style.display = "block";
             if (adminBannerForm) adminBannerForm.style.display = "none";
         }
-        renderMemes("latest-uploaded", currentPage); // Re-render memes after login
+        renderMemes("latest-uploaded", currentPage); // Re-render after login
     } else {
         currentUserEmail = null;
         currentUsername = null;
@@ -293,28 +293,25 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             const buttonsDiv = document.createElement("div");
             buttonsDiv.className = "meme-buttons";
 
-            // Bless Button with default text
             const blessBtn = document.createElement("button");
             blessBtn.className = "bless-btn";
             blessBtn.textContent = "Bless"; // Default text
             blessBtn.dataset.memeId = meme.id;
 
-            // Curse Button with default text
             const curseBtn = document.createElement("button");
             curseBtn.className = "curse-btn";
             curseBtn.textContent = "Curse"; // Default text
             curseBtn.dataset.memeId = meme.id;
 
-            // Delete Button
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Delete";
             deleteBtn.className = "delete-btn";
             deleteBtn.style.display = (meme.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
             deleteBtn.onclick = () => deleteMeme(meme.id);
 
-            // Fetch vote state asynchronously and update buttons
-            if (currentUsername) {
-                const voteRef = doc(db, "memes", meme.id, "votes", currentUsername);
+            // Update vote state if user is logged in
+            if (auth.currentUser) {
+                const voteRef = doc(db, "memes", meme.id, "votes", auth.currentUser.uid);
                 getDoc(voteRef).then((voteSnap) => {
                     const userVote = voteSnap.exists() ? voteSnap.data().vote : null;
                     blessBtn.textContent = userVote === 1 ? "Unbless" : "Bless";
@@ -326,7 +323,6 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
                 });
             }
 
-            // Attach click handlers
             blessBtn.onclick = () => handleVote(meme.id, 1, blessBtn, curseBtn);
             curseBtn.onclick = () => handleVote(meme.id, -1, curseBtn, blessBtn);
 
@@ -397,13 +393,14 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
 }
 
 async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
-    if (!currentUsername) {
-        alert("Nickname not set. Please set a nickname to vote.");
+    if (!auth.currentUser || !auth.currentUser.uid) {
+        alert("You must be logged in to vote.");
         return;
     }
     try {
+        const userId = auth.currentUser.uid;
         const memeRef = doc(db, "memes", memeId);
-        const voteRef = doc(db, "memes", memeId, "votes", currentUsername);
+        const voteRef = doc(db, "memes", memeId, "votes", userId);
         const [voteSnap, memeSnap] = await Promise.all([getDoc(voteRef), getDoc(memeRef)]);
 
         if (!memeSnap.exists()) {
@@ -633,7 +630,7 @@ if (sortOptions) {
 if (prevPageBtn && nextPageBtn && prevPageTop && nextPageTop) {
     const updatePage = (newPage) => {
         currentPage = newPage;
-        renderMemes(sortOptions.value, currentPage);
+        renderMemes(sortOptions.value || "latest-uploaded", currentPage);
     };
 
     prevPageBtn.addEventListener("click", () => {
@@ -645,6 +642,3 @@ if (prevPageBtn && nextPageBtn && prevPageTop && nextPageTop) {
     });
     nextPageTop.addEventListener("click", () => updatePage(currentPage + 1));
 }
-
-// Initial render with default sorting (latest uploaded)
-renderMemes("latest-uploaded", currentPage);
