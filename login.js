@@ -21,7 +21,7 @@ const auth = getAuth(app);
 const loginForm = document.getElementById("login-form");
 const loginEmail = document.getElementById("login-email");
 const loginPassword = document.getElementById("login-password");
-const signUpBtn = document.getElementById("sign-up-btn"); // Sign-up button
+const signUpBtn = document.getElementById("signup-btn"); // Sign-up button
 
 // Email/Password Login
 if (loginForm) {
@@ -45,4 +45,6 @@ if (signUpBtn) {
     signUpBtn.addEventListener("click", () => {
         window.location.href = "signup.html"; // Redirect to sign-up page
     });
+} else {
+    console.error('Sign Up button not found!');
 }
