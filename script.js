@@ -288,7 +288,7 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             img.alt = "User-uploaded meme";
 
             const voteCount = document.createElement("span");
-            voteCount.textContent = `Votes: ${meme.votes || 0}`;
+            voteCount.textContent = `Rating: ${meme.votes || 0}`;
 
             const buttonsDiv = document.createElement("div");
             buttonsDiv.className = "meme-buttons";
