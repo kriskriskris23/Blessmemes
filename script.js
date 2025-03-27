@@ -85,7 +85,6 @@ function renderMemes(sortBy = "latest-uploaded") {
             memes.push({ id: memeId, ...memeData, commentCount });
         }
 
-        // Sorting logic
         switch (sortBy) {
             case "most-votes":
                 memes.sort((a, b) => (b.votes || 0) - (a.votes || 0));
@@ -106,7 +105,6 @@ function renderMemes(sortBy = "latest-uploaded") {
                 memes.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
         }
 
-        // Render sorted memes
         for (const meme of memes) {
             const memeWrapper = document.createElement("div");
             memeWrapper.className = "meme-wrapper";
@@ -159,7 +157,7 @@ function renderMemes(sortBy = "latest-uploaded") {
             });
 
             blessBtn.onclick = () => handleVote(meme.id, 1, blessBtn, curseBtn);
-            curseBtn.onclick = () => handleVote(meme.id, -1, curseBtn, otherBtn);
+            curseBtn.onclick = () => handleVote(meme.id, -1, curseBtn, blessBtn);
 
             memeDiv.appendChild(img);
             memeDiv.appendChild(voteCount);
@@ -211,6 +209,10 @@ function renderMemes(sortBy = "latest-uploaded") {
 }
 
 async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
+    if (!currentUsername) {
+        alert("Nickname not set. Please set a nickname to vote.");
+        return;
+    }
     try {
         const memeRef = doc(db, "memes", memeId);
         const voteRef = doc(db, "memes", memeId, "votes", currentUsername);
