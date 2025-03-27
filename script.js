@@ -191,7 +191,6 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             memes.push({ id: memeId, ...memeData, commentCount });
         }
 
-        // Sorting logic
         switch (sortBy) {
             case "most-votes":
                 memes.sort((a, b) => (b.votes || 0) - (a.votes || 0));
@@ -212,7 +211,6 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
                 memes.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
         }
 
-        // Pagination logic
         const totalMemes = memes.length;
         const totalPages = Math.ceil(totalMemes / memesPerPage);
         currentPage = Math.max(1, Math.min(page, totalPages));
@@ -220,13 +218,11 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
         const endIndex = Math.min(startIndex + memesPerPage, totalMemes);
         const paginatedMemes = memes.slice(startIndex, endIndex);
 
-        // Toggle pagination visibility
         const paginationContainers = document.querySelectorAll('.pagination-container');
         paginationContainers.forEach(container => {
             container.style.display = totalPages > 1 ? 'flex' : 'none';
         });
 
-        // Update pagination controls
         pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
         pageInfoTop.textContent = `Page ${currentPage} of ${totalPages}`;
         prevPageBtn.disabled = currentPage === 1;
@@ -234,7 +230,6 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
         prevPageTop.disabled = currentPage === 1;
         nextPageTop.disabled = currentPage === totalPages;
 
-        // Render paginated memes
         for (const meme of paginatedMemes) {
             const memeWrapper = document.createElement("div");
             memeWrapper.className = "meme-wrapper";
@@ -448,12 +443,16 @@ async function addComment(memeId, commentText, commentInput) {
             nickname: currentUsername,
             timestamp: Date.now()
         });
-        await updateLastCommentTime(memeId, userId); // Update last comment time after successful comment
+        await updateLastCommentTime(memeId, userId);
         console.log("Comment added to meme:", memeId);
         commentInput.value = "";
     } catch (error) {
         console.error("Error adding comment:", error);
-        alert("Failed to add comment: " + error.message);
+        if (error.code === "permission-denied") {
+            alert("You don’t have permission to comment. Please try again or contact support.");
+        } else {
+            alert("Failed to add comment: " + error.message);
+        }
     }
 }
 
