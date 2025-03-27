@@ -22,6 +22,9 @@ const memesContainer = document.getElementById("memes-container");
 const adminBtn = document.getElementById("admin-btn");
 const logoutBtn = document.getElementById("logout-btn");
 const sortOptions = document.getElementById("sort-options");
+const prevPageBtn = document.getElementById("prev-page");
+const nextPageBtn = document.getElementById("next-page");
+const pageInfo = document.getElementById("page-info");
 
 const memesCollection = collection(db, "memes");
 const usersCollection = collection(db, "users");
@@ -29,6 +32,8 @@ const ADMIN_ID = "adminaccount@gmail.com";
 
 let currentUserEmail = null;
 let currentUsername = null;
+let currentPage = 1;
+const memesPerPage = 10;
 
 onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -73,7 +78,7 @@ async function getCommentCount(memeId) {
     return commentSnapshot.size;
 }
 
-function renderMemes(sortBy = "latest-uploaded") {
+function renderMemes(sortBy = "latest-uploaded", page = 1) {
     memesContainer.innerHTML = "";
     onSnapshot(memesCollection, async (snapshot) => {
         memesContainer.innerHTML = "";
@@ -85,6 +90,7 @@ function renderMemes(sortBy = "latest-uploaded") {
             memes.push({ id: memeId, ...memeData, commentCount });
         }
 
+        // Sorting logic
         switch (sortBy) {
             case "most-votes":
                 memes.sort((a, b) => (b.votes || 0) - (a.votes || 0));
@@ -105,7 +111,21 @@ function renderMemes(sortBy = "latest-uploaded") {
                 memes.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
         }
 
-        for (const meme of memes) {
+        // Pagination logic
+        const totalMemes = memes.length;
+        const totalPages = Math.ceil(totalMemes / memesPerPage);
+        currentPage = Math.max(1, Math.min(page, totalPages)); // Ensure page is within bounds
+        const startIndex = (currentPage - 1) * memesPerPage;
+        const endIndex = Math.min(startIndex + memesPerPage, totalMemes);
+        const paginatedMemes = memes.slice(startIndex, endIndex);
+
+        // Update pagination controls
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        prevPageBtn.disabled = currentPage === 1;
+        nextPageBtn.disabled = currentPage === totalPages;
+
+        // Render paginated memes
+        for (const meme of paginatedMemes) {
             const memeWrapper = document.createElement("div");
             memeWrapper.className = "meme-wrapper";
 
@@ -370,9 +390,23 @@ if (logoutBtn) {
 
 if (sortOptions) {
     sortOptions.addEventListener("change", (e) => {
-        renderMemes(e.target.value);
+        currentPage = 1; // Reset to page 1 on sort change
+        renderMemes(e.target.value, currentPage);
+    });
+}
+
+if (prevPageBtn && nextPageBtn) {
+    prevPageBtn.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderMemes(sortOptions.value, currentPage);
+        }
+    });
+    nextPageBtn.addEventListener("click", () => {
+        currentPage++;
+        renderMemes(sortOptions.value, currentPage);
     });
 }
 
 // Initial render with default sorting (latest uploaded)
-renderMemes("latest-uploaded");
+renderMemes("latest-uploaded", currentPage);
