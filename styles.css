@@ -1,7 +1,7 @@
 /* Define root variables for light and dark modes */
 :root {
     /* Light mode (default) */
-    --background-color: yellow; /* Changed from #ffffff */
+    --background-color: yellow;
     --text-color: #000000;
     --border-color: #000000;
     --input-bg: #ffffff;
@@ -63,7 +63,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: var(--background-color); /* Use variable instead of hardcoding */
+    background-color: var(--background-color);
 }
 
 .login-card {
@@ -333,6 +333,32 @@ body {
     box-sizing: border-box;
 }
 
+.description-controls {
+    display: flex;
+    gap: 0.5vw;
+    margin-top: 0.5vh;
+}
+
+.description-input {
+    padding: 0.5vh 1vw;
+    font-size: 1vw;
+    width: 70%;
+    border: 0.1vw solid var(--input-border);
+    border-radius: 0.5vw;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+.description-btn {
+    padding: 0.5vh 1vw;
+    font-size: 1vw;
+    border-radius: 0.5vw;
+    border: 0.1vw solid var(--border-color);
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    cursor: pointer;
+}
+
 .uploader {
     font-size: 1.2vw;
     display: inline-block;
@@ -375,10 +401,20 @@ body {
     background-color: var(--container-bg);
 }
 
+.meme-description {
+    font-size: 1vw;
+    font-style: italic;
+    color: var(--text-color);
+    background-color: rgba(0, 0, 0, 0.05); /* Slight background for distinction */
+    padding: 0.5vh 1vw;
+    border-radius: 0.5vw;
+}
+
 .comments-list {
     flex-grow: 1;
     overflow-y: auto;
     overflow-x: hidden;
+    max-height: calc(100% - 8vh); /* Adjust height to account for description, input, and button */
 }
 
 .comment-wrapper {
