@@ -65,12 +65,13 @@ body {
 .banner {
     width: 100%;
     background-color: var(--banner-bg);
-    text-align: center;
     padding: 1vh 0;
     margin-bottom: 2vh;
 }
 
 #banner-image {
+    display: block; /* Ensure block-level for centering */
+    margin: 0 auto; /* Center horizontally */
     width: 100%;
     max-width: 90vw;
     height: auto;
