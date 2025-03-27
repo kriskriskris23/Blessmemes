@@ -51,31 +51,25 @@ body {
     color: var(--text-color);
     display: flex;
     flex-direction: column;
-    position: relative; /* For absolute positioning of logout button */
+    position: relative; /* For absolute positioning of elements */
 }
 
-.header-controls {
-    position: absolute;
-    top: 1vh;
-    right: 1vw;
-    display: flex;
-    gap: 1vw;
+.banner-container {
+    width: 100%; /* Stretch to full width */
+    margin: 0; /* Remove centering margin */
 }
 
 .banner {
-    width: 90%; /* Match content width */
-    max-width: 90vw; /* Match content max-width */
-    margin: 0 auto; /* Center the banner */
+    width: 100%; /* Full width of the viewport */
     background-color: var(--banner-bg);
     padding: 1vh 0;
     margin-bottom: 2vh;
-    position: relative; /* For positioning text over image */
+    position: relative; /* For positioning text and buttons over image */
     overflow: hidden; /* Ensure content stays within bounds */
 }
 
 #banner-image {
-    display: block; /* Ensure block-level for centering */
-    margin: 0 auto; /* Center horizontally */
+    display: block;
     width: 100%; /* Full width of the banner container */
     height: auto;
     max-height: 40vh; /* Existing max height */
@@ -84,24 +78,33 @@ body {
 
 .banner h1 {
     position: absolute;
-    top: 30%; /* Lowered from 10% to 30% */
+    top: 30%; /* From previous step */
     left: 50%;
     transform: translateX(-50%); /* Center horizontally */
     margin: 0;
     font-size: 2.5vw; /* Keep existing size */
-    color: black; /* Changed to black */
+    color: black; /* From previous step */
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7); /* White shadow for contrast */
 }
 
 .banner p {
     position: absolute;
-    top: 50%; /* Lowered from 20% to 50%, adds space from h1 */
+    top: 50%; /* From previous step */
     left: 50%;
     transform: translateX(-50%); /* Center horizontally */
     margin: 0;
     font-size: 1.5vw; /* Keep existing size */
-    color: black; /* Changed to black */
+    color: black; /* From previous step */
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7); /* White shadow for contrast */
+}
+
+.header-controls {
+    position: absolute; /* Position over banner */
+    top: 1vh; /* Same spacing from top */
+    right: 1vw; /* Same spacing from right */
+    display: flex;
+    gap: 1vw;
+    z-index: 10; /* Ensure it’s above the banner image */
 }
 
 #admin-banner-form {
