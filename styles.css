@@ -16,6 +16,8 @@
     --logout-btn-bg: #f44336;
     --container-bg: transparent;
     --banner-bg: #f0f0f0;
+    --card-bg: #f9f9f9;
+    --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
 body.dark-mode {
@@ -35,6 +37,8 @@ body.dark-mode {
     --logout-btn-bg: #d32f2f;
     --container-bg: #2a2a2a;
     --banner-bg: #333333;
+    --card-bg: #2a2a2a;
+    --shadow-color: rgba(255, 255, 255, 0.1);
 }
 
 html {
@@ -54,57 +58,144 @@ body {
     position: relative; /* For absolute positioning of elements */
 }
 
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Full viewport height */
+}
+
+.login-card {
+    background-color: var(--card-bg);
+    padding: 3vh 4vw;
+    border-radius: 1vw;
+    box-shadow: 0 4px 8px var(--shadow-color);
+    width: 90%;
+    max-width: 40vw; /* Constrain width */
+    text-align: center;
+}
+
+.login-card h1 {
+    font-size: 2.5vw;
+    margin-bottom: 2vh;
+    color: var(--text-color);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5vh;
+}
+
+.form-group input {
+    padding: 1vh 1.5vw;
+    font-size: 1.2vw;
+    border: 0.1vw solid var(--input-border);
+    border-radius: 0.5vw;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    border-color: var(--button-bg);
+}
+
+.form-buttons {
+    display: flex;
+    gap: 1vw;
+    justify-content: center;
+}
+
+.form-buttons button {
+    padding: 1vh 2vw;
+    font-size: 1.2vw;
+    border-radius: 0.5vw;
+    border: 0.1vw solid var(--border-color);
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.form-buttons button:hover {
+    background-color: #1e88e5; /* Slightly darker blue */
+    transform: scale(1.05);
+}
+
+#signup-btn {
+    background-color: #4CAF50; /* Green for signup */
+}
+
+#signup-btn:hover {
+    background-color: #43a047; /* Darker green */
+}
+
+#error-message {
+    color: #f44336; /* Red for errors */
+    font-size: 1vw;
+    margin-top: 1vh;
+}
+
+/* Existing styles below */
 .banner-container {
-    width: 100%; /* Stretch to full width */
-    margin: 0; /* Remove centering margin */
+    width: 100%;
+    margin: 0;
 }
 
 .banner {
-    width: 100%; /* Full width of the viewport */
+    width: 100%;
     background-color: var(--banner-bg);
     padding: 1vh 0;
     margin-bottom: 2vh;
-    position: relative; /* For positioning text and buttons over image */
-    overflow: hidden; /* Ensure content stays within bounds */
+    position: relative;
+    overflow: hidden;
 }
 
 #banner-image {
     display: block;
-    width: 100%; /* Full width of the banner container */
+    width: 100%;
     height: auto;
-    max-height: 40vh; /* Existing max height */
-    object-fit: cover; /* Ensure image fits without distortion */
+    max-height: 40vh;
+    object-fit: cover;
 }
 
 .banner h1 {
     position: absolute;
-    top: 20%; /* From previous step */
+    top: 20%;
     left: 50%;
-    transform: translateX(-50%); /* Center horizontally */
+    transform: translateX(-50%);
     margin: 0;
-    font-size: 3.5vw; /* From previous step */
-    color: black; /* From previous step */
-    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7); /* White shadow for contrast */
+    font-size: 3.5vw;
+    color: black;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7);
 }
 
 .banner p {
     position: absolute;
-    top: 60%; /* From previous step */
+    top: 60%;
     left: 50%;
-    transform: translateX(-50%); /* Center horizontally */
+    transform: translateX(-50%);
     margin: 0;
-    font-size: 1.5vw; /* Keep existing size */
-    color: black; /* From previous step */
-    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7); /* White shadow for contrast */
+    font-size: 1.5vw;
+    color: black;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7);
 }
 
 .header-controls {
-    position: absolute; /* Position over banner */
-    top: 1vh; /* Same spacing from top */
-    right: 1vw; /* Same spacing from right */
+    position: absolute;
+    top: 1vh;
+    right: 1vw;
     display: flex;
     gap: 1vw;
-    z-index: 10; /* Ensure it’s above the banner image */
+    z-index: 10;
 }
 
 #admin-banner-form {
@@ -136,18 +227,18 @@ body {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center all content */
-    text-align: center; /* Center text */
-    padding-top: 5vh; /* Space for header controls */
+    align-items: center;
+    text-align: center;
+    padding-top: 5vh;
 }
 
 .meme-input-container {
     margin: 2vh 0;
-    width: 90%; /* Responsive width */
+    width: 90%;
     max-width: 90vw;
     display: flex;
     gap: 1vw;
-    justify-content: center; /* Center input and button */
+    justify-content: center;
 }
 
 .sort-pagination-wrapper {
@@ -155,7 +246,7 @@ body {
     width: 90%;
     max-width: 90vw;
     display: flex;
-    justify-content: space-between; /* Sorting left, pagination centered */
+    justify-content: space-between;
     align-items: center;
     position: relative;
 }
@@ -180,7 +271,7 @@ body {
 }
 
 .pagination-container {
-    display: none; /* Initially hidden */
+    display: none;
     justify-content: center;
     align-items: center;
     gap: 1vw;
@@ -189,7 +280,7 @@ body {
 .top-pagination {
     position: absolute;
     left: 50%;
-    transform: translateX(-50%); /* Center horizontally relative to wrapper */
+    transform: translateX(-50%);
 }
 
 .bottom-pagination {
@@ -205,7 +296,7 @@ body {
 #prev-page, #next-page, #prev-page-top, #next-page-top {
     padding: 0.8vh 1.5vw;
     font-size: 1.2vw;
-    width: 8vw; /* Fixed width for consistent size */
+    width: 8vw;
     background-color: var(--button-bg);
     color: var(--button-text);
     text-align: center;
@@ -217,65 +308,65 @@ body {
 }
 
 #memes-container {
-    width: 100%; /* Full width to allow centering */
-    max-width: 90vw; /* Constrain total width */
+    width: 100%;
+    max-width: 90vw;
     display: flex;
     flex-direction: column;
-    gap: 2vh; /* Responsive gap */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center horizontally */
+    gap: 2vh;
+    justify-content: center;
+    align-items: center;
 }
 
 .meme-wrapper {
     display: flex;
     flex-direction: column;
-    width: fit-content; /* Keep centered */
-    align-items: center; /* Center children horizontally */
-    position: relative; /* For absolute positioning of uploader */
+    width: fit-content;
+    align-items: center;
+    position: relative;
 }
 
 .uploader-container {
     position: absolute;
-    top: -2vh; /* Position above the meme panel */
-    left: -41.5vw; /* Align with left edge of meme-item (40vw width + 1vw gap/2) */
-    text-align: left; /* Align text to the left */
-    width: auto; /* Fit content */
+    top: -2vh;
+    left: -41.5vw;
+    text-align: left;
+    width: auto;
 }
 
 .uploader {
-    font-size: 1.2vw; /* Responsive uploader text */
+    font-size: 1.2vw;
 }
 
 .meme-container {
     display: flex;
-    gap: 1vw; /* Reduced gap for smaller size */
+    gap: 1vw;
     align-items: stretch;
-    justify-content: center; /* Center panels horizontally */
-    width: fit-content; /* Fit to content */
-    max-width: 90vw; /* Prevent overflow */
+    justify-content: center;
+    width: fit-content;
+    max-width: 90vw;
 }
 
 .meme-item {
-    border: 0.2vw solid var(--border-color); /* Responsive border */
-    padding: 1vw; /* Reduced padding */
+    border: 0.2vw solid var(--border-color);
+    padding: 1vw;
     border-radius: 0.5vw;
-    width: 40vw; /* Smaller width */
+    width: 40vw;
     box-sizing: border-box;
     background-color: var(--container-bg);
 }
 
 .meme-item img {
     width: 100%;
-    max-width: 38vw; /* Adjusted for smaller panel */
+    max-width: 38vw;
     height: auto;
     border-radius: 0.5vw;
 }
 
 .comment-section {
     border: 0.2vw solid var(--border-color);
-    padding: 1vw; /* Reduced padding */
+    padding: 1vw;
     border-radius: 0.5vw;
-    width: 40vw; /* Smaller width */
+    width: 40vw;
     display: flex;
     flex-direction: column;
     gap: 1vh;
@@ -299,7 +390,7 @@ body {
 
 .comments-list p {
     margin: 0;
-    font-size: 1vw; /* Slightly smaller font */
+    font-size: 1vw;
     word-wrap: break-word;
     max-width: calc(100% - 7vw);
 }
@@ -313,7 +404,7 @@ body {
 
 button {
     padding: 1vh 2vw;
-    font-size: 1.5vw; /* Responsive font size */
+    font-size: 1.5vw;
     cursor: pointer;
     border-radius: 0.5vw;
     border: 0.2vw solid var(--border-color);
@@ -366,25 +457,25 @@ button:disabled {
 #logout-btn {
     background-color: var(--logout-btn-bg);
     color: var(--button-text);
-    padding: 0.6vh 1vw; /* Reduced from 0.8vh 1.5vw */
-    font-size: 1vw; /* Reduced from 1.2vw */
+    padding: 0.6vh 1vw;
+    font-size: 1vw;
 }
 
 #mode-toggle {
     background-color: #555555;
     color: var(--button-text);
-    padding: 0.6vh 1vw; /* Reduced from 0.8vh 1.5vw */
-    font-size: 1vw; /* Reduced from 1.2vw */
+    padding: 0.6vh 1vw;
+    font-size: 1vw;
 }
 
 #update-meme {
-    padding: 0.6vh 1vw; /* Reduced from inherited 1vh 2vw */
-    font-size: 1vw; /* Reduced from inherited 1.5vw */
+    padding: 0.6vh 1vw;
+    font-size: 1vw;
 }
 
 #meme-url {
-    padding: 0.6vh 0.8vw; /* Reduced from 1vh 1vw */
-    font-size: 1vw; /* Reduced from 1.2vw */
+    padding: 0.6vh 0.8vw;
+    font-size: 1vw;
     width: 100%;
     box-sizing: border-box;
     background-color: var(--input-bg);
@@ -406,13 +497,13 @@ input {
 
 .comment-input {
     padding: 0.8vh 1vw;
-    font-size: 1vw; /* Slightly smaller font */
+    font-size: 1vw;
 }
 
 h1 {
-    font-size: 2.5vw; /* Responsive heading */
+    font-size: 2.5vw;
 }
 
 p {
-    font-size: 1.5vw; /* Responsive text */
+    font-size: 1.5vw;
 }
