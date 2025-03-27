@@ -18,34 +18,28 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 // DOM Elements for login
-const loginForm = document.getElementById("login-form");
+const loginBtn = document.getElementById("login-btn");
 const loginEmail = document.getElementById("login-email");
 const loginPassword = document.getElementById("login-password");
-const signUpBtn = document.getElementById("signup-btn"); // Sign-up button
 
-// Email/Password Login
-if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+// Add event listener to the login button
+if (loginBtn) {
+    loginBtn.addEventListener("click", async (event) => {
+        event.preventDefault(); // Prevent the default form submission
+
         const email = loginEmail.value;
         const password = loginPassword.value;
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
             alert("Login successful!");
-            window.location.href = "index.html"; // Redirect after login
+            window.location.href = "index.html"; // Redirect to home page after login
         } catch (error) {
             alert(`🔥 Login failed: ${error.message}`);
         }
     });
+} else {
+    console.error("Login button not found.");
 }
 
-// Redirect to Sign-up Page when Sign-up button is clicked
-if (signUpBtn) {
-    signUpBtn.addEventListener("click", (event) => {
-        console.log("Sign up button clicked");  // This will log to the console
-        window.location.href = "signup.html";  // Redirect to the sign-up page
-    });
-} else {
-    console.error('Sign Up button not found!');
-}
+// Additional code to handle Sign-up redirection or other features can go here
