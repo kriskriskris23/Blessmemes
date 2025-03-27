@@ -1,5 +1,5 @@
 // Import Firebase SDKs
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
 
 // Firebase Configuration
@@ -16,14 +16,12 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
 
 // DOM Elements for login
 const loginForm = document.getElementById("login-form");
 const loginEmail = document.getElementById("login-email");
 const loginPassword = document.getElementById("login-password");
-const googleLoginBtn = document.getElementById("google-login-btn");
-const signUpBtn = document.getElementById("sign-up-btn"); // Add sign-up button element
+const signUpBtn = document.getElementById("sign-up-btn"); // Sign-up button
 
 // Email/Password Login
 if (loginForm) {
@@ -38,19 +36,6 @@ if (loginForm) {
             window.location.href = "index.html"; // Redirect after login
         } catch (error) {
             alert(`🔥 Login failed: ${error.message}`);
-        }
-    });
-}
-
-// Google Login
-if (googleLoginBtn) {
-    googleLoginBtn.addEventListener("click", async () => {
-        try {
-            await signInWithPopup(auth, provider);
-            alert("Login successful!");
-            window.location.href = "index.html"; // Redirect after login
-        } catch (error) {
-            alert(`🔥 Google login failed: ${error.message}`);
         }
     });
 }
