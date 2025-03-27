@@ -37,7 +37,7 @@ onAuthStateChanged(auth, async (user) => {
         if (userSnap.exists() && userSnap.data().nickname) {
             currentUsername = userSnap.data().nickname;
         } else {
-            window.location.href = "set-nickname.html"; // Redirect if no nickname
+            window.location.href = "set-nickname.html";
             return;
         }
         console.log("User logged in:", currentUserEmail, "Nickname:", currentUsername);
@@ -260,7 +260,7 @@ function renderComments(memeId, commentsDiv) {
             const deleteCommentBtn = document.createElement("button");
             deleteCommentBtn.textContent = "Delete";
             deleteCommentBtn.className = "delete-comment-btn";
-            deleteBtn.style.display = (currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
+            deleteCommentBtn.style.display = (currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
             deleteCommentBtn.onclick = () => deleteComment(memeId, comment.id);
 
             commentWrapper.appendChild(commentP);
@@ -280,7 +280,7 @@ async function deleteMeme(memeId) {
         console.log(`Deleted meme ${memeId}`);
     } catch (error) {
         console.error("Error deleting meme:", error);
-        alert("You don’t have permission to delete this meme.");
+        alert("Failed to delete meme: " + error.message); // Improved error feedback
     }
 }
 
@@ -288,7 +288,7 @@ if (updateMemeBtn && memeInput) {
     updateMemeBtn.addEventListener("click", async () => {
         const newMemeURL = memeInput.value.trim();
         if (newMemeURL) {
-            const allowedExtensions = /\.(jpg|jpeg|png)$/i;
+            const allowedExtensions = /\.(jpg|jpeg|png)(\?.*)?$/i;
             if (!allowedExtensions.test(newMemeURL)) {
                 alert("Only static images (.jpg, .jpeg, .png) are allowed. No GIFs, videos, or other formats.");
                 return;
@@ -296,9 +296,9 @@ if (updateMemeBtn && memeInput) {
             try {
                 await addDoc(memesCollection, {
                     url: newMemeURL,
-                    uploadedBy: currentUserEmail, // Store email for ownership
-                    nickname: currentUsername, // Store nickname for display
-                    timestamp: Date.now(), // Store upload timestamp
+                    uploadedBy: currentUserEmail,
+                    nickname: currentUsername,
+                    timestamp: Date.now(),
                     votes: 0
                 });
                 memeInput.value = "";
