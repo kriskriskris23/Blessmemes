@@ -21,6 +21,7 @@ const auth = getAuth(app);
 const signupForm = document.getElementById("signup-form");
 const signupEmail = document.getElementById("signup-email");
 const signupPassword = document.getElementById("signup-password");
+const errorMessage = document.getElementById("error-message"); // Error message element
 
 // Email/Password Signup
 if (signupForm) {
@@ -30,11 +31,18 @@ if (signupForm) {
         const password = signupPassword.value;
 
         try {
+            // Create user with email and password
             await createUserWithEmailAndPassword(auth, email, password);
             alert("Account created successfully!");
             window.location.href = "login.html"; // Redirect to login page after sign up
         } catch (error) {
-            alert(`🔥 Sign up failed: ${error.message}`);
+            if (error.code === 'auth/email-already-in-use') {
+                // Handle case when email is already registered
+                errorMessage.textContent = "User with that email already exists.";
+            } else {
+                // Handle other errors
+                errorMessage.textContent = `🔥 Sign up failed: ${error.message}`;
+            }
         }
     });
 }
