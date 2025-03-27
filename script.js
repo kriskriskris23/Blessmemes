@@ -29,7 +29,7 @@ const prevPageTop = document.getElementById("prev-page-top");
 const nextPageTop = document.getElementById("next-page-top");
 const pageInfoTop = document.getElementById("page-info-top");
 const modeToggleBtn = document.getElementById("mode-toggle");
-const bannerText = document.getElementById("banner-text");
+const bannerImage = document.getElementById("banner-image");
 const adminBannerForm = document.getElementById("admin-banner-form");
 const bannerInput = document.getElementById("banner-input");
 const updateBannerBtn = document.getElementById("update-banner-btn");
@@ -80,12 +80,13 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// Load banner text from Firestore
+// Load banner image from Firestore
 onSnapshot(bannerDoc, (docSnap) => {
-    if (docSnap.exists()) {
-        bannerText.textContent = docSnap.data().text || "Welcome to Bless Memes!";
+    if (docSnap.exists() && docSnap.data().imageUrl) {
+        bannerImage.src = docSnap.data().imageUrl;
+        bannerImage.style.display = "block";
     } else {
-        bannerText.textContent = "Welcome to Bless Memes!";
+        bannerImage.style.display = "none"; // Hide if no image
     }
 });
 
@@ -437,18 +438,23 @@ if (modeToggleBtn) {
 
 if (updateBannerBtn && bannerInput) {
     updateBannerBtn.addEventListener("click", async () => {
-        const newBannerText = bannerInput.value.trim();
-        if (newBannerText) {
+        const newBannerImageUrl = bannerInput.value.trim();
+        if (newBannerImageUrl) {
+            const allowedExtensions = /\.(jpg|jpeg|png)(\?.*)?$/i;
+            if (!allowedExtensions.test(newBannerImageUrl)) {
+                alert("Only static images (.jpg, .jpeg, .png) are allowed for the banner.");
+                return;
+            }
             try {
-                await setDoc(bannerDoc, { text: newBannerText });
+                await setDoc(bannerDoc, { imageUrl: newBannerImageUrl });
                 bannerInput.value = "";
-                console.log("Banner updated successfully");
+                console.log("Banner image updated successfully");
             } catch (error) {
-                console.error("Error updating banner:", error);
-                alert("Failed to update banner: " + error.message);
+                console.error("Error updating banner image:", error);
+                alert("Failed to update banner image: " + error.message);
             }
         } else {
-            alert("Please enter a banner message!");
+            alert("Please enter a banner image URL!");
         }
     });
 }
