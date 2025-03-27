@@ -42,8 +42,9 @@ if (loginForm) {
 
 // Redirect to Sign-up Page when Sign-up button is clicked
 if (signUpBtn) {
-    signUpBtn.addEventListener("click", () => {
-        window.location.href = "signup.html"; // Redirect to sign-up page
+    signUpBtn.addEventListener("click", (event) => {
+        console.log("Sign up button clicked");  // This will log to the console
+        window.location.href = "signup.html";  // Redirect to the sign-up page
     });
 } else {
     console.error('Sign Up button not found!');
