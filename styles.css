@@ -14,29 +14,29 @@ html, body {
 }
 
 #memes-container {
-    width: 80%;
-    max-width: 600px; /* Reduced max-width for better left alignment */
+    width: 90%; /* Slightly wider container */
+    max-width: 800px; /* Increased from 600px to make panels bigger */
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 25px; /* Increased gap for larger panels */
 }
 
 .meme-item {
     border: 2px solid black;
-    padding: 10px;
+    padding: 15px; /* Increased padding for larger feel */
     border-radius: 8px;
 }
 
 .meme-item img {
     width: 100%;
-    max-width: 500px; /* Adjust to fit left-aligned layout */
+    max-width: 700px; /* Increased from 500px to make images bigger */
     height: auto;
     border-radius: 8px;
 }
 
 button {
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 12px 24px; /* Slightly larger buttons to match scale */
+    font-size: 18px; /* Increased font size */
     cursor: pointer;
     border-radius: 5px;
     border: 2px solid black;
@@ -77,7 +77,8 @@ button:disabled {
 }
 
 input {
-    padding: 10px;
+    padding: 12px; /* Slightly larger input to match scale */
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 16px; /* Increased font size */
 }
