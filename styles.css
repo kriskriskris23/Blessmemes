@@ -78,23 +78,23 @@ body {
 
 .banner h1 {
     position: absolute;
-    top: 20%; /* Adjusted lower from 30% to fit larger text */
+    top: 20%; /* From previous step */
     left: 50%;
     transform: translateX(-50%); /* Center horizontally */
     margin: 0;
-    font-size: 3.5vw; /* Increased from 2.5vw for bigger text */
-    color: black; /* Existing color */
+    font-size: 3.5vw; /* From previous step */
+    color: black; /* From previous step */
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7); /* White shadow for contrast */
 }
 
 .banner p {
     position: absolute;
-    top: 60%; /* Increased from 50% to add more space */
+    top: 60%; /* From previous step */
     left: 50%;
     transform: translateX(-50%); /* Center horizontally */
     margin: 0;
     font-size: 1.5vw; /* Keep existing size */
-    color: black; /* Existing color */
+    color: black; /* From previous step */
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7); /* White shadow for contrast */
 }
 
@@ -353,15 +353,31 @@ button:disabled {
 #logout-btn {
     background-color: var(--logout-btn-bg);
     color: var(--button-text);
-    padding: 0.8vh 1.5vw;
-    font-size: 1.2vw;
+    padding: 0.6vh 1vw; /* Reduced from 0.8vh 1.5vw */
+    font-size: 1vw; /* Reduced from 1.2vw */
 }
 
 #mode-toggle {
     background-color: #555555;
     color: var(--button-text);
-    padding: 0.8vh 1.5vw;
-    font-size: 1.2vw;
+    padding: 0.6vh 1vw; /* Reduced from 0.8vh 1.5vw */
+    font-size: 1vw; /* Reduced from 1.2vw */
+}
+
+#update-meme {
+    padding: 0.6vh 1vw; /* Reduced from inherited 1vh 2vw */
+    font-size: 1vw; /* Reduced from inherited 1.5vw */
+}
+
+#meme-url {
+    padding: 0.6vh 0.8vw; /* Reduced from 1vh 1vw */
+    font-size: 1vw; /* Reduced from 1.2vw */
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 0.1vw solid var(--input-border);
+    border-radius: 0.5vw;
 }
 
 input {
