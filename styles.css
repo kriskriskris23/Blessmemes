@@ -9,22 +9,29 @@ html, body {
     font-family: Arial, sans-serif;
 }
 
-.meme-panel {
-    width: 80%;
-    max-width: 600px;
-    margin-bottom: 20px;
-    border: 2px solid black;
+.meme-input-container {
+    margin: 20px 0;
 }
 
-.meme-panel img {
-    width: 100%;
-    height: auto;
+#memes-container {
+    width: 80%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.meme-item {
+    border: 2px solid black;
+    padding: 10px;
     border-radius: 8px;
 }
 
-.button-container {
-    display: flex;
-    gap: 10px;
+.meme-item img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: 8px;
 }
 
 button {
@@ -33,30 +40,38 @@ button {
     cursor: pointer;
     border-radius: 5px;
     border: 2px solid black;
+    margin: 5px;
 }
 
-#bless {
+.bless-btn {
     background-color: yellow;
     color: black;
-    border: 2px solid black;
 }
 
-#curse {
+.curse-btn {
     background-color: red;
     color: black;
-    border: 2px solid black;
+}
+
+.delete-btn {
+    background-color: #f44336;
+    color: white;
 }
 
 #admin-btn {
-    background-color: #4CAF50; /* Green */
+    background-color: #4CAF50;
     color: white;
-    border: 2px solid black;
     margin-top: 20px;
 }
 
 #logout-btn {
-    background-color: #f44336; /* Red */
+    background-color: #f44336;
     color: white;
-    border: 2px solid black;
     margin-top: 20px;
+}
+
+input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
