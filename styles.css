@@ -29,7 +29,7 @@ html, body {
 .meme-wrapper .uploader {
     font-size: 14px;
     color: #555;
-    margin-bottom: 5px; /* Space between uploader and panel */
+    margin-bottom: 5px;
 }
 
 .meme-item {
@@ -43,6 +43,13 @@ html, body {
     max-width: 700px;
     height: auto;
     border-radius: 8px;
+}
+
+.vote-buttons {
+    display: flex;
+    justify-content: center; /* Center the vote buttons */
+    gap: 10px; /* Space between buttons */
+    margin-top: 10px; /* Space below the panel */
 }
 
 button {
