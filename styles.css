@@ -42,27 +42,27 @@ body.dark-mode {
 }
 
 html {
-    height: 100%; /* Ensure html stretches full height */
-    background-color: var(--background-color); /* Apply background to full page */
+    height: 100%;
+    background-color: var(--background-color);
 }
 
 body {
-    min-height: 100%; /* Allow body to grow beyond viewport if needed */
+    min-height: 100%;
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: var(--background-color); /* Fallback */
+    background-color: var(--background-color);
     color: var(--text-color);
     display: flex;
     flex-direction: column;
-    position: relative; /* For absolute positioning of elements */
+    position: relative;
 }
 
 .login-page {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Full viewport height */
+    min-height: 100vh;
 }
 
 .login-card {
@@ -71,7 +71,7 @@ body {
     border-radius: 1vw;
     box-shadow: 0 4px 8px var(--shadow-color);
     width: 90%;
-    max-width: 40vw; /* Constrain width */
+    max-width: 40vw;
     text-align: center;
 }
 
@@ -126,25 +126,24 @@ body {
 }
 
 .form-buttons button:hover {
-    background-color: #1e88e5; /* Slightly darker blue */
+    background-color: #1e88e5;
     transform: scale(1.05);
 }
 
 #signup-btn {
-    background-color: #4CAF50; /* Green for signup */
+    background-color: #4CAF50;
 }
 
 #signup-btn:hover {
-    background-color: #43a047; /* Darker green */
+    background-color: #43a047;
 }
 
 #error-message {
-    color: #f44336; /* Red for errors */
+    color: #f44336;
     font-size: 1vw;
     margin-top: 1vh;
 }
 
-/* Existing styles below */
 .banner-container {
     width: 100%;
     margin: 0;
@@ -327,14 +326,17 @@ body {
 
 .uploader-container {
     position: absolute;
-    top: -2vh;
-    left: -41.5vw;
+    top: 0; /* Align with top of meme-wrapper */
+    left: calc(-50% - 0.5vw); /* Shift left by half the meme-container width (41vw/2) plus half the gap */
+    transform: translateX(-100%); /* Move left by its own width */
     text-align: left;
     width: auto;
+    z-index: 1; /* Ensure it’s above other elements */
 }
 
 .uploader {
     font-size: 1.2vw;
+    display: inline-block;
 }
 
 .meme-container {
