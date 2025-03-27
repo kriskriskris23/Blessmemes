@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Nickname - Bless Memes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Set Your Nickname</h2>
+        <p>Choose a unique nickname (max 32 characters):</p>
+        <form id="nickname-form">
+            <label for="nickname-input">Nickname:</label>
+            <input type="text" id="nickname-input" required maxlength="32" placeholder="Enter your nickname">
+            <button type="submit">Save Nickname</button>
+        </form>
+        <p id="error-message" class="error"></p>
+    </div>
+    <script type="module" src="set-nickname.js"></script>
+</body>
+</html>
