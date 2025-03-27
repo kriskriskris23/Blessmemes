@@ -440,9 +440,9 @@ if (updateBannerBtn && bannerInput) {
     updateBannerBtn.addEventListener("click", async () => {
         const newBannerImageUrl = bannerInput.value.trim();
         if (newBannerImageUrl) {
-            const allowedExtensions = /\.(jpg|jpeg|png)(\?.*)?$/i;
+            const allowedExtensions = /\.(jpg|jpeg|png|webp)(\?.*)?$/i; // Added webp
             if (!allowedExtensions.test(newBannerImageUrl)) {
-                alert("Only static images (.jpg, .jpeg, .png) are allowed for the banner.");
+                alert("Only static images (.jpg, .jpeg, .png, .webp) are allowed for the banner.");
                 return;
             }
             try {
