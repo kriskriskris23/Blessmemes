@@ -1,8 +1,8 @@
-// script.js
-
+// Import Firebase SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
+import { 
+    getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot 
+} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 // Firebase Configuration
 const firebaseConfig = {
@@ -15,10 +15,9 @@ const firebaseConfig = {
     measurementId: "G-0GY321M1ML"
 };
 
-// Initialize Firebase, Firestore & Auth
+// Initialize Firebase & Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
 
 // DOM Elements
 const blessBtn = document.getElementById("bless");
@@ -28,43 +27,19 @@ const memeInput = document.getElementById("meme-url");
 const updateMemeBtn = document.getElementById("update-meme");
 const deleteMemeBtn = document.getElementById("delete-meme");
 const memeImg = document.getElementById("meme-img");
-const logoutBtn = document.getElementById("logout-btn");
 
 // Firestore Document References
 const voteDocRef = doc(db, "votes", "meme1");
 const memeDocRef = doc(db, "memes", "currentMeme");
 
-// Check if user is logged in, else redirect
-onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-        alert("You must be logged in to access this page.");
-        window.location.href = "login.html"; // Redirect to login page
-    } else {
-        // Check user's role
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
+// Admin Identifier (Replace with your actual admin ID or email)
+const ADMIN_ID = "your_admin_id_or_email"; // Change this
 
-        if (userDoc.exists()) {
-            const userData = userDoc.data();
-            if (userData.role !== "admin") {
-                deleteMemeBtn.style.display = "none"; // Hide delete button for non-admin users
-                updateMemeBtn.style.display = "none"; // Hide update button for non-admin users
-            }
-        }
-    }
-});
-
-// Logout function
-if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-        try {
-            await signOut(auth);
-            alert("Logged out successfully!");
-            window.location.href = "login.html"; // Redirect after logout
-        } catch (error) {
-            console.error("🔥 Error logging out:", error);
-        }
-    });
+// Unique device identifier stored in localStorage
+let deviceId = localStorage.getItem("deviceId");
+if (!deviceId) {
+    deviceId = crypto.randomUUID(); // Generate unique ID for device
+    localStorage.setItem("deviceId", deviceId);
 }
 
 // Fetch & Update Vote Count
@@ -72,7 +47,7 @@ async function updateVoteCount() {
     try {
         const docSnap = await getDoc(voteDocRef);
         let voteCount = docSnap.exists() ? docSnap.data().count : 0;
-
+        
         if (!docSnap.exists()) {
             await setDoc(voteDocRef, { count: 0 });
         }
@@ -83,7 +58,7 @@ async function updateVoteCount() {
     }
 }
 
-// Handle Vote Logic with Spam Prevention
+// Handle Vote Logic
 async function vote(type) {
     try {
         const docSnap = await getDoc(voteDocRef);
@@ -91,23 +66,9 @@ async function vote(type) {
 
         let currentVotes = docSnap.data().count || 0;
 
-        // Get the last vote from localStorage
-        let lastVote = localStorage.getItem("lastVote");
+        await updateDoc(voteDocRef, { count: currentVotes + (type === "bless" ? 1 : -1) });
 
-        if (lastVote === type) {
-            // Cancel the previous vote
-            await updateDoc(voteDocRef, { count: currentVotes + (type === "bless" ? -1 : 1) });
-            localStorage.removeItem("lastVote");
-            alert("Vote canceled!");
-        } else if (lastVote === null) {
-            // Cast a new vote
-            await updateDoc(voteDocRef, { count: currentVotes + (type === "bless" ? 1 : -1) });
-            localStorage.setItem("lastVote", type);
-            alert("Thank you for voting!");
-        } else {
-            alert("You must cancel your previous vote before voting again.");
-        }
-
+        alert("Thank you for voting!");
         updateVoteCount();
     } catch (error) {
         console.error("🔥 Error processing vote:", error);
@@ -121,13 +82,13 @@ curseBtn.addEventListener("click", () => vote("curse"));
 // Initialize Vote Count on Page Load
 updateVoteCount();
 
-// Function to update meme image in Firestore (Admin only)
+// Function to update meme image in Firestore
 updateMemeBtn.addEventListener("click", async () => {
     const newMemeURL = memeInput.value.trim();
 
     if (newMemeURL) {
         try {
-            await setDoc(memeDocRef, { url: newMemeURL });
+            await setDoc(memeDocRef, { url: newMemeURL, uploadedBy: deviceId });
             memeInput.value = ""; // Clear input after updating
         } catch (error) {
             console.error("🔥 Error updating meme URL:", error);
@@ -137,7 +98,7 @@ updateMemeBtn.addEventListener("click", async () => {
     }
 });
 
-// Function to delete meme (Admin only)
+// Function to delete meme (Only for uploader or admin)
 deleteMemeBtn.addEventListener("click", async () => {
     try {
         await deleteDoc(memeDocRef);
@@ -154,8 +115,36 @@ onSnapshot(memeDocRef, (docSnap) => {
     if (docSnap.exists()) {
         const memeData = docSnap.data();
         memeImg.src = memeData.url;
+
+        // Show delete button only for the uploader or admin
+        if (memeData.uploadedBy === deviceId || deviceId === ADMIN_ID) {
+            deleteMemeBtn.style.display = "block";
+        } else {
+            deleteMemeBtn.style.display = "none";
+        }
     } else {
         memeImg.src = "default-meme.jpg"; // No meme found, show default
         deleteMemeBtn.style.display = "none";
     }
 });
+
+// Load meme from Firestore when page loads
+async function loadMeme() {
+    try {
+        const docSnap = await getDoc(memeDocRef);
+        if (docSnap.exists()) {
+            const memeData = docSnap.data();
+            memeImg.src = memeData.url;
+
+            // Show delete button only for the uploader or admin
+            if (memeData.uploadedBy === deviceId || deviceId === ADMIN_ID) {
+                deleteMemeBtn.style.display = "block";
+            }
+        }
+    } catch (error) {
+        console.error("🔥 Error loading meme:", error);
+    }
+}
+
+// Load meme on page load
+window.addEventListener("load", loadMeme);
