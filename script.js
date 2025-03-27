@@ -69,7 +69,7 @@ function renderMemes() {
     memesContainer.innerHTML = "";
     onSnapshot(memesCollection, async (snapshot) => {
         memesContainer.innerHTML = "";
-        for (const docSnap of snapshot.docs) { // Use for...of for async operations
+        for (const docSnap of snapshot.docs) {
             const memeData = docSnap.data();
             const memeId = docSnap.id;
 
@@ -78,8 +78,9 @@ function renderMemes() {
 
             const uploaderSpan = document.createElement("span");
             uploaderSpan.className = "uploader";
-            const uploaderNickname = await getNicknameFromEmail(memeData.uploadedBy); // Fetch nickname
-            uploaderSpan.textContent = `Uploaded by: ${uploaderNickname}`;
+            const uploaderNickname = await getNicknameFromEmail(memeData.uploadedBy);
+            const uploadDate = memeData.timestamp ? new Date(memeData.timestamp).toLocaleString() : "Unknown date";
+            uploaderSpan.textContent = `Uploaded by: ${uploaderNickname} on ${uploadDate}`;
 
             const memeContainer = document.createElement("div");
             memeContainer.className = "meme-container";
@@ -217,7 +218,7 @@ async function addComment(memeId, commentText, commentInput) {
         const commentsCollection = collection(db, "memes", memeId, "comments");
         await addDoc(commentsCollection, {
             text: commentText,
-            nickname: currentUsername, // Use nickname
+            nickname: currentUsername,
             timestamp: Date.now()
         });
         console.log("Comment added to meme:", memeId);
@@ -254,12 +255,12 @@ function renderComments(memeId, commentsDiv) {
 
             const commentP = document.createElement("p");
             const date = new Date(comment.timestamp).toLocaleString();
-            commentP.textContent = `${comment.nickname}: ${comment.text} (${date})`; // Use nickname
+            commentP.textContent = `${comment.nickname}: ${comment.text} (${date})`;
 
             const deleteCommentBtn = document.createElement("button");
             deleteCommentBtn.textContent = "Delete";
             deleteCommentBtn.className = "delete-comment-btn";
-            deleteCommentBtn.style.display = (currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
+            deleteBtn.style.display = (currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
             deleteCommentBtn.onclick = () => deleteComment(memeId, comment.id);
 
             commentWrapper.appendChild(commentP);
@@ -297,6 +298,7 @@ if (updateMemeBtn && memeInput) {
                     url: newMemeURL,
                     uploadedBy: currentUserEmail, // Store email for ownership
                     nickname: currentUsername, // Store nickname for display
+                    timestamp: Date.now(), // Store upload timestamp
                     votes: 0
                 });
                 memeInput.value = "";
