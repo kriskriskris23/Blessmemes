@@ -63,7 +63,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: yellow; /* Set to yellow */
+    background-color: yellow;
 }
 
 .login-card {
@@ -326,13 +326,10 @@ body {
 }
 
 .uploader-container {
-    position: absolute;
-    top: 0;
-    left: calc(-50% - 0.5vw);
-    transform: translateX(-100%);
-    text-align: left;
-    width: auto;
-    z-index: 1;
+    width: 40vw; /* Match meme-item width */
+    text-align: left; /* Align text to the left */
+    margin-bottom: 0.5vh; /* Space above meme panel */
+    position: static; /* Remove absolute positioning */
 }
 
 .uploader {
