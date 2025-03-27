@@ -8,20 +8,14 @@
 </head>
 <body>
     <h1>Welcome to Bless Memes!</h1>
-    <p>Vote on memes below:</p>
+    <p>Share and vote on memes below:</p>
     <div class="meme-input-container">
         <input type="text" id="meme-url" placeholder="Paste image URL here">
-        <button id="update-meme">Set Meme</button>
+        <button id="update-meme">Add Meme</button>
     </div>
-    <div class="meme-panel">
-        <img id="meme-img" src="default-meme.jpg" alt="Meme Image">
+    <div id="memes-container">
+        <!-- Memes will be dynamically added here -->
     </div>
-    <button id="delete-meme" style="display: none;">Delete Meme</button>
-    <div class="button-container">
-        <button id="bless">Bless</button>
-        <button id="curse">Curse</button>
-    </div>
-    <p>Votes: <span id="vote-count">0</span></p>
     <button id="admin-btn">I am an Admin</button>
     <button id="logout-btn">Logout</button>
     <script type="module" src="script.js"></script>
