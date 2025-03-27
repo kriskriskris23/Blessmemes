@@ -1,4 +1,3 @@
-// Import Firebase SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
 import { 
     getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot 
@@ -6,13 +5,13 @@ import {
 
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
-    authDomain: "blessmemes.firebaseapp.com",
-    projectId: "blessmemes",
-    storageBucket: "blessmemes.firebasestorage.app",
-    messagingSenderId: "647948484551",
-    appId: "1:647948484551:web:db884bd3346d838737e3e2",
-    measurementId: "G-0GY321M1ML"
+    apiKey: "YOUR_API_KEY",  // Replace with your actual API key
+    authDomain: "YOUR_AUTH_DOMAIN", // Replace with your actual auth domain
+    projectId: "YOUR_PROJECT_ID",   // Replace with your actual project ID
+    storageBucket: "YOUR_STORAGE_BUCKET",  // Replace with your storage bucket
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // Replace with your messaging sender ID
+    appId: "YOUR_APP_ID",  // Replace with your actual app ID
+    measurementId: "YOUR_MEASUREMENT_ID" // Replace with your measurement ID
 };
 
 // Initialize Firebase & Firestore
@@ -25,80 +24,124 @@ const curseBtn = document.getElementById("curse");
 const voteCountSpan = document.getElementById("vote-count");
 const memeInput = document.getElementById("meme-url");
 const updateMemeBtn = document.getElementById("update-meme");
-const deleteMemeBtn = document.getElementById("delete-meme");
 const memeImg = document.getElementById("meme-img");
+const deleteMemeBtn = document.getElementById("delete-meme"); // Get the delete button
 
-// Firestore Document References
-const voteDocRef = doc(db, "votes", "meme1");
+
+// Firestore Document Reference for the meme
 const memeDocRef = doc(db, "memes", "currentMeme");
 
-// Admin Identifier (Replace with your actual admin ID or email)
-const ADMIN_ID = "your_admin_id_or_email"; // Change this
-
-// Unique device identifier stored in localStorage
-let deviceId = localStorage.getItem("deviceId");
-if (!deviceId) {
-    deviceId = crypto.randomUUID(); // Generate unique ID for device
-    localStorage.setItem("deviceId", deviceId);
+// Function to get device ID from localStorage, or create and store it
+function getDeviceId() {
+    let deviceId = localStorage.getItem("deviceId");
+    if (!deviceId) {
+        deviceId = crypto.randomUUID();
+        localStorage.setItem("deviceId", deviceId);
+    }
+    return deviceId;
 }
 
-// Fetch & Update Vote Count
-async function updateVoteCount() {
+const deviceId = getDeviceId();
+const ADMIN_ID = "admin123";  // Replace with a real admin identifier (e.g., a specific device ID or user ID from auth)
+
+
+let voteCount = 0;
+let hasVoted = false;
+
+// Load initial vote count and meme, and set up real-time updates
+async function initialize() {
     try {
-        const docSnap = await getDoc(voteDocRef);
-        let voteCount = docSnap.exists() ? docSnap.data().count : 0;
-        
-        if (!docSnap.exists()) {
-            await setDoc(voteDocRef, { count: 0 });
+        const docSnap = await getDoc(memeDocRef);
+        if (docSnap.exists()) {
+            const memeData = docSnap.data();
+            voteCount = memeData.votes;
+            voteCountSpan.textContent = voteCount;
+            memeImg.src = memeData.url;
+
+             // Show delete button only for the uploader or admin
+            if (memeData.uploadedBy === deviceId || deviceId === ADMIN_ID) {
+                deleteMemeBtn.style.display = "block";
+            } else {
+                deleteMemeBtn.style.display = "none";
+            }
+
+
+        } else {
+            console.log("No meme document found.  Initializing.");
+            await setDoc(memeDocRef, { 
+                url: "default-meme.jpg", 
+                votes: 0,
+                uploadedBy: "" // Add uploadedBy field here
+            });
+            voteCountSpan.textContent = "0";
+            memeImg.src = "default-meme.jpg";
         }
+    } catch (error) {
+        console.error("Error initializing:", error);
+    }
+}
+initialize();
 
+// Event Listeners for voting buttons
+blessBtn.addEventListener("click", async () => {
+    if (!hasVoted) {
+        voteCount++;
         voteCountSpan.textContent = voteCount;
-    } catch (error) {
-        console.error("🔥 Error fetching votes:", error);
-    }
-}
-
-// Handle Vote Logic
-async function vote(type) {
-    try {
-        const docSnap = await getDoc(voteDocRef);
-        if (!docSnap.exists()) return;
-
-        let currentVotes = docSnap.data().count || 0;
-
-        await updateDoc(voteDocRef, { count: currentVotes + (type === "bless" ? 1 : -1) });
-
-        alert("Thank you for voting!");
-        updateVoteCount();
-    } catch (error) {
-        console.error("🔥 Error processing vote:", error);
-    }
-}
-
-// Event Listeners for Voting
-blessBtn.addEventListener("click", () => vote("bless"));
-curseBtn.addEventListener("click", () => vote("curse"));
-
-// Initialize Vote Count on Page Load
-updateVoteCount();
-
-// Function to update meme image in Firestore
-updateMemeBtn.addEventListener("click", async () => {
-    const newMemeURL = memeInput.value.trim();
-
-    if (newMemeURL) {
+        hasVoted = true;
         try {
-            await setDoc(memeDocRef, { url: newMemeURL, uploadedBy: deviceId });
-            memeInput.value = ""; // Clear input after updating
+            await updateDoc(memeDocRef, { votes: voteCount });
         } catch (error) {
-            console.error("🔥 Error updating meme URL:", error);
+            console.error("Error updating vote:", error);
         }
     } else {
-        alert("Please enter a valid image URL!");
+        alert("You can only vote once!");
     }
 });
 
-// Function to delete meme (Only for uploader or admin)
+curseBtn.addEventListener("click", async () => {
+    if (!hasVoted) {
+        voteCount--;
+        voteCountSpan.textContent = voteCount;
+        hasVoted = true;
+        try {
+            await updateDoc(memeDocRef, { votes: voteCount });
+        } catch (error) {
+            console.error("Error updating vote:", error);
+        }
+    } else {
+        alert("You can only vote once!");
+    }
+});
+
+// Event listener for updating the meme
+updateMemeBtn.addEventListener("click", async () => {
+    const newMemeUrl = memeInput.value;
+    if (newMemeUrl.trim() !== "") {
+        try {
+            await setDoc(memeDocRef, { 
+                url: newMemeUrl, 
+                votes: 0,
+                uploadedBy: deviceId // Store the device ID of the uploader
+            });
+            voteCount = 0;  // Reset vote count when meme is updated
+            voteCountSpan.textContent = 0;
+            hasVoted = false;
+            memeInput.value = ""; // Clear the input
+             // After successfully updating the meme:
+            const memeData = await getDoc(memeDocRef);
+             if(memeData.data().uploadedBy === deviceId || deviceId === ADMIN_ID){
+                 deleteMemeBtn.style.display = "block";
+             }
+            alert("Meme updated!");
+        } catch (error) {
+            console.error("Error updating meme:", error);
+        }
+    } else {
+        alert("Please enter a valid meme URL.");
+    }
+});
+
+// Event listener for deleting the meme
 deleteMemeBtn.addEventListener("click", async () => {
     try {
         await deleteDoc(memeDocRef);
@@ -106,7 +149,7 @@ deleteMemeBtn.addEventListener("click", async () => {
         deleteMemeBtn.style.display = "none"; // Hide button after deletion
         alert("Meme deleted!");
     } catch (error) {
-        console.error("🔥 Error deleting meme:", error);
+        console.error("Error deleting meme:", error);
     }
 });
 
@@ -142,9 +185,7 @@ async function loadMeme() {
             }
         }
     } catch (error) {
-        console.error("🔥 Error loading meme:", error);
+        console.error("Error loading meme:", error);
     }
 }
-
-// Load meme on page load
-window.addEventListener("load", loadMeme);
+loadMeme();
