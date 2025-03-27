@@ -2,7 +2,16 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebas
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-const firebaseConfig = { /* ... */ };
+const firebaseConfig = {
+    apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
+    authDomain: "blessmemes.firebaseapp.com",
+    projectId: "blessmemes",
+    storageBucket: "blessmemes.firebasestorage.app",
+    messagingSenderId: "647948484551",
+    appId: "1:647948484551:web:db884bd3346d838737e3e2",
+    measurementId: "G-0GY321M1ML"
+};
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -19,7 +28,7 @@ const logoutBtn = document.getElementById("logout-btn");
 
 const voteDocRef = doc(db, "votes", "meme1");
 const memeDocRef = doc(db, "memes", "currentMeme");
-const ADMIN_ID = "adminacount@gmail.com"; // Match the email from Firebase
+const ADMIN_ID = "adminaccount@gmail.com"; // Your admin email
 
 let deviceId = localStorage.getItem("deviceId");
 if (!deviceId) {
