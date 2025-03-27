@@ -1,11 +1,20 @@
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
 
-const firebaseConfig = { /* ... */ };
+const firebaseConfig = {
+    apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
+    authDomain: "blessmemes.firebaseapp.com",
+    projectId: "blessmemes",
+    storageBucket: "blessmemes.firebasestorage.app",
+    messagingSenderId: "647948484551",
+    appId: "1:647948484551:web:db884bd3346d838737e3e2",
+    measurementId: "G-0GY321M1ML"
+};
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-const ADMIN_ID = "adminaccount@gmail.com"; // Match the email from Firebase
+const ADMIN_ID = "adminaccount@gmail.com"; // Your admin email
 
 const adminLoginBtn = document.getElementById("admin-login-btn");
 const adminEmail = document.getElementById("admin-email");
@@ -18,6 +27,8 @@ if (adminLoginBtn && adminEmail && adminPassword && errorMessage) {
         const email = adminEmail.value.trim();
         const password = adminPassword.value.trim();
 
+        console.log("Admin login attempt with email:", email);
+
         if (!email || !password) {
             errorMessage.textContent = "Please enter both email and password.";
             return;
@@ -26,16 +37,24 @@ if (adminLoginBtn && adminEmail && adminPassword && errorMessage) {
         try {
             await signInWithEmailAndPassword(auth, email, password);
             if (email === ADMIN_ID) {
+                console.log("Admin login successful, redirecting to index.html");
                 alert("Admin login successful!");
-                window.location.href = "index.html";
+                window.location.href = "index.html"; // Redirect to Bless Memes page
             } else {
                 errorMessage.textContent = "This account is not an admin.";
                 await auth.signOut();
+                console.log("Non-admin account, signed out");
             }
         } catch (error) {
+            console.error("Login error:", error);
             errorMessage.textContent = `🔥 Login failed: ${error.message}`;
         }
     });
 } else {
-    console.error("Admin login elements not found.");
+    console.error("Admin login elements not found:", {
+        btn: !!adminLoginBtn,
+        email: !!adminEmail,
+        password: !!adminPassword,
+        error: !!errorMessage
+    });
 }
