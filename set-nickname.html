@@ -7,15 +7,20 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Set Your Nickname</h2>
-        <p>Choose a unique nickname (max 32 characters):</p>
-        <form id="nickname-form">
-            <label for="nickname-input">Nickname:</label>
-            <input type="text" id="nickname-input" required maxlength="32" placeholder="Enter your nickname">
-            <button type="submit">Save Nickname</button>
-        </form>
-        <p id="error-message" class="error"></p>
+    <div class="login-page">
+        <div class="login-card">
+            <h1>Set Your Nickname</h1>
+            <form class="login-form" id="nickname-form">
+                <div class="form-group">
+                    <label for="nickname-input">Choose a unique nickname (max 32 characters):</label>
+                    <input type="text" id="nickname-input" placeholder="Enter your nickname" maxlength="32" required>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit">Save Nickname</button>
+                </div>
+                <p id="error-message" class="error"></p>
+            </form>
+        </div>
     </div>
     <script type="module" src="set-nickname.js"></script>
 </body>
