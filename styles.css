@@ -65,7 +65,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center; /* Center all content */
-    text-align: left;
+    text-align: center; /* Center text */
     padding-top: 5vh; /* Space for header controls */
 }
 
@@ -75,6 +75,7 @@ body {
     max-width: 90vw;
     display: flex;
     gap: 1vw;
+    justify-content: center; /* Center input and button */
 }
 
 .sort-pagination-wrapper {
@@ -149,13 +150,15 @@ body {
     display: flex;
     flex-direction: column;
     gap: 2vh; /* Responsive gap */
-    margin: 0 auto; /* Center horizontally */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center horizontally */
 }
 
 .meme-wrapper {
     display: flex;
     flex-direction: column;
     width: fit-content; /* Adjust to content width */
+    align-items: center; /* Center children */
 }
 
 .meme-container {
