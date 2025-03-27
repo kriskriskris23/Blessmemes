@@ -1,67 +1,75 @@
 html, body {
     height: 100%;
     margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    position: relative; /* For absolute positioning of logout button */
+}
+
+.main-content {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
-    font-family: Arial, sans-serif;
-    padding-left: 20px;
+    padding-left: 2vw; /* Responsive padding */
+    padding-top: 5vh; /* Space for logout button */
 }
 
 .meme-input-container {
-    margin: 20px 0;
+    margin: 2vh 0;
+    width: 90%; /* Responsive width */
+    max-width: 90vw;
 }
 
 #memes-container {
     width: 90%;
-    max-width: 1600px;
+    max-width: 90vw;
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 2vh; /* Responsive gap */
 }
 
 .meme-wrapper {
     display: flex;
     flex-direction: column;
-    width: fit-content;
-}
-
-.meme-wrapper .uploader {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 5px;
+    width: 100%;
 }
 
 .meme-container {
     display: flex;
-    gap: 20px;
+    gap: 2vw; /* Responsive gap */
     align-items: stretch;
 }
 
 .meme-item {
-    border: 2px solid black;
-    padding: 15px;
-    border-radius: 8px;
-    width: 720px;
+    border: 0.2vw solid black; /* Responsive border */
+    padding: 1.5vw;
+    border-radius: 0.5vw;
+    width: 50vw; /* Responsive width */
     box-sizing: border-box;
 }
 
 .meme-item img {
     width: 100%;
-    max-width: 700px;
+    max-width: 48vw; /* Slightly less than container for padding */
     height: auto;
-    border-radius: 8px;
+    border-radius: 0.5vw;
 }
 
 .comment-section {
-    border: 2px solid black;
-    padding: 15px;
-    border-radius: 8px;
-    width: 720px;
+    border: 0.2vw solid black;
+    padding: 1.5vw;
+    border-radius: 0.5vw;
+    width: 50vw;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 1vh;
     box-sizing: border-box;
 }
 
@@ -73,42 +81,33 @@ html, body {
 
 .comment-wrapper {
     display: flex;
-    justify-content: space-between; /* Push Delete button to the right */
+    justify-content: space-between;
     align-items: flex-start;
-    gap: 10px;
-    margin: 5px 0;
+    gap: 1vw;
+    margin: 0.5vh 0;
 }
 
 .comments-list p {
     margin: 0;
-    font-size: 14px;
+    font-size: 1.2vw; /* Responsive font size */
     word-wrap: break-word;
-    max-width: calc(100% - 70px); /* Space for Delete button */
-}
-
-.delete-comment-btn {
-    padding: 5px 10px;
-    font-size: 12px;
-    background-color: #f44336;
-    color: white;
-    white-space: nowrap;
-    flex-shrink: 0; /* Prevent button from shrinking */
+    max-width: calc(100% - 7vw);
 }
 
 .meme-buttons {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
+    gap: 1vw;
+    margin-top: 1vh;
 }
 
 button {
-    padding: 12px 24px;
-    font-size: 18px;
+    padding: 1vh 2vw;
+    font-size: 1.5vw; /* Responsive font size */
     cursor: pointer;
-    border-radius: 5px;
-    border: 2px solid black;
-    margin: 5px;
+    border-radius: 0.5vw;
+    border: 0.2vw solid black;
+    margin: 0.5vh;
 }
 
 .bless-btn {
@@ -131,6 +130,15 @@ button {
     color: white;
 }
 
+.delete-comment-btn {
+    padding: 0.5vh 1vw;
+    font-size: 1vw;
+    background-color: #f44336;
+    color: white;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
 button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
@@ -140,27 +148,41 @@ button:disabled {
 #admin-btn {
     background-color: #4CAF50;
     color: white;
-    margin-top: 20px;
+    margin-top: 2vh;
 }
 
 #logout-btn {
+    position: absolute;
+    top: 1vh; /* Responsive top margin */
+    right: 1vw; /* Responsive right margin */
     background-color: #f44336;
     color: white;
-    margin-top: 20px;
+    padding: 0.8vh 1.5vw;
+    font-size: 1.2vw;
 }
 
 input {
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
+    padding: 1vh 1vw;
+    border: 0.1vw solid #ccc;
+    border-radius: 0.5vw;
+    font-size: 1.2vw;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .comment-input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
+    padding: 0.8vh 1vw;
+    font-size: 1.2vw;
+}
+
+h1 {
+    font-size: 2.5vw; /* Responsive heading */
+}
+
+p {
+    font-size: 1.5vw; /* Responsive text */
+}
+
+.uploader {
+    font-size: 1.2vw; /* Responsive uploader text */
 }
