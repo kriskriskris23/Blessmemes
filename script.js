@@ -2,7 +2,7 @@
 import { firebaseConfig } from './firebase-config.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, doc, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, doc, getDocs, deleteField } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -35,6 +35,7 @@ let currentUserEmail = null;
 let currentUsername = null;
 let currentPage = 1;
 const memesPerPage = 10;
+const POST_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour in milliseconds
 
 // Load saved mode from localStorage
 const savedMode = localStorage.getItem("theme") || "light";
@@ -100,6 +101,27 @@ async function getCommentCount(memeId) {
     return commentSnapshot.size;
 }
 
+// Function to check if user can post
+async function canUserPost(userId) {
+    if (currentUserEmail === ADMIN_ID) return true; // Admin exempt
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    if (!userSnap.exists() || !userSnap.data().lastPostTime) return true; // First post allowed
+
+    const lastPostTime = userSnap.data().lastPostTime;
+    const currentTime = Date.now();
+    const timeSinceLastPost = currentTime - lastPostTime;
+    return timeSinceLastPost >= POST_COOLDOWN_MS;
+}
+
+// Function to update last post time
+async function updateLastPostTime(userId) {
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, {
+        lastPostTime: Date.now()
+    });
+}
+
 // Function to add or update meme description
 async function addDescription(memeId, descriptionText, descriptionInput, descriptionControls) {
     if (!descriptionText.trim()) return;
@@ -112,7 +134,7 @@ async function addDescription(memeId, descriptionText, descriptionInput, descrip
         });
         console.log("Description added to meme:", memeId);
         descriptionInput.value = "";
-        descriptionControls.style.display = "none"; // Hide controls after saving
+        descriptionControls.style.display = "none";
     } catch (error) {
         console.error("Error adding description:", error);
         alert("Failed to add description: " + error.message);
@@ -124,7 +146,7 @@ async function deleteDescription(memeId) {
     try {
         const memeRef = doc(db, "memes", memeId);
         await updateDoc(memeRef, {
-            description: deleteField(), // Remove description field
+            description: deleteField(),
             updatedBy: currentUserEmail,
             updatedAt: Date.now()
         });
@@ -225,7 +247,6 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
                 descriptionControls.appendChild(descriptionInput);
                 descriptionControls.appendChild(descriptionBtn);
 
-                // Hide controls if description exists
                 if (meme.description) {
                     descriptionControls.style.display = "none";
                 }
@@ -293,14 +314,12 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             descriptionDiv.className = "meme-description";
             descriptionDiv.textContent = meme.description || "No description provided.";
 
-            // Add delete button for uploader or admin
             if (meme.description && (meme.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID)) {
                 const deleteDescriptionBtn = document.createElement("button");
                 deleteDescriptionBtn.textContent = "Delete";
                 deleteDescriptionBtn.className = "delete-description-btn";
                 deleteDescriptionBtn.onclick = () => {
                     deleteDescription(meme.id);
-                    // Show description controls again after deletion
                     const controls = memeWrapper.querySelector('.description-controls');
                     if (controls) controls.style.display = "flex";
                 };
@@ -462,28 +481,42 @@ async function deleteMeme(memeId) {
 if (updateMemeBtn && memeInput) {
     updateMemeBtn.addEventListener("click", async () => {
         const newMemeURL = memeInput.value.trim();
-        if (newMemeURL) {
-            const allowedExtensions = /\.(jpg|jpeg|png)(\?.*)?$/i;
-            if (!allowedExtensions.test(newMemeURL)) {
-                alert("Only static images (.jpg, .jpeg, .png) are allowed. No GIFs, videos, or other formats.");
+        if (!newMemeURL) {
+            alert("Please enter a valid image URL!");
+            return;
+        }
+        const allowedExtensions = /\.(jpg|jpeg|png)(\?.*)?$/i;
+        if (!allowedExtensions.test(newMemeURL)) {
+            alert("Only static images (.jpg, .jpeg, .png) are allowed. No GIFs, videos, or other formats.");
+            return;
+        }
+
+        try {
+            const userId = auth.currentUser.uid;
+            const canPost = await canUserPost(userId);
+            if (!canPost) {
+                const userRef = doc(db, "users", userId);
+                const userSnap = await getDoc(userRef);
+                const lastPostTime = userSnap.data().lastPostTime;
+                const timeSinceLastPost = Date.now() - lastPostTime;
+                const timeRemaining = Math.ceil((POST_COOLDOWN_MS - timeSinceLastPost) / (60 * 1000));
+                alert(`You can only post one meme per hour. Please wait ${timeRemaining} minutes.`);
                 return;
             }
-            try {
-                await addDoc(memesCollection, {
-                    url: newMemeURL,
-                    uploadedBy: currentUserEmail,
-                    nickname: currentUsername,
-                    timestamp: Date.now(),
-                    votes: 0
-                });
-                memeInput.value = "";
-                console.log("Meme added successfully");
-            } catch (error) {
-                console.error("Error adding meme:", error);
-                alert("Failed to add meme!");
-            }
-        } else {
-            alert("Please enter a valid image URL!");
+
+            await addDoc(memesCollection, {
+                url: newMemeURL,
+                uploadedBy: currentUserEmail,
+                nickname: currentUsername,
+                timestamp: Date.now(),
+                votes: 0
+            });
+            await updateLastPostTime(userId); // Update last post time after successful post
+            memeInput.value = "";
+            console.log("Meme added successfully");
+        } catch (error) {
+            console.error("Error adding meme:", error);
+            alert("Failed to add meme: " + error.message);
         }
     });
 }
