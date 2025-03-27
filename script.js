@@ -1,8 +1,7 @@
-// Import Firebase SDKs
+// script.js
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { 
-    getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot 
-} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 
 // Firebase Configuration
@@ -36,10 +35,22 @@ const voteDocRef = doc(db, "votes", "meme1");
 const memeDocRef = doc(db, "memes", "currentMeme");
 
 // Check if user is logged in, else redirect
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (!user) {
         alert("You must be logged in to access this page.");
         window.location.href = "login.html"; // Redirect to login page
+    } else {
+        // Check user's role
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            if (userData.role !== "admin") {
+                deleteMemeBtn.style.display = "none"; // Hide delete button for non-admin users
+                updateMemeBtn.style.display = "none"; // Hide update button for non-admin users
+            }
+        }
     }
 });
 
@@ -61,7 +72,7 @@ async function updateVoteCount() {
     try {
         const docSnap = await getDoc(voteDocRef);
         let voteCount = docSnap.exists() ? docSnap.data().count : 0;
-        
+
         if (!docSnap.exists()) {
             await setDoc(voteDocRef, { count: 0 });
         }
@@ -110,7 +121,7 @@ curseBtn.addEventListener("click", () => vote("curse"));
 // Initialize Vote Count on Page Load
 updateVoteCount();
 
-// Function to update meme image in Firestore
+// Function to update meme image in Firestore (Admin only)
 updateMemeBtn.addEventListener("click", async () => {
     const newMemeURL = memeInput.value.trim();
 
@@ -126,7 +137,7 @@ updateMemeBtn.addEventListener("click", async () => {
     }
 });
 
-// Function to delete meme (Only for admin)
+// Function to delete meme (Admin only)
 deleteMemeBtn.addEventListener("click", async () => {
     try {
         await deleteDoc(memeDocRef);
@@ -148,18 +159,3 @@ onSnapshot(memeDocRef, (docSnap) => {
         deleteMemeBtn.style.display = "none";
     }
 });
-
-// Load meme from Firestore when page loads
-async function loadMeme() {
-    try {
-        const docSnap = await getDoc(memeDocRef);
-        if (docSnap.exists()) {
-            memeImg.src = docSnap.data().url;
-        }
-    } catch (error) {
-        console.error("🔥 Error loading meme:", error);
-    }
-}
-
-// Load meme on page load
-window.addEventListener("load", loadMeme);
