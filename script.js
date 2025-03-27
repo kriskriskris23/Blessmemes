@@ -111,6 +111,9 @@ function renderMemes() {
             const commentSection = document.createElement("div");
             commentSection.className = "comment-section";
 
+            const commentsDiv = document.createElement("div");
+            commentsDiv.className = "comments-list";
+
             const commentInput = document.createElement("input");
             commentInput.type = "text";
             commentInput.placeholder = "Add a comment...";
@@ -121,12 +124,9 @@ function renderMemes() {
             commentBtn.className = "comment-btn";
             commentBtn.onclick = () => addComment(memeId, commentInput.value);
 
-            const commentsDiv = document.createElement("div");
-            commentsDiv.className = "comments-list";
-
+            commentSection.appendChild(commentsDiv);
             commentSection.appendChild(commentInput);
             commentSection.appendChild(commentBtn);
-            commentSection.appendChild(commentsDiv);
 
             memeContainer.appendChild(memeDiv);
             memeContainer.appendChild(commentSection);
@@ -214,7 +214,7 @@ function renderComments(memeId, commentsDiv) {
         snapshot.forEach((docSnap) => {
             comments.push({ id: docSnap.id, ...docSnap.data() });
         });
-        comments.sort((a, b) => a.timestamp - b.timestamp); // Oldest first, newest last
+        comments.sort((a, b) => a.timestamp - b.timestamp);
         comments.forEach((comment) => {
             const commentWrapper = document.createElement("div");
             commentWrapper.className = "comment-wrapper";
