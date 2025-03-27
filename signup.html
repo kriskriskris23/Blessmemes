@@ -10,18 +10,18 @@
     <div class="container">
         <h2>Create an Account</h2>
         <form id="signup-form">
-            <div class="input-group">
-                <label for="signup-email">Email:</label>
-                <input type="email" id="signup-email" name="signup-email" required placeholder="Enter your email">
-            </div>
-            <div class="input-group">
-                <label for="signup-password">Password:</label>
-                <input type="password" id="signup-password" name="signup-password" required placeholder="Enter your password">
-            </div>
-            <button type="submit" id="signup-btn">Sign Up</button>
+            <label for="signup-email">Email:</label>
+            <input type="email" id="signup-email" required placeholder="Enter your email">
+            
+            <label for="signup-password">Password:</label>
+            <input type="password" id="signup-password" required placeholder="Enter your password">
+
+            <button type="submit">Sign Up</button>
         </form>
         <p>Already have an account? <a href="login.html">Login here</a></p>
     </div>
+
+    <!-- Make sure to add type="module" here -->
     <script type="module" src="signup.js"></script>
 </body>
 </html>
