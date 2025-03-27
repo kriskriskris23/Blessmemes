@@ -1,9 +1,8 @@
+// Import Firebase SDKs
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { 
-    getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 
-// Firebase Config
+// Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
     authDomain: "blessmemes.firebaseapp.com",
@@ -17,37 +16,40 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-// DOM Elements
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const loginBtn = document.getElementById("login-btn");
-const signupBtn = document.getElementById("signup-btn");
-const errorMessage = document.getElementById("error-message");
+// DOM Elements for login
+const loginForm = document.getElementById("login-form");
+const loginEmail = document.getElementById("login-email");
+const loginPassword = document.getElementById("login-password");
+const googleLoginBtn = document.getElementById("google-login-btn");
 
-// Handle Login
-loginBtn.addEventListener("click", async () => {
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
+// Email/Password Login
+if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = loginEmail.value;
+        const password = loginPassword.value;
 
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-        alert("Login successful!");
-        window.location.href = "index.html"; // Redirect to main page
-    } catch (error) {
-        errorMessage.textContent = "🔥 Error: " + error.message;
-    }
-});
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            alert("Login successful!");
+            window.location.href = "index.html"; // Redirect after login
+        } catch (error) {
+            alert(`🔥 Login failed: ${error.message}`);
+        }
+    });
+}
 
-// Handle Signup
-signupBtn.addEventListener("click", async () => {
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
-
-    try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        alert("Account created successfully! Please log in.");
-    } catch (error) {
-        errorMessage.textContent = "🔥 Error: " + error.message;
-    }
-});
+// Google Login
+if (googleLoginBtn) {
+    googleLoginBtn.addEventListener("click", async () => {
+        try {
+            await signInWithPopup(auth, provider);
+            alert("Login successful!");
+            window.location.href = "index.html"; // Redirect after login
+        } catch (error) {
+            alert(`🔥 Google login failed: ${error.message}`);
+        }
+    });
+}
