@@ -29,9 +29,14 @@ const prevPageTop = document.getElementById("prev-page-top");
 const nextPageTop = document.getElementById("next-page-top");
 const pageInfoTop = document.getElementById("page-info-top");
 const modeToggleBtn = document.getElementById("mode-toggle");
+const bannerText = document.getElementById("banner-text");
+const adminBannerForm = document.getElementById("admin-banner-form");
+const bannerInput = document.getElementById("banner-input");
+const updateBannerBtn = document.getElementById("update-banner-btn");
 
 const memesCollection = collection(db, "memes");
 const usersCollection = collection(db, "users");
+const bannerDoc = doc(db, "settings", "banner");
 const ADMIN_ID = "adminaccount@gmail.com";
 
 let currentUserEmail = null;
@@ -62,14 +67,25 @@ onAuthStateChanged(auth, async (user) => {
         console.log("User logged in:", currentUserEmail, "Nickname:", currentUsername);
         if (currentUserEmail === ADMIN_ID && adminBtn) {
             adminBtn.style.display = "none";
+            adminBannerForm.style.display = "block"; // Show banner form for admin
         } else if (adminBtn) {
             adminBtn.style.display = "block";
+            adminBannerForm.style.display = "none"; // Hide for non-admins
         }
     } else {
         currentUserEmail = null;
         currentUsername = null;
         console.log("No user logged in, redirecting to login.html");
         window.location.href = "login.html";
+    }
+});
+
+// Load banner text from Firestore
+onSnapshot(bannerDoc, (docSnap) => {
+    if (docSnap.exists()) {
+        bannerText.textContent = docSnap.data().text || "Welcome to Bless Memes!";
+    } else {
+        bannerText.textContent = "Welcome to Bless Memes!";
     }
 });
 
@@ -416,6 +432,24 @@ if (modeToggleBtn) {
         const isDarkMode = document.body.classList.contains("dark-mode");
         modeToggleBtn.textContent = isDarkMode ? "Light Mode" : "Dark Mode";
         localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+    });
+}
+
+if (updateBannerBtn && bannerInput) {
+    updateBannerBtn.addEventListener("click", async () => {
+        const newBannerText = bannerInput.value.trim();
+        if (newBannerText) {
+            try {
+                await setDoc(bannerDoc, { text: newBannerText });
+                bannerInput.value = "";
+                console.log("Banner updated successfully");
+            } catch (error) {
+                console.error("Error updating banner:", error);
+                alert("Failed to update banner: " + error.message);
+            }
+        } else {
+            alert("Please enter a banner message!");
+        }
     });
 }
 
