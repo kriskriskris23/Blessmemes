@@ -27,7 +27,7 @@ const googleSignupBtn = document.getElementById("google-signup-btn");
 // Email/Password Signup
 if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+        e.preventDefault();  // Prevent form from submitting and refreshing the page
         const email = signupEmail.value;
         const password = signupPassword.value;
 
