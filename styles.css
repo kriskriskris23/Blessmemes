@@ -25,6 +25,28 @@ body {
     margin: 2vh 0;
     width: 90%; /* Responsive width */
     max-width: 90vw;
+    display: flex;
+    gap: 1vw;
+}
+
+.sort-container {
+    margin: 2vh 0;
+    width: 90%;
+    max-width: 90vw;
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+}
+
+.sort-container label {
+    font-size: 1.5vw;
+}
+
+.sort-container select {
+    padding: 0.8vh 1vw;
+    font-size: 1.2vw;
+    border-radius: 0.5vw;
+    border: 0.1vw solid #ccc;
 }
 
 #memes-container {
