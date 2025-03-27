@@ -29,13 +29,14 @@ body {
     gap: 1vw;
 }
 
-.sort-pagination-container {
+.sort-pagination-wrapper {
     margin: 2vh 0;
     width: 90%;
     max-width: 90vw;
     display: flex;
-    justify-content: space-between; /* Space out sort and pagination */
+    justify-content: space-between; /* Sorting left, pagination centered */
     align-items: center;
+    position: relative;
 }
 
 .sort-container {
@@ -63,7 +64,9 @@ body {
 }
 
 .top-pagination {
-    /* No additional styling needed, inherits from .pagination-container */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally relative to wrapper */
 }
 
 .bottom-pagination {
