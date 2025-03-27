@@ -15,7 +15,7 @@ html, body {
 
 #memes-container {
     width: 90%;
-    max-width: 800px;
+    max-width: 1600px; /* Increased to accommodate two panels */
     display: flex;
     flex-direction: column;
     gap: 25px;
@@ -33,11 +33,16 @@ html, body {
     margin-bottom: 5px;
 }
 
+.meme-container {
+    display: flex;
+    gap: 20px; /* Space between meme and comment panels */
+}
+
 .meme-item {
     border: 2px solid black;
     padding: 15px;
     border-radius: 8px;
-    width: 100%;
+    width: 720px; /* Fixed width to match comment section */
 }
 
 .meme-item img {
@@ -47,11 +52,40 @@ html, body {
     border-radius: 8px;
 }
 
+.comment-section {
+    border: 2px solid black;
+    padding: 15px;
+    border-radius: 8px;
+    width: 720px; /* Same width as meme-item */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.comment-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 100%; /* Full width of comment section */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.comments-list {
+    flex-grow: 1;
+    overflow-y: auto; /* Scroll if too many comments */
+}
+
+.comments-list p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
 .meme-buttons {
     display: flex;
-    justify-content: center; /* Center buttons horizontally */
-    gap: 10px; /* Space between buttons */
-    margin-top: 10px; /* Space above buttons */
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
 }
 
 button {
@@ -75,6 +109,11 @@ button {
 
 .delete-btn {
     background-color: #f44336;
+    color: white;
+}
+
+.comment-btn {
+    background-color: #2196F3; /* Blue for comment button */
     color: white;
 }
 
