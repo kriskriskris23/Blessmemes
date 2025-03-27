@@ -1,7 +1,7 @@
 /* Define root variables for light and dark modes */
 :root {
     /* Light mode (default) */
-    --background-color: #ffffff;
+    --background-color: yellow; /* Changed from #ffffff */
     --text-color: #000000;
     --border-color: #000000;
     --input-bg: #ffffff;
@@ -63,7 +63,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: yellow;
+    background-color: var(--background-color); /* Use variable instead of hardcoding */
 }
 
 .login-card {
@@ -326,11 +326,11 @@ body {
 }
 
 .uploader-container {
-    width: 40vw; /* Match meme-item width */
-    text-align: left; /* Align text to left */
-    margin-bottom: 0.5vh; /* Space above meme panel */
-    padding-left: 1vw; /* Match meme-item padding */
-    box-sizing: border-box; /* Include padding in width */
+    width: 40vw;
+    text-align: left;
+    margin-bottom: 0.5vh;
+    padding-left: 1vw;
+    box-sizing: border-box;
 }
 
 .uploader {
