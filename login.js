@@ -1,8 +1,6 @@
-// login.js
-
+// Import Firebase SDKs
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 // Firebase Configuration
 const firebaseConfig = {
@@ -18,7 +16,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
 
 // DOM Elements for login
 const loginBtn = document.getElementById("login-btn");
@@ -35,26 +32,8 @@ if (loginBtn) {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
-
-            const user = auth.currentUser;
-            const userDocRef = doc(db, "users", user.uid);
-            const userDoc = await getDoc(userDocRef);
-
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-
-                // Check if the user is an admin
-                if (userData.role !== "admin") {
-                    alert("You do not have admin privileges.");
-                    window.location.href = "index.html"; // Redirect to non-admin page
-                } else {
-                    alert("Login successful!");
-                    window.location.href = "index.html"; // Redirect to home page
-                }
-            } else {
-                alert("No user data found.");
-            }
-
+            alert("Login successful!");
+            window.location.href = "index.html"; // Redirect to home page after login
         } catch (error) {
             alert(`🔥 Login failed: ${error.message}`);
         }
@@ -62,3 +41,5 @@ if (loginBtn) {
 } else {
     console.error("Login button not found.");
 }
+
+// Additional code to handle Sign-up redirection or other features can go here
