@@ -24,7 +24,7 @@ const signupPassword = document.getElementById("signup-password");
 
 // Email/Password Signup
 if (signupForm) {
-    signupForm.addEventListener("submit", async (event) => { // Changed from e to event
+    signupForm.addEventListener("submit", async (event) => {
         event.preventDefault();  // Prevent form from submitting and refreshing the page
         const email = signupEmail.value;
         const password = signupPassword.value;
