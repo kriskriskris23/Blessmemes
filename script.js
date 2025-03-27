@@ -25,6 +25,9 @@ const sortOptions = document.getElementById("sort-options");
 const prevPageBtn = document.getElementById("prev-page");
 const nextPageBtn = document.getElementById("next-page");
 const pageInfo = document.getElementById("page-info");
+const prevPageTop = document.getElementById("prev-page-top");
+const nextPageTop = document.getElementById("next-page-top");
+const pageInfoTop = document.getElementById("page-info-top");
 
 const memesCollection = collection(db, "memes");
 const usersCollection = collection(db, "users");
@@ -121,8 +124,11 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
 
         // Update pagination controls
         pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        pageInfoTop.textContent = `Page ${currentPage} of ${totalPages}`;
         prevPageBtn.disabled = currentPage === 1;
         nextPageBtn.disabled = currentPage === totalPages;
+        prevPageTop.disabled = currentPage === 1;
+        nextPageTop.disabled = currentPage === totalPages;
 
         // Render paginated memes
         for (const meme of paginatedMemes) {
@@ -395,17 +401,20 @@ if (sortOptions) {
     });
 }
 
-if (prevPageBtn && nextPageBtn) {
-    prevPageBtn.addEventListener("click", () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderMemes(sortOptions.value, currentPage);
-        }
-    });
-    nextPageBtn.addEventListener("click", () => {
-        currentPage++;
+if (prevPageBtn && nextPageBtn && prevPageTop && nextPageTop) {
+    const updatePage = (newPage) => {
+        currentPage = newPage;
         renderMemes(sortOptions.value, currentPage);
+    };
+
+    prevPageBtn.addEventListener("click", () => {
+        if (currentPage > 1) updatePage(currentPage - 1);
     });
+    nextPageBtn.addEventListener("click", () => updatePage(currentPage + 1));
+    prevPageTop.addEventListener("click", () => {
+        if (currentPage > 1) updatePage(currentPage - 1);
+    });
+    nextPageTop.addEventListener("click", () => updatePage(currentPage + 1));
 }
 
 // Initial render with default sorting (latest uploaded)
