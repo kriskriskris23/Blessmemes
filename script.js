@@ -36,6 +36,7 @@ let currentUsername = null;
 let currentPage = 1;
 const memesPerPage = 10;
 const POST_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour in milliseconds
+const COMMENT_COOLDOWN_MS = 30 * 60 * 1000; // 30 minutes in milliseconds
 
 // Load saved mode from localStorage
 const savedMode = localStorage.getItem("theme") || "light";
@@ -103,10 +104,10 @@ async function getCommentCount(memeId) {
 
 // Function to check if user can post
 async function canUserPost(userId) {
-    if (currentUserEmail === ADMIN_ID) return true; // Admin exempt
+    if (currentUserEmail === ADMIN_ID) return true;
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
-    if (!userSnap.exists() || !userSnap.data().lastPostTime) return true; // First post allowed
+    if (!userSnap.exists() || !userSnap.data().lastPostTime) return true;
 
     const lastPostTime = userSnap.data().lastPostTime;
     const currentTime = Date.now();
@@ -119,6 +120,27 @@ async function updateLastPostTime(userId) {
     const userRef = doc(db, "users", userId);
     await updateDoc(userRef, {
         lastPostTime: Date.now()
+    });
+}
+
+// Function to check if user can comment on a specific meme
+async function canUserComment(memeId, userId) {
+    if (currentUserEmail === ADMIN_ID) return true;
+    const commentTimeRef = doc(db, "memes", memeId, "commentTimes", userId);
+    const commentTimeSnap = await getDoc(commentTimeRef);
+    if (!commentTimeSnap.exists() || !commentTimeSnap.data().lastCommentTime) return true;
+
+    const lastCommentTime = commentTimeSnap.data().lastCommentTime;
+    const currentTime = Date.now();
+    const timeSinceLastComment = currentTime - lastCommentTime;
+    return timeSinceLastComment >= COMMENT_COOLDOWN_MS;
+}
+
+// Function to update last comment time
+async function updateLastCommentTime(memeId, userId) {
+    const commentTimeRef = doc(db, "memes", memeId, "commentTimes", userId);
+    await setDoc(commentTimeRef, {
+        lastCommentTime: Date.now()
     });
 }
 
@@ -228,7 +250,6 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
 
             uploaderContainer.appendChild(uploaderSpan);
 
-            // Add description input for uploader or admin
             if (meme.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID) {
                 const descriptionInput = document.createElement("input");
                 descriptionInput.type = "text";
@@ -409,17 +430,30 @@ async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
 async function addComment(memeId, commentText, commentInput) {
     if (!commentText.trim()) return;
     try {
+        const userId = auth.currentUser.uid;
+        const canComment = await canUserComment(memeId, userId);
+        if (!canComment) {
+            const commentTimeRef = doc(db, "memes", memeId, "commentTimes", userId);
+            const commentTimeSnap = await getDoc(commentTimeRef);
+            const lastCommentTime = commentTimeSnap.data().lastCommentTime;
+            const timeSinceLastComment = Date.now() - lastCommentTime;
+            const timeRemaining = Math.ceil((COMMENT_COOLDOWN_MS - timeSinceLastComment) / (60 * 1000));
+            alert(`You can only comment on this meme once every 30 minutes. Please wait ${timeRemaining} minutes.`);
+            return;
+        }
+
         const commentsCollection = collection(db, "memes", memeId, "comments");
         await addDoc(commentsCollection, {
             text: commentText,
             nickname: currentUsername,
             timestamp: Date.now()
         });
+        await updateLastCommentTime(memeId, userId); // Update last comment time after successful comment
         console.log("Comment added to meme:", memeId);
         commentInput.value = "";
     } catch (error) {
         console.error("Error adding comment:", error);
-        alert("Failed to add comment!");
+        alert("Failed to add comment: " + error.message);
     }
 }
 
@@ -511,7 +545,7 @@ if (updateMemeBtn && memeInput) {
                 timestamp: Date.now(),
                 votes: 0
             });
-            await updateLastPostTime(userId); // Update last post time after successful post
+            await updateLastPostTime(userId);
             memeInput.value = "";
             console.log("Meme added successfully");
         } catch (error) {
