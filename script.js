@@ -108,7 +108,6 @@ function renderMemes() {
             buttonsDiv.appendChild(deleteBtn);
             memeDiv.appendChild(buttonsDiv);
 
-            // Comment Section
             const commentSection = document.createElement("div");
             commentSection.className = "comment-section";
 
@@ -125,13 +124,6 @@ function renderMemes() {
             const commentsDiv = document.createElement("div");
             commentsDiv.className = "comments-list";
 
-            memeDiv.appendChild(img);
-            memeDiv.appendChild(voteCount);
-            buttonsDiv.appendChild(blessBtn);
-            buttonsDiv.appendChild(curseBtn);
-            buttonsDiv.appendChild(deleteBtn);
-            memeDiv.appendChild(buttonsDiv);
-
             commentSection.appendChild(commentInput);
             commentSection.appendChild(commentBtn);
             commentSection.appendChild(commentsDiv);
@@ -143,7 +135,6 @@ function renderMemes() {
             memeWrapper.appendChild(memeContainer);
             memesContainer.appendChild(memeWrapper);
 
-            // Render comments
             renderComments(memeId, commentsDiv);
         });
     }, (error) => {
@@ -195,7 +186,7 @@ async function addComment(memeId, commentText) {
         await addDoc(commentsCollection, {
             text: commentText,
             userEmail: currentUserEmail,
-            timestamp: new Date().toISOString()
+            timestamp: Date.now() // Use numeric timestamp for sorting
         });
         console.log("Comment added to meme:", memeId);
     } catch (error) {
@@ -208,10 +199,16 @@ function renderComments(memeId, commentsDiv) {
     const commentsCollection = collection(db, "memes", memeId, "comments");
     onSnapshot(commentsCollection, (snapshot) => {
         commentsDiv.innerHTML = "";
+        const comments = [];
         snapshot.forEach((docSnap) => {
-            const commentData = docSnap.data();
+            comments.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        // Sort by timestamp (ascending, oldest first, newest last)
+        comments.sort((a, b) => a.timestamp - b.timestamp);
+        comments.forEach((comment) => {
             const commentP = document.createElement("p");
-            commentP.textContent = `${commentData.userEmail}: ${commentData.text}`;
+            const date = new Date(comment.timestamp).toLocaleString(); // Readable timestamp
+            commentP.textContent = `${comment.userEmail}: ${comment.text} (${date})`;
             commentsDiv.appendChild(commentP);
         });
     }, (error) => {
