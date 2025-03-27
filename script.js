@@ -122,6 +122,12 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
         const endIndex = Math.min(startIndex + memesPerPage, totalMemes);
         const paginatedMemes = memes.slice(startIndex, endIndex);
 
+        // Toggle pagination visibility
+        const paginationContainers = document.querySelectorAll('.pagination-container');
+        paginationContainers.forEach(container => {
+            container.style.display = totalPages > 1 ? 'flex' : 'none';
+        });
+
         // Update pagination controls
         pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
         pageInfoTop.textContent = `Page ${currentPage} of ${totalPages}`;
