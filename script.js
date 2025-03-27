@@ -242,7 +242,6 @@ function renderComments(memeId, commentsDiv) {
             commentWrapper.appendChild(deleteCommentBtn);
             commentsDiv.appendChild(commentWrapper);
         });
-        // Scroll to the bottom after rendering
         commentsDiv.scrollTop = commentsDiv.scrollHeight;
     }, (error) => {
         console.error("Error in comments snapshot:", error);
@@ -264,6 +263,12 @@ if (updateMemeBtn && memeInput) {
     updateMemeBtn.addEventListener("click", async () => {
         const newMemeURL = memeInput.value.trim();
         if (newMemeURL) {
+            // Validate URL extension
+            const allowedExtensions = /\.(jpg|jpeg|png)$/i;
+            if (!allowedExtensions.test(newMemeURL)) {
+                alert("Only static images (.jpg, .jpeg, .png) are allowed. No GIFs, videos, or other formats.");
+                return;
+            }
             try {
                 await addDoc(memesCollection, {
                     url: newMemeURL,
