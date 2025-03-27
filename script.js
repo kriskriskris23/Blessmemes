@@ -120,14 +120,14 @@ function renderMemes() {
             commentInput.className = "comment-input";
             commentInput.addEventListener("keypress", (e) => {
                 if (e.key === "Enter") {
-                    addComment(memeId, commentInput.value);
+                    addComment(memeId, commentInput.value, commentInput);
                 }
             });
 
             const commentBtn = document.createElement("button");
             commentBtn.textContent = "Post";
             commentBtn.className = "comment-btn";
-            commentBtn.onclick = () => addComment(memeId, commentInput.value);
+            commentBtn.onclick = () => addComment(memeId, commentInput.value, commentInput);
 
             commentSection.appendChild(commentsDiv);
             commentSection.appendChild(commentInput);
@@ -187,7 +187,7 @@ async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
     }
 }
 
-async function addComment(memeId, commentText) {
+async function addComment(memeId, commentText, commentInput) {
     if (!commentText.trim()) return;
     try {
         const commentsCollection = collection(db, "memes", memeId, "comments");
@@ -197,8 +197,7 @@ async function addComment(memeId, commentText) {
             timestamp: Date.now()
         });
         console.log("Comment added to meme:", memeId);
-        const commentInput = document.querySelector(`.comment-section input[data-meme-id="${memeId}"]`);
-        if (commentInput) commentInput.value = ""; // Clear input after posting
+        commentInput.value = ""; // Clear input after posting
     } catch (error) {
         console.error("Error adding comment:", error);
         alert("Failed to add comment!");
@@ -243,6 +242,8 @@ function renderComments(memeId, commentsDiv) {
             commentWrapper.appendChild(deleteCommentBtn);
             commentsDiv.appendChild(commentWrapper);
         });
+        // Scroll to the bottom after rendering
+        commentsDiv.scrollTop = commentsDiv.scrollHeight;
     }, (error) => {
         console.error("Error in comments snapshot:", error);
     });
@@ -294,7 +295,7 @@ if (logoutBtn) {
             console.log("Logged out, redirecting to login.html");
             window.location.href = "login.html";
         } catch (error) {
-            console.error("Error deleting meme:", error);
+            console.error("Logout error:", error);
         }
     });
 }
