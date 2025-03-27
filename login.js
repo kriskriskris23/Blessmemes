@@ -23,6 +23,7 @@ const loginForm = document.getElementById("login-form");
 const loginEmail = document.getElementById("login-email");
 const loginPassword = document.getElementById("login-password");
 const googleLoginBtn = document.getElementById("google-login-btn");
+const signUpBtn = document.getElementById("sign-up-btn"); // Add sign-up button element
 
 // Email/Password Login
 if (loginForm) {
@@ -51,5 +52,12 @@ if (googleLoginBtn) {
         } catch (error) {
             alert(`🔥 Google login failed: ${error.message}`);
         }
+    });
+}
+
+// Redirect to Sign-up Page when Sign-up button is clicked
+if (signUpBtn) {
+    signUpBtn.addEventListener("click", () => {
+        window.location.href = "signup.html"; // Redirect to sign-up page
     });
 }
