@@ -62,10 +62,15 @@ body {
     gap: 1vw;
 }
 
+.banner-container {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Center the banner */
+}
+
 .banner {
     width: 90%; /* Match content width */
     max-width: 90vw; /* Match content max-width */
-    margin: 0 auto; /* Center the banner */
     background-color: var(--banner-bg);
     padding: 1vh 0;
     margin-bottom: 2vh;
