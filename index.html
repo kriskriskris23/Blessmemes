@@ -7,17 +7,17 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Welcome to Bless Memes!</h1>
-    <p>Share and vote on memes below:</p>
-    <div class="meme-input-container">
-        <input type="text" id="meme-url" placeholder="Paste image URL here">
-        <button id="update-meme">Add Meme</button>
-    </div>
-    <div id="memes-container">
-        <!-- Memes will be dynamically added here -->
-    </div>
-    <button id="admin-btn">I am an Admin</button>
     <button id="logout-btn">Logout</button>
+    <div class="main-content">
+        <h1>Welcome to Bless Memes!</h1>
+        <p>Share and vote on memes below:</p>
+        <div class="meme-input-container">
+            <input type="text" id="meme-url" placeholder="Paste image URL here">
+            <button id="update-meme">Add Meme</button>
+        </div>
+        <div id="memes-container"></div>
+        <button id="admin-btn">I am an Admin</button>
+    </div>
     <script type="module" src="script.js"></script>
 </body>
 </html>
