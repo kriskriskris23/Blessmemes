@@ -55,7 +55,7 @@ function renderMemes() {
 
             const uploaderSpan = document.createElement("span");
             uploaderSpan.className = "uploader";
-            uploaderSpan.textContent = `Uploaded by: ${memeData.uploadedBy}`; // Use email
+            uploaderSpan.textContent = `Uploaded by: ${memeData.uploadedBy}`;
 
             const memeDiv = document.createElement("div");
             memeDiv.className = "meme-item";
@@ -67,6 +67,15 @@ function renderMemes() {
             const voteCount = document.createElement("span");
             voteCount.textContent = `Votes: ${memeData.votes || 0}`;
 
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Delete";
+            deleteBtn.className = "delete-btn";
+            deleteBtn.style.display = (memeData.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
+            deleteBtn.onclick = () => deleteMeme(memeId);
+
+            const voteButtonsDiv = document.createElement("div");
+            voteButtonsDiv.className = "vote-buttons";
+
             const blessBtn = document.createElement("button");
             blessBtn.className = "bless-btn";
             blessBtn.dataset.memeId = memeId;
@@ -74,12 +83,6 @@ function renderMemes() {
             const curseBtn = document.createElement("button");
             curseBtn.className = "curse-btn";
             curseBtn.dataset.memeId = memeId;
-
-            const deleteBtn = document.createElement("button");
-            deleteBtn.textContent = "Delete";
-            deleteBtn.className = "delete-btn";
-            deleteBtn.style.display = (memeData.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
-            deleteBtn.onclick = () => deleteMeme(memeId);
 
             const voteRef = doc(db, "memes", memeId, "votes", currentUserEmail || "anonymous");
             getDoc(voteRef).then((voteSnap) => {
@@ -97,12 +100,14 @@ function renderMemes() {
 
             memeDiv.appendChild(img);
             memeDiv.appendChild(voteCount);
-            memeDiv.appendChild(blessBtn);
-            memeDiv.appendChild(curseBtn);
             memeDiv.appendChild(deleteBtn);
+
+            voteButtonsDiv.appendChild(blessBtn);
+            voteButtonsDiv.appendChild(curseBtn);
 
             memeWrapper.appendChild(uploaderSpan);
             memeWrapper.appendChild(memeDiv);
+            memeWrapper.appendChild(voteButtonsDiv);
             memesContainer.appendChild(memeWrapper);
         });
     }, (error) => {
@@ -165,7 +170,7 @@ if (updateMemeBtn && memeInput) {
             try {
                 await addDoc(memesCollection, {
                     url: newMemeURL,
-                    uploadedBy: currentUserEmail, // Use email instead of deviceId
+                    uploadedBy: currentUserEmail,
                     votes: 0
                 });
                 memeInput.value = "";
