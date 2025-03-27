@@ -72,8 +72,8 @@ html, body {
 }
 
 .comments-list {
-    flex-grow: 1;
-    overflow-y: auto;
+    max-height: 300px; /* Fixed height to trigger scrollbar */
+    overflow-y: auto; /* Scrollbar when content overflows */
 }
 
 .comment-wrapper {
@@ -126,7 +126,7 @@ button {
 }
 
 .delete-comment-btn {
-    padding: 5px 10px; /* Smaller size for comment delete */
+    padding: 5px 10px;
     font-size: 12px;
     background-color: #f44336;
     color: white;
