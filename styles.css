@@ -64,9 +64,8 @@ body {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center; /* Center all content */
     text-align: left;
-    padding-left: 2vw; /* Responsive padding */
     padding-top: 5vh; /* Space for header controls */
 }
 
@@ -150,7 +149,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 2vh; /* Responsive gap */
-    align-items: center; /* Center meme wrappers */
+    margin: 0 auto; /* Center horizontally */
 }
 
 .meme-wrapper {
