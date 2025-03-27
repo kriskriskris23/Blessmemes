@@ -15,7 +15,7 @@ html, body {
 
 #memes-container {
     width: 90%;
-    max-width: 1600px; /* Increased to accommodate two panels */
+    max-width: 1600px;
     display: flex;
     flex-direction: column;
     gap: 25px;
@@ -35,14 +35,14 @@ html, body {
 
 .meme-container {
     display: flex;
-    gap: 20px; /* Space between meme and comment panels */
+    gap: 20px;
 }
 
 .meme-item {
     border: 2px solid black;
     padding: 15px;
     border-radius: 8px;
-    width: 720px; /* Fixed width to match comment section */
+    width: 720px;
 }
 
 .meme-item img {
@@ -56,7 +56,7 @@ html, body {
     border: 2px solid black;
     padding: 15px;
     border-radius: 8px;
-    width: 720px; /* Same width as meme-item */
+    width: 720px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -67,18 +67,26 @@ html, body {
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 14px;
-    width: 100%; /* Full width of comment section */
-    box-sizing: border-box; /* Include padding in width */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .comments-list {
     flex-grow: 1;
-    overflow-y: auto; /* Scroll if too many comments */
+    overflow-y: auto;
+}
+
+.comment-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 5px 0;
 }
 
 .comments-list p {
-    margin: 5px 0;
+    margin: 0;
     font-size: 14px;
+    flex-grow: 1;
 }
 
 .meme-buttons {
@@ -113,7 +121,14 @@ button {
 }
 
 .comment-btn {
-    background-color: #2196F3; /* Blue for comment button */
+    background-color: #2196F3;
+    color: white;
+}
+
+.delete-comment-btn {
+    padding: 5px 10px; /* Smaller size for comment delete */
+    font-size: 12px;
+    background-color: #f44336;
     color: white;
 }
 
