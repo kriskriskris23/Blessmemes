@@ -41,6 +41,12 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUserEmail = user.email;
         console.log("User logged in:", currentUserEmail);
+        // Hide "I am an Admin" button if user is admin
+        if (currentUserEmail === ADMIN_ID && adminBtn) {
+            adminBtn.style.display = "none";
+        } else if (adminBtn) {
+            adminBtn.style.display = "block";
+        }
     } else {
         currentUserEmail = null;
         console.log("No user logged in, redirecting to login.html");
@@ -136,7 +142,8 @@ if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
         try {
             await auth.signOut();
-            window.location.href = "login.html";
+            console.log("Logged out, redirecting to login.html");
+            window.location.href = "login.html"; // Redirect to login page
         } catch (error) {
             console.error("Logout error:", error);
         }
