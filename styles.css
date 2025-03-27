@@ -408,6 +408,19 @@ body {
     background-color: rgba(0, 0, 0, 0.05);
     padding: 0.5vh 1vw;
     border-radius: 0.5vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delete-description-btn {
+    padding: 0.5vh 1vw;
+    font-size: 1vw;
+    background-color: var(--delete-btn-bg);
+    color: var(--button-text);
+    border: 0.1vw solid var(--border-color);
+    border-radius: 0.5vw;
+    cursor: pointer;
 }
 
 .comments-list {
