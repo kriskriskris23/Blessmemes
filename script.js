@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, doc, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
@@ -23,6 +23,7 @@ const adminBtn = document.getElementById("admin-btn");
 const logoutBtn = document.getElementById("logout-btn");
 
 const memesCollection = collection(db, "memes");
+const usersCollection = collection(db, "users");
 const ADMIN_ID = "adminaccount@gmail.com";
 
 let currentUserEmail = null;
@@ -33,13 +34,13 @@ onAuthStateChanged(auth, async (user) => {
         currentUserEmail = user.email;
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
+        if (userSnap.exists() && userSnap.data().nickname) {
             currentUsername = userSnap.data().nickname;
         } else {
-            window.location.href = "set-nickname.html"; // Redirect if no nickname set
+            window.location.href = "set-nickname.html"; // Redirect if no nickname
             return;
         }
-        console.log("User logged in:", currentUserEmail, "Username:", currentUsername);
+        console.log("User logged in:", currentUserEmail, "Nickname:", currentUsername);
         if (currentUserEmail === ADMIN_ID && adminBtn) {
             adminBtn.style.display = "none";
         } else if (adminBtn) {
@@ -53,11 +54,22 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
+// Helper function to get nickname from email
+async function getNicknameFromEmail(email) {
+    const userQuery = await getDocs(usersCollection);
+    for (const docSnap of userQuery.docs) {
+        if (docSnap.data().email === email) {
+            return docSnap.data().nickname;
+        }
+    }
+    return email; // Fallback to email if nickname not found
+}
+
 function renderMemes() {
     memesContainer.innerHTML = "";
-    onSnapshot(memesCollection, (snapshot) => {
+    onSnapshot(memesCollection, async (snapshot) => {
         memesContainer.innerHTML = "";
-        snapshot.forEach((docSnap) => {
+        for (const docSnap of snapshot.docs) { // Use for...of for async operations
             const memeData = docSnap.data();
             const memeId = docSnap.id;
 
@@ -66,7 +78,8 @@ function renderMemes() {
 
             const uploaderSpan = document.createElement("span");
             uploaderSpan.className = "uploader";
-            uploaderSpan.textContent = `Uploaded by: ${memeData.uploadedBy}`; // Now uses nickname
+            const uploaderNickname = await getNicknameFromEmail(memeData.uploadedBy); // Fetch nickname
+            uploaderSpan.textContent = `Uploaded by: ${uploaderNickname}`;
 
             const memeContainer = document.createElement("div");
             memeContainer.className = "meme-container";
@@ -95,7 +108,7 @@ function renderMemes() {
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Delete";
             deleteBtn.className = "delete-btn";
-            deleteBtn.style.display = (memeData.uploadedBy === currentUsername || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
+            deleteBtn.style.display = (memeData.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
             deleteBtn.onclick = () => deleteMeme(memeId);
 
             const voteRef = doc(db, "memes", memeId, "votes", currentUsername || "anonymous");
@@ -155,7 +168,7 @@ function renderMemes() {
 
             const memeHeight = memeDiv.offsetHeight;
             commentSection.style.height = `${memeHeight}px`;
-        });
+        }
     }, (error) => {
         console.error("Error in memes snapshot:", error);
     });
@@ -204,7 +217,7 @@ async function addComment(memeId, commentText, commentInput) {
         const commentsCollection = collection(db, "memes", memeId, "comments");
         await addDoc(commentsCollection, {
             text: commentText,
-            userNickname: currentUsername, // Use nickname instead of email
+            nickname: currentUsername, // Use nickname
             timestamp: Date.now()
         });
         console.log("Comment added to meme:", memeId);
@@ -241,7 +254,7 @@ function renderComments(memeId, commentsDiv) {
 
             const commentP = document.createElement("p");
             const date = new Date(comment.timestamp).toLocaleString();
-            commentP.textContent = `${comment.userNickname}: ${comment.text} (${date})`; // Use nickname
+            commentP.textContent = `${comment.nickname}: ${comment.text} (${date})`; // Use nickname
 
             const deleteCommentBtn = document.createElement("button");
             deleteCommentBtn.textContent = "Delete";
@@ -282,7 +295,8 @@ if (updateMemeBtn && memeInput) {
             try {
                 await addDoc(memesCollection, {
                     url: newMemeURL,
-                    uploadedBy: currentUsername, // Use nickname
+                    uploadedBy: currentUserEmail, // Store email for ownership
+                    nickname: currentUsername, // Store nickname for display
                     votes: 0
                 });
                 memeInput.value = "";
