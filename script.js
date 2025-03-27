@@ -3,11 +3,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebas
 import { 
     getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot 
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js"; // Import the signOut function
 
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
+    apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
     authDomain: "blessmemes.firebaseapp.com",
     projectId: "blessmemes",
     storageBucket: "blessmemes.firebasestorage.app",
@@ -19,7 +18,6 @@ const firebaseConfig = {
 // Initialize Firebase & Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app); // Initialize Firebase Authentication
 
 // DOM Elements
 const blessBtn = document.getElementById("bless");
@@ -29,8 +27,6 @@ const memeInput = document.getElementById("meme-url");
 const updateMemeBtn = document.getElementById("update-meme");
 const deleteMemeBtn = document.getElementById("delete-meme");
 const memeImg = document.getElementById("meme-img");
-const logoutBtn = document.getElementById("logout-btn"); // Get the logout button
-
 
 // Firestore Document References
 const voteDocRef = doc(db, "votes", "meme1");
@@ -58,7 +54,7 @@ async function updateVoteCount() {
 
         voteCountSpan.textContent = voteCount;
     } catch (error) {
-        console.error("櫨 Error fetching votes:", error);
+        console.error("🔥 Error fetching votes:", error);
     }
 }
 
@@ -75,7 +71,7 @@ async function vote(type) {
         alert("Thank you for voting!");
         updateVoteCount();
     } catch (error) {
-        console.error("櫨 Error processing vote:", error);
+        console.error("🔥 Error processing vote:", error);
     }
 }
 
@@ -95,7 +91,7 @@ updateMemeBtn.addEventListener("click", async () => {
             await setDoc(memeDocRef, { url: newMemeURL, uploadedBy: deviceId });
             memeInput.value = ""; // Clear input after updating
         } catch (error) {
-            console.error("櫨 Error updating meme URL:", error);
+            console.error("🔥 Error updating meme URL:", error);
         }
     } else {
         alert("Please enter a valid image URL!");
@@ -110,7 +106,7 @@ deleteMemeBtn.addEventListener("click", async () => {
         deleteMemeBtn.style.display = "none"; // Hide button after deletion
         alert("Meme deleted!");
     } catch (error) {
-        console.error("櫨 Error deleting meme:", error);
+        console.error("🔥 Error deleting meme:", error);
     }
 });
 
@@ -146,26 +142,9 @@ async function loadMeme() {
             }
         }
     } catch (error) {
-        console.error("櫨 Error loading meme:", error);
+        console.error("🔥 Error loading meme:", error);
     }
 }
 
 // Load meme on page load
 window.addEventListener("load", loadMeme);
-
-// Event listener for the logout button
-if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-        signOut(auth)
-            .then(() => {
-                // Sign-out successful.
-                alert("Logged out successfully!");
-                window.location.href = "login.html"; // Redirect to login page
-            })
-            .catch((error) => {
-                // An error happened.
-                console.error("Error signing out:", error);
-                alert("Failed to log out. Please try again.");
-            });
-    });
-}
