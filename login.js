@@ -1,16 +1,15 @@
-// Import Firebase Authentication SDK
+// Import Firebase Auth
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
 import { 
-    getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, 
-    onAuthStateChanged 
+    getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 
-// Firebase Configuration
+// Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
     authDomain: "blessmemes.firebaseapp.com",
     projectId: "blessmemes",
-    storageBucket: "blessmemes.appspot.com",
+    storageBucket: "blessmemes.firebasestorage.app",
     messagingSenderId: "647948484551",
     appId: "1:647948484551:web:db884bd3346d838737e3e2",
     measurementId: "G-0GY321M1ML"
@@ -26,51 +25,53 @@ const passwordInput = document.getElementById("password");
 const loginBtn = document.getElementById("login-btn");
 const signupBtn = document.getElementById("signup-btn");
 const logoutBtn = document.getElementById("logout-btn");
-const authMessage = document.getElementById("auth-message");
+const errorMessage = document.getElementById("error-message");
 
-// Login User
+// Handle Login
 loginBtn.addEventListener("click", async () => {
     const email = emailInput.value.trim();
-    const password = passwordInput.value;
+    const password = passwordInput.value.trim();
 
     try {
         await signInWithEmailAndPassword(auth, email, password);
-        authMessage.textContent = "✅ Logged in successfully!";
+        alert("Login successful!");
+        window.location.href = "index.html"; // Redirect to main page
     } catch (error) {
-        authMessage.textContent = "❌ Error: " + error.message;
+        errorMessage.textContent = "🔥 Error: " + error.message;
     }
 });
 
-// Sign Up User
+// Handle Signup
 signupBtn.addEventListener("click", async () => {
     const email = emailInput.value.trim();
-    const password = passwordInput.value;
+    const password = passwordInput.value.trim();
 
     try {
         await createUserWithEmailAndPassword(auth, email, password);
-        authMessage.textContent = "✅ Account created! You are now logged in.";
+        alert("Account created successfully! Please log in.");
     } catch (error) {
-        authMessage.textContent = "❌ Error: " + error.message;
+        errorMessage.textContent = "🔥 Error: " + error.message;
     }
 });
 
-// Logout User
+// Handle Logout
 logoutBtn.addEventListener("click", async () => {
     try {
         await signOut(auth);
-        authMessage.textContent = "✅ Logged out successfully!";
+        alert("Logged out successfully!");
+        logoutBtn.style.display = "none";
     } catch (error) {
-        authMessage.textContent = "❌ Error: " + error.message;
+        errorMessage.textContent = "🔥 Error: " + error.message;
     }
 });
 
-// Track Authentication State
+// Check Auth State
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        authMessage.textContent = `👤 Logged in as: ${user.email}`;
+        console.log("User is logged in:", user.email);
         logoutBtn.style.display = "block";
     } else {
-        authMessage.textContent = "🔒 Not logged in.";
+        console.log("No user logged in.");
         logoutBtn.style.display = "none";
     }
 });
