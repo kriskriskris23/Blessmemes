@@ -15,6 +15,7 @@
     --admin-btn-bg: #4CAF50;
     --logout-btn-bg: #f44336;
     --container-bg: transparent;
+    --banner-bg: #f0f0f0;
 }
 
 body.dark-mode {
@@ -33,6 +34,7 @@ body.dark-mode {
     --admin-btn-bg: #388E3C;
     --logout-btn-bg: #d32f2f;
     --container-bg: #2a2a2a;
+    --banner-bg: #333333;
 }
 
 html {
@@ -58,6 +60,44 @@ body {
     right: 1vw;
     display: flex;
     gap: 1vw;
+}
+
+.banner {
+    width: 100%;
+    background-color: var(--banner-bg);
+    text-align: center;
+    padding: 1vh 0;
+    margin-bottom: 2vh;
+}
+
+#banner-text {
+    font-size: 2vw;
+    margin: 0;
+}
+
+#admin-banner-form {
+    width: 90%;
+    max-width: 90vw;
+    margin: 0 auto 2vh auto;
+    text-align: center;
+}
+
+#admin-banner-form h3 {
+    font-size: 1.8vw;
+    margin: 0.5vh 0;
+}
+
+#banner-input {
+    padding: 0.8vh 1vw;
+    font-size: 1.2vw;
+    width: 50%;
+    max-width: 50vw;
+    margin-right: 1vw;
+}
+
+#update-banner-btn {
+    padding: 0.8vh 1.5vw;
+    font-size: 1.2vw;
 }
 
 .main-content {
