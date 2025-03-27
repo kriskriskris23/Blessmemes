@@ -101,7 +101,7 @@ async function getCommentCount(memeId) {
 }
 
 // Function to add or update meme description
-async function addDescription(memeId, descriptionText, descriptionInput) {
+async function addDescription(memeId, descriptionText, descriptionInput, descriptionControls) {
     if (!descriptionText.trim()) return;
     try {
         const memeRef = doc(db, "memes", memeId);
@@ -112,9 +112,26 @@ async function addDescription(memeId, descriptionText, descriptionInput) {
         });
         console.log("Description added to meme:", memeId);
         descriptionInput.value = "";
+        descriptionControls.style.display = "none"; // Hide controls after saving
     } catch (error) {
         console.error("Error adding description:", error);
         alert("Failed to add description: " + error.message);
+    }
+}
+
+// Function to delete meme description
+async function deleteDescription(memeId) {
+    try {
+        const memeRef = doc(db, "memes", memeId);
+        await updateDoc(memeRef, {
+            description: deleteField(), // Remove description field
+            updatedBy: currentUserEmail,
+            updatedAt: Date.now()
+        });
+        console.log("Description deleted from meme:", memeId);
+    } catch (error) {
+        console.error("Error deleting description:", error);
+        alert("Failed to delete description: " + error.message);
     }
 }
 
@@ -201,12 +218,17 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
                 const descriptionBtn = document.createElement("button");
                 descriptionBtn.textContent = "Save Description";
                 descriptionBtn.className = "description-btn";
-                descriptionBtn.onclick = () => addDescription(meme.id, descriptionInput.value, descriptionInput);
+                descriptionBtn.onclick = () => addDescription(meme.id, descriptionInput.value, descriptionInput, descriptionControls);
 
                 const descriptionControls = document.createElement("div");
                 descriptionControls.className = "description-controls";
                 descriptionControls.appendChild(descriptionInput);
                 descriptionControls.appendChild(descriptionBtn);
+
+                // Hide controls if description exists
+                if (meme.description) {
+                    descriptionControls.style.display = "none";
+                }
 
                 uploaderContainer.appendChild(descriptionControls);
             }
@@ -270,6 +292,20 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             const descriptionDiv = document.createElement("div");
             descriptionDiv.className = "meme-description";
             descriptionDiv.textContent = meme.description || "No description provided.";
+
+            // Add delete button for uploader or admin
+            if (meme.description && (meme.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID)) {
+                const deleteDescriptionBtn = document.createElement("button");
+                deleteDescriptionBtn.textContent = "Delete";
+                deleteDescriptionBtn.className = "delete-description-btn";
+                deleteDescriptionBtn.onclick = () => {
+                    deleteDescription(meme.id);
+                    // Show description controls again after deletion
+                    const controls = memeWrapper.querySelector('.description-controls');
+                    if (controls) controls.style.display = "flex";
+                };
+                descriptionDiv.appendChild(deleteDescriptionBtn);
+            }
 
             const commentsDiv = document.createElement("div");
             commentsDiv.className = "comments-list";
