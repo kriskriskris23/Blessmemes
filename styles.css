@@ -76,7 +76,7 @@ body {
     margin: 0 auto; /* Center horizontally */
     width: 100%; /* Full width of the banner container */
     height: auto;
-    max-height: 40vh; /* Doubled from 20vh to 40vh */
+    max-height: 20vh; /* Limit banner height */
     object-fit: cover; /* Ensure image fits without distortion */
 }
 
