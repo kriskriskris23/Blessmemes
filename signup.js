@@ -1,6 +1,8 @@
-// Import Firebase SDKs
+// signup.js
+
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 // Firebase Configuration
 const firebaseConfig = {
@@ -16,6 +18,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 // DOM Elements
 const signupForm = document.getElementById("signup-form");
@@ -31,9 +34,16 @@ if (signupForm) {
 
         try {
             // Attempt to create the user with email and password
-            await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            // Assign admin role to yourself or a specific UID (replace 'your-uid-here' with actual UID)
+            const userRole = (user.uid === "your-uid-here") ? "admin" : "user"; 
+
+            await setDoc(doc(db, "users", user.uid), { role: userRole });
             alert("Account created successfully!");
             window.location.href = "login.html"; // Redirect to login page after sign-up
+
         } catch (error) {
             if (error.code === 'auth/email-already-in-use') {
                 alert("🔥 User with that email already exists.");
