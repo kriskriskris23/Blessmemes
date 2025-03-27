@@ -63,6 +63,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    background-color: yellow; /* Set to yellow */
 }
 
 .login-card {
@@ -326,12 +327,12 @@ body {
 
 .uploader-container {
     position: absolute;
-    top: 0; /* Align with top of meme-wrapper */
-    left: calc(-50% - 0.5vw); /* Shift left by half the meme-container width (41vw/2) plus half the gap */
-    transform: translateX(-100%); /* Move left by its own width */
+    top: 0;
+    left: calc(-50% - 0.5vw);
+    transform: translateX(-100%);
     text-align: left;
     width: auto;
-    z-index: 1; /* Ensure it’s above other elements */
+    z-index: 1;
 }
 
 .uploader {
