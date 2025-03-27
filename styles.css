@@ -414,12 +414,12 @@ body {
 }
 
 .delete-description-btn {
-    padding: 0.5vh 1vw;
-    font-size: 1vw;
-    background-color: var(--delete-btn-bg);
+    padding: 0.3vh 0.5vw; /* Smaller padding */
+    font-size: 0.8vw; /* Smaller font */
+    background-color: var(--delete-btn-bg); /* Red */
     color: var(--button-text);
     border: 0.1vw solid var(--border-color);
-    border-radius: 0.5vw;
+    border-radius: 0.3vw; /* Slightly smaller radius */
     cursor: pointer;
 }
 
