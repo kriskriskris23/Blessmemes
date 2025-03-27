@@ -327,9 +327,10 @@ body {
 
 .uploader-container {
     width: 40vw; /* Match meme-item width */
-    text-align: left; /* Align text to the left */
+    text-align: left; /* Align text to left */
     margin-bottom: 0.5vh; /* Space above meme panel */
-    position: static; /* Remove absolute positioning */
+    padding-left: 1vw; /* Match meme-item padding */
+    box-sizing: border-box; /* Include padding in width */
 }
 
 .uploader {
