@@ -118,6 +118,11 @@ function renderMemes() {
             commentInput.type = "text";
             commentInput.placeholder = "Add a comment...";
             commentInput.className = "comment-input";
+            commentInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                    addComment(memeId, commentInput.value);
+                }
+            });
 
             const commentBtn = document.createElement("button");
             commentBtn.textContent = "Post";
@@ -137,7 +142,6 @@ function renderMemes() {
 
             renderComments(memeId, commentsDiv);
 
-            // Match heights after rendering
             const memeHeight = memeDiv.offsetHeight;
             commentSection.style.height = `${memeHeight}px`;
         });
@@ -193,6 +197,8 @@ async function addComment(memeId, commentText) {
             timestamp: Date.now()
         });
         console.log("Comment added to meme:", memeId);
+        const commentInput = document.querySelector(`.comment-section input[data-meme-id="${memeId}"]`);
+        if (commentInput) commentInput.value = ""; // Clear input after posting
     } catch (error) {
         console.error("Error adding comment:", error);
         alert("Failed to add comment!");
@@ -288,7 +294,7 @@ if (logoutBtn) {
             console.log("Logged out, redirecting to login.html");
             window.location.href = "login.html";
         } catch (error) {
-            console.error("Logout error:", error);
+            console.error("Error deleting meme:", error);
         }
     });
 }
