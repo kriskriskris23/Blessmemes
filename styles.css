@@ -405,7 +405,7 @@ body {
     font-size: 1vw;
     font-style: italic;
     color: var(--text-color);
-    background-color: rgba(0, 0, 0, 0.05); /* Slight background for distinction */
+    background-color: rgba(0, 0, 0, 0.05);
     padding: 0.5vh 1vw;
     border-radius: 0.5vw;
 }
@@ -414,7 +414,7 @@ body {
     flex-grow: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    max-height: calc(100% - 8vh); /* Adjust height to account for description, input, and button */
+    max-height: calc(100% - 8vh);
 }
 
 .comment-wrapper {
