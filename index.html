@@ -15,6 +15,16 @@
             <input type="text" id="meme-url" placeholder="Paste image URL here">
             <button id="update-meme">Add Meme</button>
         </div>
+        <div class="sort-container">
+            <label for="sort-options">Sort by:</label>
+            <select id="sort-options">
+                <option value="most-votes">Most Votes</option>
+                <option value="least-votes">Least Votes</option>
+                <option value="latest-uploaded">Latest Uploaded</option>
+                <option value="oldest-uploaded">Oldest Uploaded</option>
+                <option value="most-comments">Most Comments</option>
+            </select>
+        </div>
         <div id="memes-container"></div>
         <button id="admin-btn">I am an Admin</button>
     </div>
