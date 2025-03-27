@@ -4,7 +4,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebas
 
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk", // Replace this with your actual API key
+    apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
     authDomain: "blessmemes.firebaseapp.com",
     projectId: "blessmemes",
     storageBucket: "blessmemes.firebasestorage.app",
@@ -21,7 +21,6 @@ const auth = getAuth(app);
 const loginBtn = document.getElementById("login-btn");
 const loginEmail = document.getElementById("login-email");
 const loginPassword = document.getElementById("login-password");
-const errorMessageDisplay = document.getElementById("error-message"); // Get error message element
 
 // Add event listener to the login button
 if (loginBtn) {
@@ -31,33 +30,16 @@ if (loginBtn) {
         const email = loginEmail.value;
         const password = loginPassword.value;
 
-        if (!email || !password) {
-            errorMessageDisplay.textContent = "Please enter both email and password.";
-            alert("Please enter both email and password.");
-            return; // Stop if email or password is missing
-        }
-
         try {
-            // Attempt to sign in the user with email and password
-            console.log("Attempting to log in with email:", email); // Add this line for debugging
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-            console.log("Logged in:", user);
-            alert("Logged in successfully!");
-            window.location.href = "index.html"; // Redirect to the main page
+            await signInWithEmailAndPassword(auth, email, password);
+            alert("Login successful!");
+            window.location.href = "index.html"; // Redirect to home page after login
         } catch (error) {
-            // Handle errors during login
-            console.error("Error logging in:", error);
-            let errorMessage = "Login failed. Please check your email and password."; // Default error
-            if (error.code === 'auth/user-not-found') {
-                errorMessage = "User not found. Please check your email.";
-            } else if (error.code === 'auth/wrong-password') {
-                errorMessage = "Incorrect password. Please try again.";
-            } else {
-                errorMessage = "An unexpected error occurred: " + error.message;
-            }
-            errorMessageDisplay.textContent = errorMessage; // Display the error message
-            alert(errorMessage);
+            alert(`🔥 Login failed: ${error.message}`);
         }
     });
+} else {
+    console.error("Login button not found.");
 }
+
+// Additional code to handle Sign-up redirection or other features can go here
