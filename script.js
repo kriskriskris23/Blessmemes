@@ -42,9 +42,9 @@ const COMMENT_COOLDOWN_MS = 30 * 60 * 1000; // 30 minutes in milliseconds
 const savedMode = localStorage.getItem("theme") || "light";
 if (savedMode === "dark") {
     document.body.classList.add("dark-mode");
-    modeToggleBtn.textContent = "Light Mode";
+    if (modeToggleBtn) modeToggleBtn.textContent = "Light Mode";
 } else {
-    modeToggleBtn.textContent = "Dark Mode";
+    if (modeToggleBtn) modeToggleBtn.textContent = "Dark Mode";
 }
 
 onAuthStateChanged(auth, async (user) => {
@@ -61,11 +61,12 @@ onAuthStateChanged(auth, async (user) => {
         console.log("User logged in:", currentUserEmail, "Nickname:", currentUsername);
         if (currentUserEmail === ADMIN_ID && adminBtn) {
             adminBtn.style.display = "none";
-            adminBannerForm.style.display = "block";
+            if (adminBannerForm) adminBannerForm.style.display = "block";
         } else if (adminBtn) {
             adminBtn.style.display = "block";
-            adminBannerForm.style.display = "none";
+            if (adminBannerForm) adminBannerForm.style.display = "none";
         }
+        renderMemes("latest-uploaded", currentPage); // Re-render memes after login
     } else {
         currentUserEmail = null;
         currentUsername = null;
@@ -77,10 +78,12 @@ onAuthStateChanged(auth, async (user) => {
 // Load banner image from Firestore
 onSnapshot(bannerDoc, (docSnap) => {
     if (docSnap.exists() && docSnap.data().imageUrl) {
-        bannerImage.src = docSnap.data().imageUrl;
-        bannerImage.style.display = "block";
+        if (bannerImage) {
+            bannerImage.src = docSnap.data().imageUrl;
+            bannerImage.style.display = "block";
+        }
     } else {
-        bannerImage.style.display = "none";
+        if (bannerImage) bannerImage.style.display = "none";
     }
 });
 
@@ -180,8 +183,10 @@ async function deleteDescription(memeId) {
 }
 
 function renderMemes(sortBy = "latest-uploaded", page = 1) {
+    if (!memesContainer) return;
     memesContainer.innerHTML = "";
     onSnapshot(memesCollection, async (snapshot) => {
+        if (!memesContainer) return;
         memesContainer.innerHTML = "";
         let memes = [];
         for (const docSnap of snapshot.docs) {
@@ -223,12 +228,12 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             container.style.display = totalPages > 1 ? 'flex' : 'none';
         });
 
-        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-        pageInfoTop.textContent = `Page ${currentPage} of ${totalPages}`;
-        prevPageBtn.disabled = currentPage === 1;
-        nextPageBtn.disabled = currentPage === totalPages;
-        prevPageTop.disabled = currentPage === 1;
-        nextPageTop.disabled = currentPage === totalPages;
+        if (pageInfo) pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        if (pageInfoTop) pageInfoTop.textContent = `Page ${currentPage} of ${totalPages}`;
+        if (prevPageBtn) prevPageBtn.disabled = currentPage === 1;
+        if (nextPageBtn) nextPageBtn.disabled = currentPage === totalPages;
+        if (prevPageTop) prevPageTop.disabled = currentPage === 1;
+        if (nextPageTop) nextPageTop.disabled = currentPage === totalPages;
 
         for (const meme of paginatedMemes) {
             const memeWrapper = document.createElement("div");
@@ -288,39 +293,49 @@ function renderMemes(sortBy = "latest-uploaded", page = 1) {
             const buttonsDiv = document.createElement("div");
             buttonsDiv.className = "meme-buttons";
 
+            // Bless Button with default text
             const blessBtn = document.createElement("button");
             blessBtn.className = "bless-btn";
+            blessBtn.textContent = "Bless"; // Default text
             blessBtn.dataset.memeId = meme.id;
 
+            // Curse Button with default text
             const curseBtn = document.createElement("button");
             curseBtn.className = "curse-btn";
+            curseBtn.textContent = "Curse"; // Default text
             curseBtn.dataset.memeId = meme.id;
 
+            // Delete Button
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Delete";
             deleteBtn.className = "delete-btn";
             deleteBtn.style.display = (meme.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
             deleteBtn.onclick = () => deleteMeme(meme.id);
 
-            const voteRef = doc(db, "memes", meme.id, "votes", currentUsername);
-            getDoc(voteRef).then((voteSnap) => {
-                const userVote = voteSnap.exists() ? voteSnap.data().vote : null;
-                blessBtn.textContent = userVote === 1 ? "Unbless" : "Bless";
-                curseBtn.textContent = userVote === -1 ? "Uncurse" : "Curse";
-                blessBtn.disabled = userVote === -1;
-                curseBtn.disabled = userVote === 1;
-            }).catch((error) => {
-                console.error("Error fetching vote state:", error);
-            });
+            // Fetch vote state asynchronously and update buttons
+            if (currentUsername) {
+                const voteRef = doc(db, "memes", meme.id, "votes", currentUsername);
+                getDoc(voteRef).then((voteSnap) => {
+                    const userVote = voteSnap.exists() ? voteSnap.data().vote : null;
+                    blessBtn.textContent = userVote === 1 ? "Unbless" : "Bless";
+                    curseBtn.textContent = userVote === -1 ? "Uncurse" : "Curse";
+                    blessBtn.disabled = userVote === -1;
+                    curseBtn.disabled = userVote === 1;
+                }).catch((error) => {
+                    console.error("Error fetching vote state:", error);
+                });
+            }
 
+            // Attach click handlers
             blessBtn.onclick = () => handleVote(meme.id, 1, blessBtn, curseBtn);
             curseBtn.onclick = () => handleVote(meme.id, -1, curseBtn, blessBtn);
 
-            memeDiv.appendChild(img);
-            memeDiv.appendChild(voteCount);
             buttonsDiv.appendChild(blessBtn);
             buttonsDiv.appendChild(curseBtn);
             buttonsDiv.appendChild(deleteBtn);
+
+            memeDiv.appendChild(img);
+            memeDiv.appendChild(voteCount);
             memeDiv.appendChild(buttonsDiv);
 
             const commentSection = document.createElement("div");
@@ -418,7 +433,11 @@ async function handleVote(memeId, voteChange, clickedBtn, otherBtn) {
         }
     } catch (error) {
         console.error("Error handling vote:", error);
-        alert("Failed to process vote: " + error.message);
+        if (error.code === "permission-denied") {
+            alert("You don’t have permission to vote. Check Firestore rules.");
+        } else {
+            alert("Failed to process vote: " + error.message);
+        }
     }
 }
 
