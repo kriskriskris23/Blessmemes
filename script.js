@@ -28,6 +28,7 @@ const pageInfo = document.getElementById("page-info");
 const prevPageTop = document.getElementById("prev-page-top");
 const nextPageTop = document.getElementById("next-page-top");
 const pageInfoTop = document.getElementById("page-info-top");
+const modeToggleBtn = document.getElementById("mode-toggle");
 
 const memesCollection = collection(db, "memes");
 const usersCollection = collection(db, "users");
@@ -37,6 +38,15 @@ let currentUserEmail = null;
 let currentUsername = null;
 let currentPage = 1;
 const memesPerPage = 10;
+
+// Load saved mode from localStorage
+const savedMode = localStorage.getItem("theme") || "light";
+if (savedMode === "dark") {
+    document.body.classList.add("dark-mode");
+    modeToggleBtn.textContent = "Light Mode";
+} else {
+    modeToggleBtn.textContent = "Dark Mode";
+}
 
 onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -397,6 +407,15 @@ if (logoutBtn) {
         } catch (error) {
             console.error("Logout error:", error);
         }
+    });
+}
+
+if (modeToggleBtn) {
+    modeToggleBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        const isDarkMode = document.body.classList.contains("dark-mode");
+        modeToggleBtn.textContent = isDarkMode ? "Light Mode" : "Dark Mode";
+        localStorage.setItem("theme", isDarkMode ? "dark" : "light");
     });
 }
 
