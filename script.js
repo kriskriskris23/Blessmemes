@@ -21,6 +21,7 @@ const updateMemeBtn = document.getElementById("update-meme");
 const memesContainer = document.getElementById("memes-container");
 const adminBtn = document.getElementById("admin-btn");
 const logoutBtn = document.getElementById("logout-btn");
+const sortOptions = document.getElementById("sort-options");
 
 const memesCollection = collection(db, "memes");
 const usersCollection = collection(db, "users");
@@ -65,21 +66,55 @@ async function getNicknameFromEmail(email) {
     return email; // Fallback to email if nickname not found
 }
 
-function renderMemes() {
+// Helper function to get comment count for a meme
+async function getCommentCount(memeId) {
+    const commentsCollection = collection(db, "memes", memeId, "comments");
+    const commentSnapshot = await getDocs(commentsCollection);
+    return commentSnapshot.size;
+}
+
+function renderMemes(sortBy = "latest-uploaded") {
     memesContainer.innerHTML = "";
     onSnapshot(memesCollection, async (snapshot) => {
         memesContainer.innerHTML = "";
+        let memes = [];
         for (const docSnap of snapshot.docs) {
             const memeData = docSnap.data();
             const memeId = docSnap.id;
+            const commentCount = await getCommentCount(memeId);
+            memes.push({ id: memeId, ...memeData, commentCount });
+        }
 
+        // Sorting logic
+        switch (sortBy) {
+            case "most-votes":
+                memes.sort((a, b) => (b.votes || 0) - (a.votes || 0));
+                break;
+            case "least-votes":
+                memes.sort((a, b) => (a.votes || 0) - (b.votes || 0));
+                break;
+            case "latest-uploaded":
+                memes.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                break;
+            case "oldest-uploaded":
+                memes.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                break;
+            case "most-comments":
+                memes.sort((a, b) => b.commentCount - a.commentCount);
+                break;
+            default:
+                memes.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)); // Default to latest
+        }
+
+        // Render sorted memes
+        for (const meme of memes) {
             const memeWrapper = document.createElement("div");
             memeWrapper.className = "meme-wrapper";
 
             const uploaderSpan = document.createElement("span");
             uploaderSpan.className = "uploader";
-            const uploaderNickname = await getNicknameFromEmail(memeData.uploadedBy);
-            const uploadDate = memeData.timestamp ? new Date(memeData.timestamp).toLocaleString() : "Unknown date";
+            const uploaderNickname = await getNicknameFromEmail(meme.uploadedBy);
+            const uploadDate = meme.timestamp ? new Date(meme.timestamp).toLocaleString() : "Unknown date";
             uploaderSpan.textContent = `Uploaded by: ${uploaderNickname} on ${uploadDate}`;
 
             const memeContainer = document.createElement("div");
@@ -89,30 +124,30 @@ function renderMemes() {
             memeDiv.className = "meme-item";
 
             const img = document.createElement("img");
-            img.src = memeData.url;
+            img.src = meme.url;
             img.alt = "User-uploaded meme";
 
             const voteCount = document.createElement("span");
-            voteCount.textContent = `Votes: ${memeData.votes || 0}`;
+            voteCount.textContent = `Votes: ${meme.votes || 0}`;
 
             const buttonsDiv = document.createElement("div");
             buttonsDiv.className = "meme-buttons";
 
             const blessBtn = document.createElement("button");
             blessBtn.className = "bless-btn";
-            blessBtn.dataset.memeId = memeId;
+            blessBtn.dataset.memeId = meme.id;
 
             const curseBtn = document.createElement("button");
             curseBtn.className = "curse-btn";
-            curseBtn.dataset.memeId = memeId;
+            curseBtn.dataset.memeId = meme.id;
 
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Delete";
             deleteBtn.className = "delete-btn";
-            deleteBtn.style.display = (memeData.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
-            deleteBtn.onclick = () => deleteMeme(memeId);
+            deleteBtn.style.display = (meme.uploadedBy === currentUserEmail || currentUserEmail === ADMIN_ID) ? "inline-block" : "none";
+            deleteBtn.onclick = () => deleteMeme(meme.id);
 
-            const voteRef = doc(db, "memes", memeId, "votes", currentUsername || "anonymous");
+            const voteRef = doc(db, "memes", meme.id, "votes", currentUsername || "anonymous");
             getDoc(voteRef).then((voteSnap) => {
                 const userVote = voteSnap.exists() ? voteSnap.data().vote : null;
                 blessBtn.textContent = userVote === 1 ? "Unbless" : "Bless";
@@ -123,8 +158,8 @@ function renderMemes() {
                 console.error("Error fetching vote state:", error);
             });
 
-            blessBtn.onclick = () => handleVote(memeId, 1, blessBtn, curseBtn);
-            curseBtn.onclick = () => handleVote(memeId, -1, curseBtn, blessBtn);
+            blessBtn.onclick = () => handleVote(meme.id, 1, blessBtn, curseBtn);
+            curseBtn.onclick = () => handleVote(meme.id, -1, curseBtn, blessBtn);
 
             memeDiv.appendChild(img);
             memeDiv.appendChild(voteCount);
@@ -145,14 +180,14 @@ function renderMemes() {
             commentInput.className = "comment-input";
             commentInput.addEventListener("keypress", (e) => {
                 if (e.key === "Enter") {
-                    addComment(memeId, commentInput.value, commentInput);
+                    addComment(meme.id, commentInput.value, commentInput);
                 }
             });
 
             const commentBtn = document.createElement("button");
             commentBtn.textContent = "Post";
             commentBtn.className = "comment-btn";
-            commentBtn.onclick = () => addComment(memeId, commentInput.value, commentInput);
+            commentBtn.onclick = () => addComment(meme.id, commentInput.value, commentInput);
 
             commentSection.appendChild(commentsDiv);
             commentSection.appendChild(commentInput);
@@ -165,7 +200,7 @@ function renderMemes() {
             memeWrapper.appendChild(memeContainer);
             memesContainer.appendChild(memeWrapper);
 
-            renderComments(memeId, commentsDiv);
+            renderComments(meme.id, commentsDiv);
 
             const memeHeight = memeDiv.offsetHeight;
             commentSection.style.height = `${memeHeight}px`;
@@ -280,7 +315,7 @@ async function deleteMeme(memeId) {
         console.log(`Deleted meme ${memeId}`);
     } catch (error) {
         console.error("Error deleting meme:", error);
-        alert("Failed to delete meme: " + error.message); // Improved error feedback
+        alert("Failed to delete meme: " + error.message);
     }
 }
 
@@ -331,4 +366,11 @@ if (logoutBtn) {
     });
 }
 
-renderMemes();
+if (sortOptions) {
+    sortOptions.addEventListener("change", (e) => {
+        renderMemes(e.target.value);
+    });
+}
+
+// Initial render with default sorting (latest uploaded)
+renderMemes("latest-uploaded");
