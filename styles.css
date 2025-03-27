@@ -1,14 +1,61 @@
+/* Define root variables for light and dark modes */
+:root {
+    /* Light mode (default) */
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --border-color: #000000;
+    --input-bg: #ffffff;
+    --input-border: #ccc;
+    --button-bg: #2196F3;
+    --button-text: #ffffff;
+    --button-disabled-bg: #ccc;
+    --bless-btn-bg: yellow;
+    --curse-btn-bg: red;
+    --delete-btn-bg: #f44336;
+    --admin-btn-bg: #4CAF50;
+    --logout-btn-bg: #f44336;
+    --container-bg: transparent;
+}
+
+body.dark-mode {
+    /* Dark mode */
+    --background-color: #1a1a1a;
+    --text-color: #ffffff;
+    --border-color: #ffffff;
+    --input-bg: #333333;
+    --input-border: #555555;
+    --button-bg: #1976D2;
+    --button-text: #ffffff;
+    --button-disabled-bg: #666666;
+    --bless-btn-bg: #cccc00;
+    --curse-btn-bg: #b30000;
+    --delete-btn-bg: #d32f2f;
+    --admin-btn-bg: #388E3C;
+    --logout-btn-bg: #d32f2f;
+    --container-bg: #2a2a2a;
+}
+
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 body {
     display: flex;
     flex-direction: column;
     position: relative; /* For absolute positioning of logout button */
+}
+
+.header-controls {
+    position: absolute;
+    top: 1vh;
+    right: 1vw;
+    display: flex;
+    gap: 1vw;
 }
 
 .main-content {
@@ -18,7 +65,7 @@ body {
     align-items: flex-start;
     text-align: left;
     padding-left: 2vw; /* Responsive padding */
-    padding-top: 5vh; /* Space for logout button */
+    padding-top: 5vh; /* Space for header controls */
 }
 
 .meme-input-container {
@@ -53,7 +100,9 @@ body {
     padding: 0.8vh 1vw;
     font-size: 1.2vw;
     border-radius: 0.5vw;
-    border: 0.1vw solid #ccc;
+    border: 0.1vw solid var(--input-border);
+    background-color: var(--input-bg);
+    color: var(--text-color);
 }
 
 .pagination-container {
@@ -83,13 +132,13 @@ body {
     padding: 0.8vh 1.5vw;
     font-size: 1.2vw;
     width: 8vw; /* Fixed width for consistent size */
-    background-color: #2196F3;
-    color: white;
+    background-color: var(--button-bg);
+    color: var(--button-text);
     text-align: center;
 }
 
 #prev-page:disabled, #next-page:disabled, #prev-page-top:disabled, #next-page-top:disabled {
-    background-color: #ccc;
+    background-color: var(--button-disabled-bg);
     cursor: not-allowed;
 }
 
@@ -114,11 +163,12 @@ body {
 }
 
 .meme-item {
-    border: 0.2vw solid black; /* Responsive border */
+    border: 0.2vw solid var(--border-color); /* Responsive border */
     padding: 1.5vw;
     border-radius: 0.5vw;
     width: 50vw; /* Responsive width */
     box-sizing: border-box;
+    background-color: var(--container-bg);
 }
 
 .meme-item img {
@@ -129,7 +179,7 @@ body {
 }
 
 .comment-section {
-    border: 0.2vw solid black;
+    border: 0.2vw solid var(--border-color);
     padding: 1.5vw;
     border-radius: 0.5vw;
     width: 50vw;
@@ -137,6 +187,7 @@ body {
     flex-direction: column;
     gap: 1vh;
     box-sizing: border-box;
+    background-color: var(--container-bg);
 }
 
 .comments-list {
@@ -172,68 +223,76 @@ button {
     font-size: 1.5vw; /* Responsive font size */
     cursor: pointer;
     border-radius: 0.5vw;
-    border: 0.2vw solid black;
+    border: 0.2vw solid var(--border-color);
     margin: 0.5vh;
+    background-color: var(--button-bg);
+    color: var(--button-text);
 }
 
 .bless-btn {
-    background-color: yellow;
-    color: black;
+    background-color: var(--bless-btn-bg);
+    color: var(--text-color);
 }
 
 .curse-btn {
-    background-color: red;
-    color: black;
+    background-color: var(--curse-btn-bg);
+    color: var(--text-color);
 }
 
 .delete-btn {
-    background-color: #f44336;
-    color: white;
+    background-color: var(--delete-btn-bg);
+    color: var(--button-text);
 }
 
 .comment-btn {
-    background-color: #2196F3;
-    color: white;
+    background-color: var(--button-bg);
+    color: var(--button-text);
 }
 
 .delete-comment-btn {
     padding: 0.5vh 1vw;
     font-size: 1vw;
-    background-color: #f44336;
-    color: white;
+    background-color: var(--delete-btn-bg);
+    color: var(--button-text);
     white-space: nowrap;
     flex-shrink: 0;
 }
 
 button:disabled {
-    background-color: #ccc;
+    background-color: var(--button-disabled-bg);
     cursor: not-allowed;
     opacity: 0.6;
 }
 
 #admin-btn {
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--admin-btn-bg);
+    color: var(--button-text);
     margin-top: 2vh;
 }
 
 #logout-btn {
-    position: absolute;
-    top: 1vh; /* Responsive top margin */
-    right: 1vw; /* Responsive right margin */
-    background-color: #f44336;
-    color: white;
+    background-color: var(--logout-btn-bg);
+    color: var(--button-text);
+    padding: 0.8vh 1.5vw;
+    font-size: 1.2vw;
+}
+
+#mode-toggle {
+    background-color: #555555;
+    color: var(--button-text);
     padding: 0.8vh 1.5vw;
     font-size: 1.2vw;
 }
 
 input {
     padding: 1vh 1vw;
-    border: 0.1vw solid #ccc;
+    border: 0.1vw solid var(--input-border);
     border-radius: 0.5vw;
     font-size: 1.2vw;
     width: 100%;
     box-sizing: border-box;
+    background-color: var(--input-bg);
+    color: var(--text-color);
 }
 
 .comment-input {
