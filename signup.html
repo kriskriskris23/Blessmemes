@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Sign Up - Bless Memes</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Create an Account</h2>
-        <form id="signup-form">
-            <label for="signup-email">Email:</label>
-            <input type="email" id="signup-email" required placeholder="Enter your email">
-            
-            <label for="signup-password">Password:</label>
-            <input type="password" id="signup-password" required placeholder="Enter your password">
-
-            <button type="submit">Sign Up</button>
-        </form>
-        <p>Already have an account? <a href="login.html">Login here</a></p>
+    <div class="login-page">
+        <div class="login-card">
+            <h1>Create an Account</h1>
+            <form class="login-form" id="signup-form">
+                <div class="form-group">
+                    <input type="email" id="signup-email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="signup-password" placeholder="Enter your password" required>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit">Sign Up</button>
+                </div>
+                <p>Already have an account? <a href="login.html">Login here</a></p>
+                <p id="error-message" class="error"></p>
+            </form>
+        </div>
     </div>
-
-    <!-- Make sure to add type="module" here -->
     <script type="module" src="signup.js"></script>
 </body>
 </html>
