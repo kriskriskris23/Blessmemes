@@ -36,6 +36,7 @@ html, body {
 .meme-container {
     display: flex;
     gap: 20px;
+    align-items: stretch; /* Ensure both panels stretch to the same height */
 }
 
 .meme-item {
@@ -43,6 +44,7 @@ html, body {
     padding: 15px;
     border-radius: 8px;
     width: 720px;
+    box-sizing: border-box; /* Include padding in width */
 }
 
 .meme-item img {
@@ -60,12 +62,12 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    height: 400px; /* Fixed height to control panel size */
+    box-sizing: border-box; /* Include padding in width */
 }
 
 .comments-list {
     flex-grow: 1; /* Stretch to fill available space */
-    overflow-y: auto; /* Scrollbar stretches full height */
+    overflow-y: auto; /* Scrollbar spans full height */
 }
 
 .comment-wrapper {
