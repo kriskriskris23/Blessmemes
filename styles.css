@@ -70,9 +70,12 @@ body {
     margin-bottom: 2vh;
 }
 
-#banner-text {
-    font-size: 2vw;
-    margin: 0;
+#banner-image {
+    width: 100%;
+    max-width: 90vw;
+    height: auto;
+    max-height: 20vh; /* Limit banner height */
+    object-fit: cover; /* Ensure image fits without distortion */
 }
 
 #admin-banner-form {
