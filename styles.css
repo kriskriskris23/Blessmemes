@@ -60,20 +60,12 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-}
-
-.comment-input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
+    height: 400px; /* Fixed height to control panel size */
 }
 
 .comments-list {
-    max-height: 300px; /* Fixed height to trigger scrollbar */
-    overflow-y: auto; /* Scrollbar when content overflows */
+    flex-grow: 1; /* Stretch to fill available space */
+    overflow-y: auto; /* Scrollbar stretches full height */
 }
 
 .comment-wrapper {
@@ -87,6 +79,15 @@ html, body {
     margin: 0;
     font-size: 14px;
     flex-grow: 1;
+}
+
+.comment-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .meme-buttons {
