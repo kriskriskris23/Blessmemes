@@ -229,15 +229,14 @@ body {
 .meme-wrapper {
     display: flex;
     flex-direction: column;
-    width: 100%; /* Full width to align uploader */
-    max-width: 90vw; /* Match memes-container */
-    align-items: flex-start; /* Align children to the left */
+    width: fit-content; /* Restore centering of meme-container */
+    align-items: center; /* Center children horizontally */
 }
 
 .uploader-container {
-    width: 100%; /* Full width of meme-wrapper */
+    width: 90vw; /* Match memes-container max-width */
     text-align: left; /* Align text to the left */
-    margin-left: calc((100% - 90vw) / 2); /* Align with meme-item’s left edge */
+    margin-left: calc((100vw - 90vw) / 2); /* Align with left edge of centered meme-item */
 }
 
 .uploader {
