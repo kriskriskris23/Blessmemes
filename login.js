@@ -1,17 +1,7 @@
-// Import Firebase SDKs
+// login.js
+import { firebaseConfig } from './firebase-config.js';
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-
-// Firebase Configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyDI_fGu98sgzr8ie4DphTFFkApEbwwdSyk",
-    authDomain: "blessmemes.firebaseapp.com",
-    projectId: "blessmemes",
-    storageBucket: "blessmemes.firebasestorage.app",
-    messagingSenderId: "647948484551",
-    appId: "1:647948484551:web:db884bd3346d838737e3e2",
-    measurementId: "G-0GY321M1ML"
-};
 
 // Initialize Firebase
 let app, auth;
@@ -25,7 +15,7 @@ try {
 
 // DOM Elements for login
 const loginBtn = document.getElementById("login-btn");
-const signupBtn = document.getElementById("signup-btn"); // Added
+const signupBtn = document.getElementById("signup-btn");
 const loginEmail = document.getElementById("login-email");
 const loginPassword = document.getElementById("login-password");
 
